@@ -19,7 +19,7 @@ const App={/* FINAL v8.5 bugfixes: drawer clickability above bottom nav, single 
       dayNames:['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
     },
     els:{},
-    state:{app:null,selectedScreen:'calendar',selectedYear:new Date().getFullYear(),selectedWeekId:null,editingEventId:null,calendarMonth:new Date().getMonth(),calendarYear:new Date().getFullYear(),calendarEditingWeekId:null,calendarDetailWeekId:null,calendarEventFilter:'all',pdfExportType:'month-grid',calendarEditorMode:'edit',calendarCreateDate:null,pdfRangeStart:'',pdfRangeEnd:''},
+    state:{app:null,selectedScreen:'calendar',selectedYear:new Date().getFullYear(),selectedWeekId:null,editingEventId:null,calendarMonth:new Date().getMonth(),calendarYear:new Date().getFullYear(),calendarEditingWeekId:null,calendarDetailWeekId:null,calendarEventFilter:'all',pdfExportType:'month-grid',calendarEditorMode:'edit',calendarCreateDate:null,pdfRangeStart:'',pdfRangeEnd:'',exportType:'json',exportRangeStart:'',exportRangeEnd:''},
     utils:{
       uid(prefix='id'){return prefix+'_'+Math.random().toString(36).slice(2,10)},
       iso(date){const d=new Date(date);const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`},
@@ -77,7 +77,7 @@ const App={/* FINAL v8.5 bugfixes: drawer clickability above bottom nav, single 
     },
     ui:{
       applyTheme(){App.state.app.settings=App.store.ensureSettingsDefaults(App.state.app.settings);document.documentElement.setAttribute('data-theme',App.state.app.settings.theme || 'light');document.documentElement.setAttribute('data-layout',App.state.app.settings.layoutPreset || 'classic')},
-      cacheElements(){['appRoot','desktopNav','toastWrap','offlineBanner','sideStatus','screenTitle','screenSubtitle','weekSearch','yearSelect','eventFilter','weekList','weekEditorTitle','weekEditorEmpty','weekEditor','weekEventSelect','weekPrioritySelect','flagLetter','flagS302','weekNoteInput','saveWeekBtn','monthLabel','calendarRangeLabel','calendarGrid','prevMonthBtn','todayMonthBtn','nextMonthBtn','calendarYearSelect','calendarLayoutPresetSelect','layoutPresetSelect','calendarEditor','editorTitle','editorMeta','editorEventSelect','editorStart','editorEnd','editorReadonly','editorCloseBtn','editorCancelBtn','editorDeleteBtn','editorSaveBtn','calendarServiceYearLabel','calendarPanelYearLabel','calendarQuickList','calendarSideTitle','calendarSideMeta','calendarSideDetails','calendarEventQuickFilter','toggleTeamPanelBtn','calendarLayout','eventsList','eventNameInput','eventColorInput','eventAddressInput','eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','notesList','languageSelect','themeSelect','settingsPdfBtn','backupBtn','resetAppBtn','themeBtn','exportBtn','importInput','pdfModal','pdfModalCloseBtn','pdfCancelBtn','pdfExportConfirmBtn','pdfRangeCard','pdfRangeStartInput','pdfRangeEndInput','pdfRangeHelp','pdfHint','bottomNav','bottomNavRow','mobileOverlay','mobileMenuToggleBtn','addYearInput','addNextYearBtn','addYearBtn'].forEach(id=>App.els[id]=document.getElementById(id))},
+      cacheElements(){['appRoot','desktopNav','toastWrap','offlineBanner','sideStatus','screenTitle','screenSubtitle','weekSearch','yearSelect','eventFilter','weekList','weekEditorTitle','weekEditorEmpty','weekEditor','weekEventSelect','weekPrioritySelect','flagLetter','flagS302','weekNoteInput','saveWeekBtn','monthLabel','calendarRangeLabel','calendarGrid','prevMonthBtn','todayMonthBtn','nextMonthBtn','calendarYearSelect','calendarLayoutPresetSelect','layoutPresetSelect','calendarEditor','editorTitle','editorMeta','editorEventSelect','editorStart','editorEnd','editorReadonly','editorCloseBtn','editorCancelBtn','editorDeleteBtn','editorSaveBtn','calendarServiceYearLabel','calendarPanelYearLabel','calendarQuickList','calendarSideTitle','calendarSideMeta','calendarSideDetails','calendarEventQuickFilter','toggleTeamPanelBtn','calendarLayout','eventsList','eventNameInput','eventColorInput','eventAddressInput','eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','notesList','languageSelect','themeSelect','settingsPdfBtn','backupBtn','resetAppBtn','themeBtn','exportBtn','importInput','pdfModal','pdfModalCloseBtn','pdfCancelBtn','pdfExportConfirmBtn','pdfRangeCard','pdfRangeStartInput','pdfRangeEndInput','pdfRangeHelp','pdfHint','bottomNav','bottomNavRow','mobileOverlay','mobileMenuToggleBtn','addYearInput','addNextYearBtn','addYearBtn','exportModal','exportModalCloseBtn','exportCancelBtn','exportConfirmBtn','exportRangeCard','exportRangeStartInput','exportRangeEndInput','exportRangeHelp'].forEach(id=>App.els[id]=document.getElementById(id))},
       setDrawer(open){App.els.appRoot.classList.toggle('menu-open',open);document.body.classList.toggle('menu-open',open);App.els.mobileOverlay.hidden=!open},
       syncLayoutSelectors(){const value=App.state.app.settings.layoutPreset || 'classic';const html=App.config.layoutPresets.map(p=>`<option value="${p.value}">${p.label}</option>`).join('');App.els.layoutPresetSelect.innerHTML=html;App.els.layoutPresetSelect.value=value;App.els.calendarLayoutPresetSelect.innerHTML=html;App.els.calendarLayoutPresetSelect.value=value},
       renderNav(){App.els.desktopNav.innerHTML='';App.config.navItems.forEach(item=>{const btn=document.createElement('button');btn.className='nav-btn'+(App.state.selectedScreen===item.id?' active':'');btn.type='button';btn.innerHTML=`<span>${item.icon}</span><span>${item.title}</span>`;btn.addEventListener('click',()=>{App.state.selectedScreen=item.id;if(window.innerWidth<=1200)App.ui.setDrawer(false);App.ui.renderAll()});App.els.desktopNav.appendChild(btn)});App.els.bottomNavRow.innerHTML='';App.config.navItems.forEach(item=>{const btn=document.createElement('button');btn.className='bottom-nav-btn'+(App.state.selectedScreen===item.id?' active':'');btn.type='button';btn.innerHTML=`<span class="icon">${item.icon}</span><span class="label">${item.title}</span>`;btn.addEventListener('click',()=>{App.state.selectedScreen=item.id;App.ui.setDrawer(false);App.ui.renderAll()});App.els.bottomNavRow.appendChild(btn)})},
@@ -191,8 +191,133 @@ hR.addEventListener('pointerdown',ev=>App.ui.startResizeDrag(ev,item.id,'end',Ap
       fallbackOpenPrint(payload){const w=window.open('','_blank');if(!w){App.utils.toast('Браузер заблокировал печать. Разреши всплывающие окна для этого сайта.');return}w.document.open();const scriptTag='<scr'+'ipt>window.onload=()=>{setTimeout(()=>{window.focus();window.print();},120)};<\\/scr'+'ipt>';w.document.write(payload.html+scriptTag);w.document.close()},
       export(){const payload=App.pdf.buildPayload();const frame=document.createElement('iframe');let printStarted=false;frame.style.position='fixed';frame.style.right='0';frame.style.bottom='0';frame.style.width='0';frame.style.height='0';frame.style.border='0';frame.onload=()=>{if(printStarted)return;printStarted=true;try{setTimeout(()=>{try{frame.contentWindow.focus();frame.contentWindow.print();App.utils.toast('Открыл печатную версию. В системном окне выбери «Сохранить как PDF».')}catch(err){App.pdf.fallbackOpenPrint(payload)}},180)}catch(err){App.pdf.fallbackOpenPrint(payload)}};frame.srcdoc=payload.html;document.body.appendChild(frame);App.pdf.closeModal();setTimeout(()=>frame.remove(),60000)}
     },
-    bind:{
-      events(){const E=App.els,S=App.state,U=App.utils,Store=App.store,UI=App.ui,PDF=App.pdf;E.yearSelect.addEventListener('change',()=>{S.selectedYear=Number(E.yearSelect.value);S.selectedWeekId=null;UI.renderAll()});E.calendarYearSelect.addEventListener('change',()=>{S.calendarYear=Number(E.calendarYearSelect.value);UI.renderCalendar()});E.calendarLayoutPresetSelect.addEventListener('change',()=>{S.app.settings.layoutPreset=E.calendarLayoutPresetSelect.value;Store.save()});E.layoutPresetSelect.addEventListener('change',()=>{S.app.settings.layoutPreset=E.layoutPresetSelect.value;Store.save()});E.eventFilter.addEventListener('change',UI.renderWeeks);E.weekSearch.addEventListener('input',UI.renderWeeks);E.noteSearch.addEventListener('input',UI.renderNotes);E.calendarEventQuickFilter.addEventListener('change',()=>{S.calendarEventFilter=E.calendarEventQuickFilter.value;UI.renderCalendar()});E.toggleTeamPanelBtn.addEventListener('click',()=>{S.app.settings.showTeamPanel=!S.app.settings.showTeamPanel;Store.save()});E.prevMonthBtn.addEventListener('click',()=>{const old=S.calendarMonth;S.calendarMonth=(S.calendarMonth+11)%12;if(old===8)S.calendarYear--;UI.renderCalendar()});E.nextMonthBtn.addEventListener('click',()=>{const old=S.calendarMonth;S.calendarMonth=(S.calendarMonth+1)%12;if(old===7)S.calendarYear++;UI.renderCalendar()});E.todayMonthBtn.addEventListener('click',()=>{const now=new Date();S.calendarMonth=now.getMonth();S.calendarYear=U.getServiceYearForDate(now);UI.renderCalendar()});E.editorCloseBtn.addEventListener('click',UI.closeCalendarEditor);E.editorCancelBtn.addEventListener('click',UI.closeCalendarEditor);E.editorDeleteBtn.addEventListener('click',()=>{const item=Store.getWeekById(S.calendarEditingWeekId);if(!item)return UI.closeCalendarEditor();item.assignedEventId='';item.updatedAt=new Date().toISOString();S.calendarDetailWeekId=null;UI.closeCalendarEditor();Store.save();U.toast('Событие удалено из календаря')});E.editorSaveBtn.addEventListener('click',()=>{let startDate=E.editorStart.value,endDate=E.editorEnd.value;const assignedEventId=E.editorEventSelect.value;if(!assignedEventId)return U.toast('Выбери событие');if(!startDate || !endDate)return U.toast('Нужно указать начало и конец.');if(endDate<startDate){const s=startDate;startDate=endDate;endDate=s}if(S.calendarEditorMode==='create'){const itemYear=U.getServiceYearForDate(U.parseLocalDate(startDate));if(!S.app.serviceYears[itemYear])S.app.serviceYears[itemYear]={id:String(itemYear),year:itemYear,weeks:[]};const newItem={id:U.uid('week'),year:itemYear,weekNo:0,startDate,endDate,assignedEventId,priority:'normal',flags:{letter:false,s302:false},note:'',updatedAt:new Date().toISOString()};S.app.serviceYears[itemYear].weeks.push(newItem);S.app.serviceYears[itemYear].weeks.sort((a,b)=>a.startDate.localeCompare(b.startDate));S.app.serviceYears[itemYear].weeks.forEach((w,idx)=>w.weekNo=idx+1);S.calendarDetailWeekId=newItem.id;UI.closeCalendarEditor();Store.save();U.toast('Событие добавлено');return}const item=Store.getWeekById(S.calendarEditingWeekId);if(!item)return UI.closeCalendarEditor();const oldYear=item.year;item.startDate=startDate;item.endDate=endDate;item.assignedEventId=assignedEventId;item.year=U.getServiceYearForDate(U.parseLocalDate(startDate));item.updatedAt=new Date().toISOString();if(oldYear!==item.year){Object.values(S.app.serviceYears).forEach(y=>{y.weeks=y.weeks.filter(w=>w.id!==item.id)});if(!S.app.serviceYears[item.year])S.app.serviceYears[item.year]={id:String(item.year),year:item.year,weeks:[]};S.app.serviceYears[item.year].weeks.push(item)}S.app.serviceYears[item.year].weeks.sort((a,b)=>a.startDate.localeCompare(b.startDate));S.app.serviceYears[item.year].weeks.forEach((w,idx)=>w.weekNo=idx+1);S.calendarDetailWeekId=item.id;UI.closeCalendarEditor();Store.save();U.toast('Обновлено')});E.saveWeekBtn.addEventListener('click',()=>{const w=Store.getWeekById(S.selectedWeekId);if(!w)return;w.assignedEventId=E.weekEventSelect.value;w.priority=E.weekPrioritySelect.value;w.flags={letter:E.flagLetter.checked,s302:E.flagS302.checked};w.note=E.weekNoteInput.value.trim();w.updatedAt=new Date().toISOString();Store.save();U.toast('Сохранено')});E.saveEventBtn.addEventListener('click',()=>{const payload={name:E.eventNameInput.value.trim(),color:E.eventColorInput.value,address:E.eventAddressInput.value.trim(),schedule:E.eventScheduleInput.value.trim()};if(!payload.name)return U.toast('Название обязательно');if(S.editingEventId){Object.assign(Store.getEventById(S.editingEventId),payload);U.toast('Событие обновлено')}else{S.app.events.unshift({id:U.uid('evt'),...payload});U.toast('Событие создано')}UI.clearEventForm();Store.save()});E.resetEventBtn.addEventListener('click',UI.clearEventForm);E.themeBtn.addEventListener('click',()=>{S.app.settings.theme=S.app.settings.theme==='light'?'dark':'light';Store.save()});E.languageSelect.addEventListener('change',()=>{S.app.settings.language=E.languageSelect.value;Store.save()});E.themeSelect.addEventListener('change',()=>{S.app.settings.theme=E.themeSelect.value;Store.save()});E.settingsPdfBtn.addEventListener('click',PDF.openModal);E.pdfModalCloseBtn.addEventListener('click',PDF.closeModal);E.pdfCancelBtn.addEventListener('click',PDF.closeModal);E.pdfExportConfirmBtn.addEventListener('click',PDF.export);E.pdfModal.addEventListener('click',e=>{if(e.target===E.pdfModal)PDF.closeModal()});document.querySelectorAll('[data-pdf-type]').forEach(btn=>btn.addEventListener('click',()=>{S.pdfExportType=btn.dataset.pdfType;if(S.pdfExportType!=='custom-range'&&S.pdfExportType!=='custom-range-calendar'){const range=PDF.resolveDateRange();S.pdfRangeStart=range.start;S.pdfRangeEnd=range.end}PDF.openModal()}));E.pdfRangeStartInput.addEventListener('change',()=>{S.pdfRangeStart=E.pdfRangeStartInput.value});E.pdfRangeEndInput.addEventListener('change',()=>{S.pdfRangeEnd=E.pdfRangeEndInput.value});E.exportBtn.addEventListener('click',()=>{const data=JSON.stringify(S.app,null,2);const blob=new Blob([data],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`service-year-planner-${U.iso(new Date())}.json`;a.click();URL.revokeObjectURL(a.href);U.toast('Файл экспортирован')});E.backupBtn.addEventListener('click',()=>E.exportBtn.click());E.importInput.addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const text=await file.text();const data=JSON.parse(text);if(data?.schema==='sp-backup-v2')S.app=Store.importBackupSchema(data);else if(data?.serviceYears&&data?.events)S.app=Store.normalize(data);else throw new Error('unknown');const sy=U.getServiceYearForDate(new Date());S.selectedYear=S.app.serviceYears[sy]?sy:Number(Object.keys(S.app.serviceYears)[0]);S.calendarYear=S.selectedYear;S.calendarMonth=new Date().getMonth();S.selectedScreen='calendar';UI.clearEventForm();UI.closeCalendarEditor();Store.save();U.toast('JSON успешно импортирован')}catch(err){console.error(err);U.toast('Ошибка импорта JSON')}e.target.value=''});E.resetAppBtn.addEventListener('click',()=>{S.app=Store.createDefaultData();const now=new Date();S.selectedYear=U.getServiceYearForDate(now);S.calendarYear=S.selectedYear;S.calendarMonth=now.getMonth();S.selectedWeekId=null;UI.clearEventForm();UI.closeCalendarEditor();Store.save();U.toast('Приложение сброшено')});
+    
+ ,
+ export:{
+  escapeIcsText(value){
+    return String(value??'')
+      .replace(/\\/g,'\\\\')
+      .replace(/\n/g,'\\n')
+      .replace(/;/g,'\\;')
+      .replace(/,/g,'\\,');
+  },
+  dtStamp(){
+    const d=new Date();
+    const pad=n=>String(n).padStart(2,'0');
+    return `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
+  },
+  addOneDay(iso){
+    const d=App.utils.parseLocalDate(iso);
+    d.setDate(d.getDate()+1);
+    return App.utils.iso(d);
+  },
+  resolveDefaultRange(){
+    // Default: current visible month
+    const actualYear=App.utils.actualYearForServiceMonth(App.state.calendarYear,App.state.calendarMonth);
+    const start=App.utils.iso(new Date(actualYear,App.state.calendarMonth,1));
+    const end=App.utils.iso(new Date(actualYear,App.state.calendarMonth+1,0));
+    return {start,end};
+  },
+  itemsInRange(startIso,endIso){
+    const start=App.utils.parseLocalDate(startIso),end=App.utils.parseLocalDate(endIso);
+    return App.store.getAllWeeks()
+      .filter(item=>item.assignedEventId && App.store.getEventById(item.assignedEventId))
+      .filter(item=>App.utils.overlaps(App.utils.parseLocalDate(item.startDate),App.utils.parseLocalDate(item.endDate),start,end))
+      .sort((a,b)=>a.startDate.localeCompare(b.startDate)||a.endDate.localeCompare(b.endDate));
+  },
+  buildIcs(startIso,endIso){
+    const items=App.export.itemsInRange(startIso,endIso);
+    const stamp=App.export.dtStamp();
+    const lines=[];
+    lines.push('BEGIN:VCALENDAR');
+    lines.push('VERSION:2.0');
+    lines.push('PRODID:-//Service Year Planner//EN');
+    lines.push('CALSCALE:GREGORIAN');
+    lines.push('METHOD:PUBLISH');
+    lines.push(`X-WR-CALNAME:${App.export.escapeIcsText('Service Year Planner')}`);
+    lines.push('X-WR-TIMEZONE:UTC');
+
+    items.forEach(item=>{
+      const ev=App.store.getEventById(item.assignedEventId);
+      const uid=`${item.id}@service-year-planner`;
+      const dtStart=item.startDate.replace(/-/g,'');
+      const dtEnd=App.export.addOneDay(item.endDate).replace(/-/g,''); // exclusive
+      const summary=App.export.escapeIcsText(ev?.name||'Событие');
+      const location=App.export.escapeIcsText(ev?.address||'');
+      const descParts=[];
+      if(ev?.schedule) descParts.push(`Расписание: ${ev.schedule}`);
+      if(item.note) descParts.push(`Заметка: ${item.note}`);
+      descParts.push(`Период: ${item.startDate} — ${item.endDate}`);
+      const description=App.export.escapeIcsText(descParts.join('\n'));
+
+      lines.push('BEGIN:VEVENT');
+      lines.push(`UID:${uid}`);
+      lines.push(`DTSTAMP:${stamp}`);
+      lines.push(`DTSTART;VALUE=DATE:${dtStart}`);
+      lines.push(`DTEND;VALUE=DATE:${dtEnd}`);
+      lines.push(`SUMMARY:${summary}`);
+      if(location) lines.push(`LOCATION:${location}`);
+      lines.push(`DESCRIPTION:${description}`);
+      lines.push('END:VEVENT');
+    });
+
+    lines.push('END:VCALENDAR');
+    return lines.join('\r\n');
+  },
+  downloadBlob(text, filename, mime){
+    const blob=new Blob([text],{type:mime});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  },
+  openModal(){
+    const S=App.state;
+    // init range
+    if(!S.exportRangeStart || !S.exportRangeEnd){
+      const r=App.export.resolveDefaultRange();
+      S.exportRangeStart=r.start;
+      S.exportRangeEnd=r.end;
+    }
+    App.els.exportModal.hidden=false;
+    document.querySelectorAll('[data-export-type]').forEach(btn=>btn.classList.toggle('active', btn.dataset.exportType===S.exportType));
+    App.export.updateRangeUi();
+  },
+  closeModal(){
+    App.els.exportModal.hidden=true;
+  },
+  updateRangeUi(){
+    const S=App.state;
+    const show = S.exportType==='ics';
+    App.els.exportRangeCard.style.display = show ? 'block' : 'none';
+    App.els.exportRangeStartInput.value = S.exportRangeStart;
+    App.els.exportRangeEndInput.value = S.exportRangeEnd;
+    App.els.exportRangeHelp.textContent = show
+      ? 'Для .ics будет экспортирован выбранный диапазон дат (включая обе даты).'
+      : 'JSON содержит все данные приложения.';
+  },
+  confirm(){
+    const S=App.state, U=App.utils;
+    if(S.exportType==='json'){
+      const data=JSON.stringify(S.app,null,2);
+      App.export.downloadBlob(data, `service-year-planner-${U.iso(new Date())}.json`, 'application/json');
+      U.toast('Файл JSON экспортирован');
+      App.export.closeModal();
+      return;
+    }
+    // ics
+    let start=S.exportRangeStart, end=S.exportRangeEnd;
+    if(!start || !end) return U.toast('Укажи начало и конец периода');
+    if(end<start){const t=start; start=end; end=t;}
+    const ics=App.export.buildIcs(start,end);
+    App.export.downloadBlob(ics, `service-year-planner-${start}-to-${end}.ics`, 'text/calendar;charset=utf-8');
+    U.toast('Файл .ics создан (Google/Apple)');
+    App.export.closeModal();
+  }
+ }
+bind:{
+      events(){const E=App.els,S=App.state,U=App.utils,Store=App.store,UI=App.ui,PDF=App.pdf,Export=App.export;E.yearSelect.addEventListener('change',()=>{S.selectedYear=Number(E.yearSelect.value);S.selectedWeekId=null;UI.renderAll()});E.calendarYearSelect.addEventListener('change',()=>{S.calendarYear=Number(E.calendarYearSelect.value);UI.renderCalendar()});E.calendarLayoutPresetSelect.addEventListener('change',()=>{S.app.settings.layoutPreset=E.calendarLayoutPresetSelect.value;Store.save()});E.layoutPresetSelect.addEventListener('change',()=>{S.app.settings.layoutPreset=E.layoutPresetSelect.value;Store.save()});E.eventFilter.addEventListener('change',UI.renderWeeks);E.weekSearch.addEventListener('input',UI.renderWeeks);E.noteSearch.addEventListener('input',UI.renderNotes);E.calendarEventQuickFilter.addEventListener('change',()=>{S.calendarEventFilter=E.calendarEventQuickFilter.value;UI.renderCalendar()});E.toggleTeamPanelBtn.addEventListener('click',()=>{S.app.settings.showTeamPanel=!S.app.settings.showTeamPanel;Store.save()});E.prevMonthBtn.addEventListener('click',()=>{const old=S.calendarMonth;S.calendarMonth=(S.calendarMonth+11)%12;if(old===8)S.calendarYear--;UI.renderCalendar()});E.nextMonthBtn.addEventListener('click',()=>{const old=S.calendarMonth;S.calendarMonth=(S.calendarMonth+1)%12;if(old===7)S.calendarYear++;UI.renderCalendar()});E.todayMonthBtn.addEventListener('click',()=>{const now=new Date();S.calendarMonth=now.getMonth();S.calendarYear=U.getServiceYearForDate(now);UI.renderCalendar()});E.editorCloseBtn.addEventListener('click',UI.closeCalendarEditor);E.editorCancelBtn.addEventListener('click',UI.closeCalendarEditor);E.editorDeleteBtn.addEventListener('click',()=>{const item=Store.getWeekById(S.calendarEditingWeekId);if(!item)return UI.closeCalendarEditor();item.assignedEventId='';item.updatedAt=new Date().toISOString();S.calendarDetailWeekId=null;UI.closeCalendarEditor();Store.save();U.toast('Событие удалено из календаря')});E.editorSaveBtn.addEventListener('click',()=>{let startDate=E.editorStart.value,endDate=E.editorEnd.value;const assignedEventId=E.editorEventSelect.value;if(!assignedEventId)return U.toast('Выбери событие');if(!startDate || !endDate)return U.toast('Нужно указать начало и конец.');if(endDate<startDate){const s=startDate;startDate=endDate;endDate=s}if(S.calendarEditorMode==='create'){const itemYear=U.getServiceYearForDate(U.parseLocalDate(startDate));if(!S.app.serviceYears[itemYear])S.app.serviceYears[itemYear]={id:String(itemYear),year:itemYear,weeks:[]};const newItem={id:U.uid('week'),year:itemYear,weekNo:0,startDate,endDate,assignedEventId,priority:'normal',flags:{letter:false,s302:false},note:'',updatedAt:new Date().toISOString()};S.app.serviceYears[itemYear].weeks.push(newItem);S.app.serviceYears[itemYear].weeks.sort((a,b)=>a.startDate.localeCompare(b.startDate));S.app.serviceYears[itemYear].weeks.forEach((w,idx)=>w.weekNo=idx+1);S.calendarDetailWeekId=newItem.id;UI.closeCalendarEditor();Store.save();U.toast('Событие добавлено');return}const item=Store.getWeekById(S.calendarEditingWeekId);if(!item)return UI.closeCalendarEditor();const oldYear=item.year;item.startDate=startDate;item.endDate=endDate;item.assignedEventId=assignedEventId;item.year=U.getServiceYearForDate(U.parseLocalDate(startDate));item.updatedAt=new Date().toISOString();if(oldYear!==item.year){Object.values(S.app.serviceYears).forEach(y=>{y.weeks=y.weeks.filter(w=>w.id!==item.id)});if(!S.app.serviceYears[item.year])S.app.serviceYears[item.year]={id:String(item.year),year:item.year,weeks:[]};S.app.serviceYears[item.year].weeks.push(item)}S.app.serviceYears[item.year].weeks.sort((a,b)=>a.startDate.localeCompare(b.startDate));S.app.serviceYears[item.year].weeks.forEach((w,idx)=>w.weekNo=idx+1);S.calendarDetailWeekId=item.id;UI.closeCalendarEditor();Store.save();U.toast('Обновлено')});E.saveWeekBtn.addEventListener('click',()=>{const w=Store.getWeekById(S.selectedWeekId);if(!w)return;w.assignedEventId=E.weekEventSelect.value;w.priority=E.weekPrioritySelect.value;w.flags={letter:E.flagLetter.checked,s302:E.flagS302.checked};w.note=E.weekNoteInput.value.trim();w.updatedAt=new Date().toISOString();Store.save();U.toast('Сохранено')});E.saveEventBtn.addEventListener('click',()=>{const payload={name:E.eventNameInput.value.trim(),color:E.eventColorInput.value,address:E.eventAddressInput.value.trim(),schedule:E.eventScheduleInput.value.trim()};if(!payload.name)return U.toast('Название обязательно');if(S.editingEventId){Object.assign(Store.getEventById(S.editingEventId),payload);U.toast('Событие обновлено')}else{S.app.events.unshift({id:U.uid('evt'),...payload});U.toast('Событие создано')}UI.clearEventForm();Store.save()});E.resetEventBtn.addEventListener('click',UI.clearEventForm);E.themeBtn.addEventListener('click',()=>{S.app.settings.theme=S.app.settings.theme==='light'?'dark':'light';Store.save()});E.languageSelect.addEventListener('change',()=>{S.app.settings.language=E.languageSelect.value;Store.save()});E.themeSelect.addEventListener('change',()=>{S.app.settings.theme=E.themeSelect.value;Store.save()});E.settingsPdfBtn.addEventListener('click',PDF.openModal);E.pdfModalCloseBtn.addEventListener('click',PDF.closeModal);E.pdfCancelBtn.addEventListener('click',PDF.closeModal);E.pdfExportConfirmBtn.addEventListener('click',PDF.export);E.pdfModal.addEventListener('click',e=>{if(e.target===E.pdfModal)PDF.closeModal()});document.querySelectorAll('[data-pdf-type]').forEach(btn=>btn.addEventListener('click',()=>{S.pdfExportType=btn.dataset.pdfType;if(S.pdfExportType!=='custom-range'&&S.pdfExportType!=='custom-range-calendar'){const range=PDF.resolveDateRange();S.pdfRangeStart=range.start;S.pdfRangeEnd=range.end}PDF.openModal()}));E.pdfRangeStartInput.addEventListener('change',()=>{S.pdfRangeStart=E.pdfRangeStartInput.value});E.pdfRangeEndInput.addEventListener('change',()=>{S.pdfRangeEnd=E.pdfRangeEndInput.value});E.exportBtn.addEventListener('click',()=>{const data=JSON.stringify(S.app,null,2);const blob=new Blob([data],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`service-year-planner-${U.iso(new Date())}.json`;a.click();URL.revokeObjectURL(a.href);U.toast('Файл экспортирован')});E.backupBtn.addEventListener('click',()=>E.exportBtn.click());E.importInput.addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const text=await file.text();const data=JSON.parse(text);if(data?.schema==='sp-backup-v2')S.app=Store.importBackupSchema(data);else if(data?.serviceYears&&data?.events)S.app=Store.normalize(data);else throw new Error('unknown');const sy=U.getServiceYearForDate(new Date());S.selectedYear=S.app.serviceYears[sy]?sy:Number(Object.keys(S.app.serviceYears)[0]);S.calendarYear=S.selectedYear;S.calendarMonth=new Date().getMonth();S.selectedScreen='calendar';UI.clearEventForm();UI.closeCalendarEditor();Store.save();U.toast('JSON успешно импортирован')}catch(err){console.error(err);U.toast('Ошибка импорта JSON')}e.target.value=''});E.resetAppBtn.addEventListener('click',()=>{S.app=Store.createDefaultData();const now=new Date();S.selectedYear=U.getServiceYearForDate(now);S.calendarYear=S.selectedYear;S.calendarMonth=now.getMonth();S.selectedWeekId=null;UI.clearEventForm();UI.closeCalendarEditor();Store.save();U.toast('Приложение сброшено')});
  // Add service year (Settings)
  const computeNextServiceYear = () => {
   const years = Object.keys(S.app.serviceYears || {}).map(Number).filter(n=>Number.isFinite(n));

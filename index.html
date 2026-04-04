@@ -212,6 +212,62 @@
   </div>
   <div class="modal" id="pdfModal" hidden><div class="modal-card"><div class="modal-head"><div><h3>Экспорт в PDF</h3><div class="modal-sub">Выберите тип PDF: календарная сетка или список/отчёт.</div></div><button class="icon-btn" id="pdfModalCloseBtn" type="button">✕</button></div><div class="pdf-section"><h4>Календарная сетка</h4><div class="pdf-grid"><button class="pdf-option active" data-pdf-type="month-grid" type="button"><strong>Календарь месяца</strong><span>Сетка текущего месяца для печати.</span></button><button class="pdf-option" data-pdf-type="custom-range-calendar" type="button"><strong>Календарь периода</strong><span>Сетка за любой выбранный диапазон месяцев.</span></button></div></div><div class="pdf-section"><h4>Список событий и отчёты</h4><div class="pdf-grid"><button class="pdf-option" data-pdf-type="month-agenda" type="button"><strong>Список событий месяца</strong><span>Список событий за текущий месяц.</span></button><button class="pdf-option" data-pdf-type="half-year-agenda" type="button"><strong>События за полгода</strong><span>Список событий за 6 месяцев.</span></button><button class="pdf-option" data-pdf-type="year-agenda" type="button"><strong>События за год</strong><span>Список событий за 12 месяцев.</span></button><button class="pdf-option" data-pdf-type="custom-range" type="button"><strong>Список за период</strong><span>Список событий за любой диапазон дат.</span></button><button class="pdf-option" data-pdf-type="year-overview" type="button"><strong>Годовой обзор</strong><span>Табличная сводка по служебному году.</span></button><button class="pdf-option" data-pdf-type="notes-report" type="button"><strong>Отчёт по заметкам</strong><span>Недельные заметки по выбранному году.</span></button></div></div><div class="card" id="pdfRangeCard" style="margin-top:14px;padding:14px;border-radius:18px;display:none;box-shadow:none;"><div class="form-grid"><label><span class="small">Начало периода</span><input id="pdfRangeStartInput" type="date" /></label><label><span class="small">Конец периода</span><input id="pdfRangeEndInput" type="date" /></label></div><p class="small" id="pdfRangeHelp" style="margin:10px 0 0;">Выбери даты начала и конца периода.</p></div><div class="pdf-hint" id="pdfHint">Если окно печати не появилось, разреши всплывающие окна для этого сайта.</div><div class="editor-actions"><button class="btn" id="pdfCancelBtn" type="button">Закрыть</button><button class="btn primary" id="pdfExportConfirmBtn" type="button">PDF</button></div></div></div>
   <nav class="bottom-nav" id="bottomNav"><div class="bottom-nav-row" id="bottomNavRow"></div></nav>
+  <div class="modal" id="exportModal" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <h3>Экспорт</h3>
+        <div class="modal-sub">
+          Выберите формат экспорта: резервный JSON или календарь (.ics) для Google/Apple.
+        </div>
+      </div>
+      <button class="icon-btn" id="exportModalCloseBtn" type="button">✕</button>
+    </div>
+
+    <div class="pdf-section">
+      <h4>Файлы</h4>
+      <div class="pdf-grid">
+        <button class="pdf-option active" data-export-type="json" type="button">
+          <strong>JSON backup</strong>
+          <span>Полная резервная копия данных приложения.</span>
+        </button>
+
+        <button class="pdf-option" data-export-type="ics" type="button">
+          <strong>Календарь (.ics)</strong>
+          <span>Импорт в Google Calendar и Apple Calendar.</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card" id="exportRangeCard"
+         style="margin-top:14px;padding:14px;border-radius:18px;display:none;box-shadow:none;">
+      <div class="form-grid">
+        <label>
+          <span class="small">Начало периода</span>
+          <input id="exportRangeStartInput" type="date" />
+        </label>
+        <label>
+          <span class="small">Конец периода</span>
+          <input id="exportRangeEndInput" type="date" />
+        </label>
+      </div>
+
+      <p class="small" id="exportRangeHelp" style="margin:10px 0 0;">
+        Для .ics будет экспортирован выбранный диапазон дат.
+      </p>
+
+      <div class="small" style="margin-top:8px;">
+        Подсказка: для Google Calendar открой «Настройки → Импорт и экспорт → Импорт», выбери .ics.
+        Для Apple Calendar просто открой файл.
+      </div>
+    </div>
+
+    <div class="editor-actions">
+      <button class="btn" id="exportCancelBtn" type="button">Закрыть</button>
+      <button class="btn primary" id="exportConfirmBtn" type="button">Скачать</button>
+    </div>
+  </div>
+</div>
   <div class="toast-wrap" id="toastWrap"></div>
   
 
