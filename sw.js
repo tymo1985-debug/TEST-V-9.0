@@ -1,7 +1,7 @@
 // Service Worker for Service Year Planner v9.0
 // Optimized for GitHub Pages / static hosting
 
-const VERSION = 'syp-v9.0.1';
+const VERSION = 'syp-v9.0.2';
 const CACHE_STATIC = `static-${VERSION}`;
 const CACHE_RUNTIME = `runtime-${VERSION}`;
 
