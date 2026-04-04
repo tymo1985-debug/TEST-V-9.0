@@ -1,12 +1,11 @@
-// Service Worker for Service Year Planner v9.0
+// Service Worker for Service Year Planner v9.x
 // Optimized for GitHub Pages / static hosting
-
-const VERSION = 'syp-v9.0.2';
+const VERSION = 'syp-v9.0.3';
 const CACHE_STATIC = `static-${VERSION}`;
 const CACHE_RUNTIME = `runtime-${VERSION}`;
 
 // Precache: keep paths relative so GitHub Pages subpaths work.
-// We try each asset individually so installation doesn't fail if a file is renamed.
+// Each asset is attempted individually so install doesn't fail if a file is missing.
 const PRECACHE_URLS = [
   './',
   './index.html',
@@ -44,7 +43,7 @@ self.addEventListener('activate', (event) => {
 
 function isNavigationRequest(request) {
   return request.mode === 'navigate' ||
-    (request.method === 'GET' && request.headers.get('accept')?.includes('text/html'));
+    (request.method === 'GET' && (request.headers.get('accept') || '').includes('text/html'));
 }
 
 async function cacheFirst(request) {
@@ -78,7 +77,6 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
 
-  // Ignore non-http(s)
   const url = new URL(request.url);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
@@ -98,13 +96,16 @@ self.addEventListener('fetch', (event) => {
   // Default: stale-while-revalidate-ish
   event.respondWith((async () => {
     const cached = await caches.match(request);
-    const fetchPromise = fetch(request).then(async (res) => {
-      if (res && res.ok) {
-        const cache = await caches.open(CACHE_RUNTIME);
-        try { cache.put(request, res.clone()); } catch (_) {}
-      }
-      return res;
-    }).catch(() => cached);
+    const fetchPromise = fetch(request)
+      .then(async (res) => {
+        if (res && res.ok) {
+          const cache = await caches.open(CACHE_RUNTIME);
+          try { cache.put(request, res.clone()); } catch (_) {}
+        }
+        return res;
+      })
+      .catch(() => cached);
+
     return cached || fetchPromise;
   })());
 });
