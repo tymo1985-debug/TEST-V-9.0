@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Service Year Planner v9.0</title>
+  <meta name="theme-color" content="#14532d" />
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root{--bg:#f4f7f5;--surface:#fff;--surface2:#f0f5f2;--text:#163024;--muted:#5f776a;--line:#d8e2db;--accent:#14532d;--danger:#b91c1c;--shadow:0 10px 28px rgba(22,48,36,.08);--cal-header-bg:color-mix(in srgb,var(--accent) 5%, var(--surface));--cal-weeknum-bg:color-mix(in srgb,var(--accent) 4%, var(--surface));--cal-weekend-bg:color-mix(in srgb,var(--accent) 6%, var(--surface));--cal-inactive-bg:transparent;--cal-grid-line:color-mix(in srgb,var(--line) 85%, transparent)}
+    [data-theme="dark"]{--bg:#0f1712;--surface:#152019;--surface2:#1b2a21;--text:#e8f0eb;--muted:#a7baaf;--line:#2b3b31;--accent:#4ade80;--danger:#f87171;--shadow:0 10px 28px rgba(0,0,0,.28);--cal-header-bg:color-mix(in srgb,var(--accent) 10%, var(--surface2));--cal-weeknum-bg:color-mix(in srgb,var(--accent) 10%, transparent);--cal-weekend-bg:color-mix(in srgb,var(--accent) 12%, transparent);--cal-inactive-bg:color-mix(in srgb,var(--surface2) 30%, transparent);--cal-grid-line:color-mix(in srgb,var(--line) 85%, transparent)}
+    *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif} body{display:flex}
+    body::before{content:'';position:fixed;left:0;top:0;bottom:0;width:280px;background:linear-gradient(180deg,var(--accent),#0d3d22);z-index:0}
+    .app{display:grid;grid-template-columns:280px 1fr;width:100%;min-height:100dvh;position:relative;z-index:1}
+    .sidebar{background:linear-gradient(180deg,var(--accent),#0d3d22);color:#fff;padding:24px 18px;min-height:100dvh;display:flex;flex-direction:column;gap:18px}
+    .brand{display:flex;gap:12px;align-items:center}.logo{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.14);font-weight:700}.menu{display:grid;gap:8px}
+    .nav-btn{appearance:none;border:0;background:transparent;color:#eef7f1;padding:12px 14px;border-radius:14px;text-align:left;font-size:15px;cursor:pointer;display:flex;gap:10px;align-items:center}.nav-btn.active,.nav-btn:hover{background:rgba(255,255,255,.12)}
+    .summary{margin-top:auto;padding:14px;border-radius:16px;background:rgba(255,255,255,.1);font-size:14px}.summary strong{display:block;margin-bottom:8px}
+    .main{padding:28px;min-width:0}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.topbar h2{margin:0;font-size:28px}.topbar p{margin:6px 0 0;color:var(--muted)}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btn,.chip,select,input,textarea{font:inherit}.btn,.chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:12px 14px;border-radius:14px;cursor:pointer;box-shadow:var(--shadow)}
+    .btn.primary{background:var(--accent);color:#fff;border-color:transparent}.btn.danger{background:var(--danger);color:#fff;border-color:transparent}.btn.full{width:100%}
+    .screen{display:none}.screen.active{display:block}.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:18px}.grid{display:grid;gap:18px}.split{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    input[type="text"],input[type="date"],input[type="color"],textarea,select{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;padding:12px 14px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}.small{font-size:12px;color:var(--muted)}.empty{padding:24px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);text-align:center}
+    .week-item,.event-row,.note-row{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.week-item{display:grid;cursor:pointer}.week-item.active{border-color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 20%, transparent)}.week-item-top{display:flex;justify-content:space-between;align-items:center}.pill-row{display:flex;gap:8px;flex-wrap:wrap}.pill,.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-size:12px}.dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .calendar-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px}.calendar-layout.team-hidden{grid-template-columns:minmax(0,1fr)}.calendar-layout.team-hidden .calendar-side{display:none}
+    .calendar-shell{background:var(--surface);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);overflow:visible;position:relative}
+    .calendar-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 24px 16px;border-bottom:1px solid color-mix(in srgb,var(--line) 85%, transparent)}
+    .calendar-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.calendar-nav{display:flex;align-items:center;gap:8px;padding:4px;background:var(--surface2);border:1px solid var(--line);border-radius:999px}.icon-btn{appearance:none;border:1px solid var(--line);background:var(--surface2);color:var(--text);width:32px;height:32px;border-radius:999px;cursor:pointer}
+    .calendar-title{margin:0;font-size:22px}.calendar-sub{color:var(--muted);font-size:13px;margin-top:6px}.legend{display:flex;gap:10px;flex-wrap:wrap;padding:0 24px 14px;color:var(--muted);font-size:12px;border-bottom:1px solid color-mix(in srgb,var(--line) 70%, transparent)}.legend-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line)}
+    .grid-cal{display:grid}
+
+/* === Calendar grid (v8.6 canonical) === */
+.dow-row,.week-row{display:grid;grid-template-columns:46px 1fr;}
+.dow-row{background:var(--cal-header-bg);border-bottom:1px solid var(--cal-grid-line)}.dow-corner,.week-num{border-right:1px solid var(--cal-grid-line)}.dow-corner{min-height:34px}.dow-days,.week-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));position:relative;}.dow{min-height:34px;display:flex;align-items:center;justify-content:flex-end;padding:0 10px 0 6px;color:var(--muted);font-size:12px}.week-row{min-height:88px;border-bottom:1px solid var(--cal-grid-line)}.week-row:last-child{border-bottom:0}.week-num{display:flex;align-items:flex-start;justify-content:center;padding-top:10px;color:var(--muted);font-size:12px;background:var(--cal-weeknum-bg);min-height:88px;background-image:linear-gradient(to right, transparent calc((100% / 7) - 1px), var(--cal-grid-line) calc((100% / 7) - 1px));background-size:calc(100% / 7) 100%}
+    .day-cell{position:relative;min-height:88px;padding:8px 8px 8px 10px;border-right:1px solid var(--cal-grid-line)}.day-cell:last-child{border-right:0}.day-cell.inactive{background:var(--cal-inactive-bg)}.day-cell.weekend{background:var(--cal-weekend-bg)}.day-cell.inactive.weekend{background:color-mix(in srgb,var(--cal-weekend-bg) 55%, var(--cal-inactive-bg))}.day-cell.today .day-num{background:var(--accent);color:#fff}.day-num{display:inline-flex;min-width:24px;height:24px;align-items:center;justify-content:center;border-radius:999px;font-size:13px}.day-month{color:var(--muted);font-size:11px;margin-left:2px}
+    .event-bar{position:absolute;min-height:18px;border-radius:999px;color:#fff;padding:2px 10px;display:flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 5px rgba(0,0,0,.08);cursor:pointer}.event-bar::before{content:'';width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.92);flex:0 0 auto}
+    .calendar-side{display:grid;gap:18px}.side-card{background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:18px}.side-card h4{margin:0 0 10px;font-size:18px}.side-list{display:grid;gap:8px}.side-item{padding:10px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}.side-item strong{display:block;margin-bottom:4px}.side-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 72%, transparent)}.side-row:last-child{border-bottom:0}.side-label{color:var(--muted);font-size:12px}.side-value{font-weight:600}
+    .editor{position:absolute;top:80px;right:18px;width:min(360px,calc(100% - 36px));z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 44px rgba(0,0,0,.18);padding:16px}.editor[hidden]{display:none}.editor-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}.editor-title{margin:0;font-size:16px}.editor-sub{color:var(--muted);font-size:12px;margin-top:4px}.editor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.editor-grid label{display:grid;gap:6px;font-size:12px;color:var(--muted)}.editor-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}.editor-meta{margin-top:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;font-size:12px;color:var(--muted)}
+    .modal{position:fixed;inset:0;background:rgba(15,23,18,.42);backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px;z-index:1400}.modal[hidden]{display:none}.modal-card{width:min(860px,100%);background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:0 24px 60px rgba(0,0,0,.22);padding:20px}.modal-head{display:flex;justify-content:space-between;gap:16px;margin-bottom:14px}.modal-sub{color:var(--muted);font-size:13px;margin-top:6px}.pdf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pdf-section{margin-top:14px}.pdf-section h4{margin:0 0 12px;font-size:16px}.pdf-option{border:1px solid var(--line);border-radius:18px;padding:14px;background:var(--surface2);cursor:pointer;text-align:left}.pdf-option.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 50%, transparent)}.pdf-option strong{display:block;margin-bottom:6px}.pdf-hint{margin-top:14px;padding:12px 14px;border-radius:16px;border:1px dashed var(--line);color:var(--muted);font-size:13px}
+    .toast-wrap{position:fixed;top:18px;right:18px;display:grid;gap:10px;z-index:1600}.toast{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}.version-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-size:12px;color:var(--muted)}
+    .layout-help{margin-top:8px;font-size:12px;color:var(--muted)} .calendar-layout-select{min-width:170px}
+    .bottom-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:1550;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -8px 20px rgba(0,0,0,.08);padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))}
+    
+ .offline-banner{display:none;position:sticky;top:0;z-index:1300;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--danger) 10%, var(--surface));color:var(--text);margin-bottom:12px}
+ .offline-banner.show{display:block}
+ .app.menu-open .bottom-nav{display:none !important}
+ .app.menu-open .sidebar{z-index:1501 !important}
+.bottom-nav-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.bottom-nav-btn{appearance:none;border:1px solid transparent;background:transparent;color:var(--muted);border-radius:16px;padding:10px 6px;display:grid;gap:4px;place-items:center;font:inherit;cursor:pointer;min-width:0}.bottom-nav-btn .icon{font-size:18px;line-height:1}.bottom-nav-btn .label{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.bottom-nav-btn.active{background:var(--surface2);color:var(--text);border-color:var(--line)}
+    .mobile-overlay{position:fixed;inset:0;background:rgba(15,23,18,.42);backdrop-filter:none;z-index:1500;pointer-events:none}.mobile-overlay[hidden]{display:none !important}.mobile-menu-btn{display:none !important}
+    :root[data-layout="classic"]{}
+    :root[data-layout="compact"] .week-row{min-height:72px}:root[data-layout="compact"] .week-days{min-height:72px}:root[data-layout="compact"] .day-cell{min-height:72px;padding:6px 6px 6px 8px}:root[data-layout="compact"] .event-bar{font-size:11px;padding:2px 8px}:root[data-layout="compact"] .calendar-shell{border-radius:20px}
+    :root[data-layout="spacious"] .week-row{min-height:112px}:root[data-layout="spacious"] .week-days{min-height:112px}:root[data-layout="spacious"] .day-cell{min-height:112px;padding:12px}:root[data-layout="spacious"] .event-bar{font-size:13px;padding:4px 12px}:root[data-layout="spacious"] .calendar-shell{border-radius:32px}
+    :root[data-layout="cards"] .week-days{background:none;gap:8px;padding:8px}:root[data-layout="cards"] .day-cell{border:1px solid var(--line);border-radius:18px;min-height:94px;background:var(--surface);box-shadow:var(--shadow)}:root[data-layout="cards"] .day-cell.inactive{opacity:.72}:root[data-layout="cards"] .week-row{grid-template-columns:64px 1fr;background:transparent;border-bottom:0}:root[data-layout="cards"] .week-num{background:transparent;border-right:0;align-items:center}:root[data-layout="cards"] .event-bar{border-radius:14px}
+    :root[data-layout="minimal"] .calendar-shell,:root[data-layout="minimal"] .side-card{box-shadow:none}:root[data-layout="minimal"] .day-cell{background:transparent}:root[data-layout="minimal"] .week-days{background-image:linear-gradient(to right, transparent calc((100% / 7) - 1px), color-mix(in srgb,var(--line) 60%, transparent) calc((100% / 7) - 1px))}:root[data-layout="minimal"] .event-bar{box-shadow:none;border:1px solid rgba(255,255,255,.35)}:root[data-layout="minimal"] .legend{padding-bottom:8px}
+    :root[data-layout="dense"] .calendar-toolbar{padding:14px 18px 12px}:root[data-layout="dense"] .legend{padding:0 18px 10px}:root[data-layout="dense"] .week-row{min-height:64px}:root[data-layout="dense"] .week-days{min-height:64px}:root[data-layout="dense"] .day-cell{min-height:64px;padding:4px 4px 4px 6px}:root[data-layout="dense"] .event-bar{font-size:10px;padding:1px 7px}:root[data-layout="dense"] .day-num{min-width:20px;height:20px;font-size:11px}
+    :root[data-layout="pill"] .event-bar{border-radius:999px;padding:3px 12px;box-shadow:0 4px 10px rgba(0,0,0,.15)}:root[data-layout="pill"] .event-bar::before{width:6px;height:6px}:root[data-layout="pill"] .day-cell{background:linear-gradient(180deg, color-mix(in srgb,var(--surface2) 45%, transparent), transparent 40%)}:root[data-layout="pill"] .calendar-shell{border-radius:34px}
+    :root[data-layout="outline"] .calendar-shell,:root[data-layout="outline"] .side-card{background:transparent;box-shadow:none;border:2px solid var(--line)}:root[data-layout="outline"] .day-cell{background:transparent}:root[data-layout="outline"] .event-bar{border:2px solid rgba(255,255,255,.5)}:root[data-layout="outline"] .legend-chip,:root[data-layout="outline"] .chip{background:transparent}
+    :root[data-layout="agenda"] .week-row,:root[data-layout="agenda"] .dow-row{grid-template-columns:86px 1fr}:root[data-layout="agenda"] .week-num{font-size:14px;font-weight:700;padding-top:12px}:root[data-layout="agenda"] .day-cell{min-height:82px}:root[data-layout="agenda"] .event-bar{border-radius:10px}:root[data-layout="agenda"] .calendar-title{font-size:24px}
+    :root[data-layout="board"] .calendar-shell{background:linear-gradient(180deg, color-mix(in srgb,var(--surface2) 50%, var(--surface)), var(--surface))}:root[data-layout="board"] .day-cell{border-right:0;border-left:1px solid var(--line);border-top:4px solid transparent}:root[data-layout="board"] .day-cell.today{border-top-color:var(--accent)}:root[data-layout="board"] .day-cell.weekend{border-top-color:color-mix(in srgb,var(--danger) 30%, transparent)}:root[data-layout="board"] .event-bar{border-radius:12px;box-shadow:0 6px 14px rgba(0,0,0,.18)}
+    @media (max-width:1280px){.calendar-layout{grid-template-columns:1fr}}
+    @media (min-width:1201px){.app{grid-template-columns:280px 1fr !important}.sidebar{display:flex !important;position:relative !important;left:auto !important;top:auto !important;width:auto !important;z-index:1 !important}.bottom-nav{display:none !important}.mobile-menu-btn{display:none !important}.mobile-overlay{display:none !important}}
+    @media (min-width:768px) and (max-width:1200px){
+  body::before{display:none!important}
+  .app{grid-template-columns:1fr!important}
+  .sidebar{position:fixed;left:-296px;top:0;bottom:0;width:280px;transition:left .24s ease;z-index:1501}
+  .mobile-menu-btn{display:inline-flex!important}
+  .app.menu-open .sidebar{left:0}
+  .main{padding:18px}
+  .dow-row,.week-row{grid-template-columns:38px 1fr}
+  .topbar h2{font-size:24px}
+}
+
+@media (max-width:767px){body::before{display:none !important}.app{grid-template-columns:1fr !important}.sidebar{display:flex !important;position:fixed !important;top:0 !important;left:-296px !important;bottom:0 !important;width:280px !important;z-index:1501 !important;transition:left .24s ease !important;filter:none !important;opacity:1 !important;pointer-events:auto !important}.app.menu-open .sidebar{left:0 !important}.mobile-menu-btn{display:inline-flex !important}.mobile-overlay{display:block !important}.bottom-nav{display:block !important}.main{padding:16px 16px 96px !important}.topbar{position:sticky;top:0;z-index:1200;background:var(--bg);padding-top:4px}.actions{gap:8px}.actions .btn,.actions label.btn{padding:10px 12px}.split,.form-grid,.pdf-grid{grid-template-columns:1fr !important}.editor{position:fixed;left:12px;right:12px;top:auto;bottom:88px;width:auto}.dow-row,.week-row{display:grid;grid-template-columns:46px 1fr;}.topbar h2{font-size:24px}}
+  
+
+/* === v8.5d enhancements === */
+.week-row:hover .week-days{
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+/* Today: highlight whole weekday column */
+.day-cell.today-col{
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--accent) 8%, transparent), transparent 55%);
+}
+.day-cell.today-col.weekend{
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%);
+}
+
+/* Quick add (+) on day hover */
+.day-add-btn{
+  position:absolute;
+  right:8px;
+  top:8px;
+  width:26px;
+  height:26px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--text);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow: var(--shadow);
+}
+.day-cell:hover .day-add-btn{display:flex;}
+@media (hover:none){
+  .day-add-btn{display:flex;opacity:.78;}
+}
+
+/* Resize handles for events */
+.event-bar.resizing{outline:2px solid color-mix(in srgb,var(--accent) 35%, transparent);}
+.event-handle{
+  position:absolute;
+  top:0;
+  width:12px;
+  height:100%;
+  cursor:ew-resize;
+  opacity:0;
+}
+.event-handle.left{left:-2px;}
+.event-handle.right{right:-2px;}
+.event-bar:hover .event-handle{opacity:1;}
+
+</style>
+</head>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+<body>
+  <div class="mobile-overlay" id="mobileOverlay" hidden></div>
+  <div class="app" id="appRoot">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.0 • index.html + app.js</p></div></div>
+      <nav class="menu" id="desktopNav"></nav>
+      <div class="summary"><strong>Быстрый статус</strong><div id="sideStatus" class="small"></div></div>
+    </aside>
+    <main class="main">
+      <div class="offline-banner" id="offlineBanner">Вы офлайн. Изменения сохраняются локально.</div>
+      <header class="topbar">
+        <div>
+          <div class="version-badge">Версия: v9.0</div>
+          <h2 id="screenTitle">Календарь</h2>
+          <p id="screenSubtitle"></p>
+        </div>
+        <div class="actions">
+          <button class="btn mobile-menu-btn" id="mobileMenuToggleBtn" type="button">☰ Меню</button>
+          <button class="btn" id="themeBtn" type="button">Тема</button>
+          <button class="btn primary" id="exportBtn" type="button">Экспорт</button>
+          <label class="btn" for="importInput">Импорт JSON</label>
+          <input id="importInput" type="file" accept=".json,application/json,text/plain" hidden />
+        </div>
+      </header>
+      <section id="calendar" class="screen active">
+        <div class="calendar-layout" id="calendarLayout">
+          <div class="calendar-shell">
+            <div class="calendar-toolbar">
+              <div><div class="small" id="calendarServiceYearLabel"></div><h3 class="calendar-title" id="monthLabel"></h3><div class="calendar-sub" id="calendarRangeLabel"></div></div>
+              <div class="calendar-controls">
+                <button class="chip" id="toggleTeamPanelBtn" type="button">Скрыть панель команды</button>
+                <div class="calendar-nav"><button class="icon-btn" id="prevMonthBtn" type="button">‹</button><button class="chip" id="todayMonthBtn" type="button">Сегодня</button><button class="icon-btn" id="nextMonthBtn" type="button">›</button></div>
+                <select id="calendarLayoutPresetSelect" class="calendar-layout-select"></select>
+                <select id="calendarYearSelect"></select>
+              </div>
+            </div>
+            <div class="legend"><span class="legend-chip"><span class="dot" style="background:var(--accent)"></span>Событие</span><span class="legend-chip"><span class="dot" style="background:#cbd5e1"></span>Выходные</span><span class="legend-chip"><span class="dot" style="background:var(--accent)"></span>Сегодня</span></div>
+            <div id="calendarGrid"></div>
+            <div class="editor" id="calendarEditor" hidden>
+              <div class="editor-head"><div><h4 class="editor-title" id="editorTitle">Событие</h4><div class="editor-sub" id="editorMeta">—</div></div><button class="icon-btn" id="editorCloseBtn" type="button">✕</button></div>
+              <div class="editor-grid"><label style="grid-column:1 / -1"><span>Событие</span><select id="editorEventSelect"></select></label><label><span>Начало</span><input id="editorStart" type="date" /></label><label><span>Конец</span><input id="editorEnd" type="date" /></label></div>
+              <div class="editor-meta" id="editorReadonly">—</div>
+              <div class="editor-actions"><button class="btn danger" id="editorDeleteBtn" type="button">Удалить событие</button><button class="btn" id="editorCancelBtn" type="button">Закрыть</button><button class="btn primary" id="editorSaveBtn" type="button">Сохранить</button></div>
+            </div>
+          </div>
+          <aside class="calendar-side">
+            <div class="side-card"><h4>Панель команды</h4><div class="small" id="calendarPanelYearLabel"></div><div style="margin-top:12px"><label class="small">Фильтр события</label><select id="calendarEventQuickFilter"></select></div><div class="side-list" id="calendarQuickList"></div></div>
+            <div class="side-card"><h4 id="calendarSideTitle">Детали события</h4><div class="small" id="calendarSideMeta">—</div><div id="calendarSideDetails" style="margin-top:12px"></div></div>
+          </aside>
+        </div>
+      </section>
+      <section id="weeks" class="screen">
+        <div class="toolbar" style="display:grid;grid-template-columns:1fr 220px 220px;gap:10px"><input id="weekSearch" type="text" placeholder="Поиск по неделе, заметке или событию" /><select id="yearSelect"></select><select id="eventFilter"></select></div>
+        <div class="split"><div class="card"><div id="weekList" class="grid"></div></div><div class="card"><h3 id="weekEditorTitle">Детали недели</h3><div id="weekEditorEmpty" class="empty">Выберите неделю слева, чтобы редактировать её.</div><div id="weekEditor" hidden><div class="form-grid"><div><label class="small">Назначенное событие</label><select id="weekEventSelect"></select></div><div><label class="small">Приоритет</label><select id="weekPrioritySelect"><option value="normal">Обычный</option><option value="important">Важный</option><option value="critical">Критичный</option></select></div></div><div class="form-grid" style="margin-top:12px"><label><input type="checkbox" id="flagLetter" /> <span>Письмо</span></label><label><input type="checkbox" id="flagS302" /> <span>S302</span></label></div><div style="margin-top:12px"><label class="small">Заметка недели</label><textarea id="weekNoteInput"></textarea></div><div class="editor-actions"><button class="btn primary" id="saveWeekBtn" type="button">Сохранить</button></div></div></div></div>
+      </section>
+      <section id="events" class="screen"><div class="split"><div class="card"><h3>Шаблоны событий</h3><div id="eventsList" class="grid"></div></div><div class="card"><h3>Редактор события</h3><div class="form-grid"><div><label class="small">Название</label><input id="eventNameInput" type="text" /></div><div><label class="small">Цвет</label><input id="eventColorInput" type="color" value="#1f7a45" /></div><div><label class="small">Адрес</label><input id="eventAddressInput" type="text" /></div><div><label class="small">Расписание</label><input id="eventScheduleInput" type="text" placeholder="Ср 19:00, Сб 10:00" /></div></div><div class="editor-actions"><button class="btn" id="resetEventBtn" type="button">Очистить</button><button class="btn primary" id="saveEventBtn" type="button">Сохранить событие</button></div></div></div></section>
+      <section id="notes" class="screen"><div class="toolbar"><input id="noteSearch" type="text" placeholder="Поиск по заметкам" /></div><div class="card"><div id="notesList" class="grid"></div></div></section>
+      <section id="settings" class="screen"><div class="grid" style="grid-template-columns:repeat(2,1fr)"><div class="card"><h3>Внешний вид</h3><div class="form-grid"><div><label class="small">Язык</label><select id="languageSelect"><option value="ru">Русский</option><option value="en">English</option><option value="uk">Українська</option><option value="pl">Polski</option></select></div><div><label class="small">Тема</label><select id="themeSelect"><option value="light">Светлая</option><option value="dark">Тёмная</option></select></div><div><label class="small">Макет календаря</label><select id="layoutPresetSelect"></select><div class="layout-help">Доступно 10 вариантов отображения календаря.</div></div></div></div><div class="card"><h3>Управление данными</h3><div class="grid"><button class="btn full" id="settingsPdfBtn" type="button">PDF</button><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><button class="btn primary" id="backupBtn" type="button">Создать backup</button><button class="btn danger" id="resetAppBtn" type="button">Сбросить приложение</button></div></div><p class="small" style="margin-top:12px">PDF запускает печать через iframe с резервным способом через новое окно.</p></div></div></section>
+    </main>
+  </div>
+  <div class="modal" id="pdfModal" hidden><div class="modal-card"><div class="modal-head"><div><h3>Экспорт в PDF</h3><div class="modal-sub">Выберите тип PDF: календарная сетка или список/отчёт.</div></div><button class="icon-btn" id="pdfModalCloseBtn" type="button">✕</button></div><div class="pdf-section"><h4>Календарная сетка</h4><div class="pdf-grid"><button class="pdf-option active" data-pdf-type="month-grid" type="button"><strong>Календарь месяца</strong><span>Сетка текущего месяца для печати.</span></button><button class="pdf-option" data-pdf-type="custom-range-calendar" type="button"><strong>Календарь периода</strong><span>Сетка за любой выбранный диапазон месяцев.</span></button></div></div><div class="pdf-section"><h4>Список событий и отчёты</h4><div class="pdf-grid"><button class="pdf-option" data-pdf-type="month-agenda" type="button"><strong>Список событий месяца</strong><span>Список событий за текущий месяц.</span></button><button class="pdf-option" data-pdf-type="half-year-agenda" type="button"><strong>События за полгода</strong><span>Список событий за 6 месяцев.</span></button><button class="pdf-option" data-pdf-type="year-agenda" type="button"><strong>События за год</strong><span>Список событий за 12 месяцев.</span></button><button class="pdf-option" data-pdf-type="custom-range" type="button"><strong>Список за период</strong><span>Список событий за любой диапазон дат.</span></button><button class="pdf-option" data-pdf-type="year-overview" type="button"><strong>Годовой обзор</strong><span>Табличная сводка по служебному году.</span></button><button class="pdf-option" data-pdf-type="notes-report" type="button"><strong>Отчёт по заметкам</strong><span>Недельные заметки по выбранному году.</span></button></div></div><div class="card" id="pdfRangeCard" style="margin-top:14px;padding:14px;border-radius:18px;display:none;box-shadow:none;"><div class="form-grid"><label><span class="small">Начало периода</span><input id="pdfRangeStartInput" type="date" /></label><label><span class="small">Конец периода</span><input id="pdfRangeEndInput" type="date" /></label></div><p class="small" id="pdfRangeHelp" style="margin:10px 0 0;">Выбери даты начала и конца периода.</p></div><div class="pdf-hint" id="pdfHint">Если окно печати не появилось, разреши всплывающие окна для этого сайта.</div><div class="editor-actions"><button class="btn" id="pdfCancelBtn" type="button">Закрыть</button><button class="btn primary" id="pdfExportConfirmBtn" type="button">PDF</button></div></div></div>
+  <nav class="bottom-nav" id="bottomNav"><div class="bottom-nav-row" id="bottomNavRow"></div></nav>
+  <div class="toast-wrap" id="toastWrap"></div>
+  
+
+  <script src="app.js" defer></script>
+</body>
+</html>
