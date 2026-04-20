@@ -122,15 +122,14 @@ const App = {
     },
 
     escapeHtml(str) {
-      return String(str).replace(/[&<>\"']/g, s => ({
+      return String(str).replace(/[&<>"']/g, s => ({
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
-        "'": '&#39;'
+        ''': '&#39;'
       }[s]));
     },
-
     toast(message) {
       const el = document.createElement('div');
       el.className = 'toast';
