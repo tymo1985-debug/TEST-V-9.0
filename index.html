@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Service Year Planner v9.4</title>
+  <title>Service Year Planner v9.1</title>
   <meta name="theme-color" content="#14532d" />
   <link rel="manifest" href="manifest.webmanifest">
   <style>
@@ -68,4 +68,134 @@
   .day-cell:hover .day-add-btn{display:flex;} @media (hover:none){.day-add-btn{display:flex;opacity:.78;}}
   #calendarLayoutPresetSelect{display:none !important}
   @media print{body::before,.sidebar,.topbar,.calendar-side,.bottom-nav,.mobile-overlay,.toast-wrap,.editor,.modal{display:none !important}.app{grid-template-columns:1fr !important}.main{padding:0 !important}.calendar-shell,.card{box-shadow:none !important;border:1px solid #ccc !important}}
-  
+  </style>
+</head>
+<body>
+  <div class="mobile-overlay" id="mobileOverlay" hidden></div>
+  <div class="app" id="appRoot">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.1 • index.html + app.js</p></div></div>
+      <nav class="menu" id="desktopNav"></nav>
+      <div class="summary"><strong>Быстрый статус</strong><div id="sideStatus" class="small"></div></div>
+    </aside>
+    <main class="main">
+      <div class="offline-banner" id="offlineBanner">Вы офлайн. Изменения сохраняются локально.</div>
+      <header class="topbar">
+        <div>
+          <div class="version-badge">Версия: v9.1</div>
+          <h2 id="screenTitle">Календарь</h2>
+          <p id="screenSubtitle"></p>
+        </div>
+        <div class="actions">
+          <button class="btn mobile-menu-btn" id="mobileMenuToggleBtn" type="button">☰ Меню</button>
+        </div>
+      </header>
+      <section id="calendar" class="screen active">
+        <div class="calendar-layout" id="calendarLayout">
+          <div class="calendar-shell">
+            <div class="calendar-toolbar">
+              <div><div class="small" id="calendarServiceYearLabel"></div><h3 class="calendar-title" id="monthLabel"></h3><div class="calendar-sub" id="calendarRangeLabel"></div></div>
+              <div class="calendar-controls">
+                <button class="chip" id="toggleTeamPanelBtn" type="button">Скрыть панель команды</button>
+                <div class="calendar-nav"><button class="icon-btn" id="prevMonthBtn" type="button">‹</button><button class="chip" id="todayMonthBtn" type="button">Сегодня</button><button class="icon-btn" id="nextMonthBtn" type="button">›</button></div>
+                <select id="calendarLayoutPresetSelect" class="calendar-layout-select"></select>
+                <select id="calendarYearSelect"></select>
+              </div>
+            </div>
+            <div class="legend"><span class="legend-chip"><span class="dot" style="background:var(--accent)"></span>Событие</span><span class="legend-chip"><span class="dot" style="background:#cbd5e1"></span>Выходные</span><span class="legend-chip"><span class="dot" style="background:var(--accent)"></span>Сегодня</span></div>
+            <div id="calendarGrid"></div>
+            <div class="editor" id="calendarEditor" hidden>
+              <div class="editor-head"><div><h4 class="editor-title" id="editorTitle">Событие</h4><div class="editor-sub" id="editorMeta">—</div></div><button class="icon-btn" id="editorCloseBtn" type="button">✕</button></div>
+              <div class="editor-grid"><label style="grid-column:1 / -1"><span>Событие</span><select id="editorEventSelect"></select></label><label><span>Начало</span><input id="editorStart" type="date" /></label><label><span>Конец</span><input id="editorEnd" type="date" /></label></div>
+              <div class="editor-meta" id="editorReadonly">—</div>
+              <div class="editor-actions"><button class="btn danger" id="editorDeleteBtn" type="button">Удалить событие</button><button class="btn" id="editorCancelBtn" type="button">Закрыть</button><button class="btn primary" id="editorSaveBtn" type="button">Сохранить</button></div>
+            </div>
+          </div>
+          <aside class="calendar-side">
+            <div class="side-card"><h4>Панель команды</h4><div class="small" id="calendarPanelYearLabel"></div><div style="margin-top:12px"><label class="small">Фильтр события</label><select id="calendarEventQuickFilter"></select></div><div class="side-list" id="calendarQuickList"></div></div>
+            <div class="side-card"><h4 id="calendarSideTitle">Детали события</h4><div class="small" id="calendarSideMeta">—</div><div id="calendarSideDetails" style="margin-top:12px"></div></div>
+          </aside>
+        </div>
+      </section>
+      <section id="weeks" class="screen">
+        <div class="toolbar" style="display:grid;grid-template-columns:1fr 220px 220px;gap:10px"><input id="weekSearch" type="text" placeholder="Поиск по неделе, заметке или событию" /><select id="yearSelect"></select><select id="eventFilter"></select></div>
+        <div class="split"><div class="card"><div id="weekList" class="grid"></div></div><div class="card"><h3 id="weekEditorTitle">Детали недели</h3><div id="weekEditorEmpty" class="empty">Выберите неделю слева, чтобы редактировать её.</div><div id="weekEditor" hidden><div class="form-grid"><div><label class="small">Назначенное событие</label><select id="weekEventSelect"></select></div><div><label class="small">Приоритет</label><select id="weekPrioritySelect"><option value="normal">Обычный</option><option value="important">Важный</option><option value="critical">Критичный</option></select></div></div><div class="form-grid" style="margin-top:12px"><label><input type="checkbox" id="flagLetter" /> <span>Письмо</span></label><label><input type="checkbox" id="flagS302" /> <span>S302</span></label></div><div style="margin-top:12px"><label class="small">Заметка недели</label><textarea id="weekNoteInput"></textarea></div><div class="editor-actions"><button class="btn primary" id="saveWeekBtn" type="button">Сохранить</button></div></div></div></div>
+      </section>
+      <section id="events" class="screen"><div class="split"><div class="card"><h3>Шаблоны событий</h3><div id="eventsList" class="grid"></div></div><div class="card"><h3>Редактор события</h3><div class="form-grid"><div><label class="small">Название</label><input id="eventNameInput" type="text" /></div><div>
+<label class="small">Цвет</label>
+<select id="eventColorInput">
+  <option value="#1f7a45">■ #1f7a45</option>
+  <option value="#2563eb">■ #2563eb</option>
+  <option value="#1976d2">■ #1976d2</option>
+  <option value="#d32f2f">■ #d32f2f</option>
+  <option value="#e53935">■ #e53935</option>
+  <option value="#0097a7">■ #0097a7</option>
+  <option value="#ef6c00">■ #ef6c00</option>
+  <option value="#7b1fa2">■ #7b1fa2</option>
+  <option value="#5d4037">■ #5d4037</option>
+  <option value="#00897b">■ #00897b</option>
+  <option value="#6d4c41">■ #6d4c41</option>
+  <option value="#546e7a">■ #546e7a</option>
+  <option value="#3949ab">■ #3949ab</option>
+  <option value="#8e24aa">■ #8e24aa</option>
+  <option value="#f4511e">■ #f4511e</option>
+  <option value="#43a047">■ #43a047</option>
+</select>
+</div><div><label class="small">Адрес</label><input id="eventAddressInput" type="text" /></div><div><label class="small">Расписание</label><input id="eventScheduleInput" type="text" placeholder="Ср 19:00, Сб 10:00" /></div></div><div class="editor-actions"><button class="btn" id="resetEventBtn" type="button">Очистить</button><button class="btn primary" id="saveEventBtn" type="button">Сохранить событие</button></div></div></div></section>
+      <section id="notes" class="screen"><div class="toolbar"><input id="noteSearch" type="text" placeholder="Поиск по заметкам" /></div><div class="card"><div id="notesList" class="grid"></div></div></section>
+      <section id="settings" class="screen"><div class="grid" style="grid-template-columns:repeat(2,1fr)"><div class="card"><h3>Внешний вид</h3><div class="form-grid"><div><label class="small">Язык</label><select id="languageSelect"><option value="ru">Русский</option><option value="en">English</option><option value="uk">Українська</option><option value="pl">Polski</option></select></div><div><label class="small">Тема</label><select id="themeSelect"><option value="light">Светлая</option><option value="dark">Тёмная</option></select></div><div><label class="small">Макет календаря</label><select id="layoutPresetSelect"></select><div class="layout-help">Доступно 10 вариантов отображения календаря.</div></div></div></div><div class="card"><h3>Управление данными</h3><div class="grid"><button class="btn full" id="settingsPdfBtn" type="button">PDF / Печать</button>
+<div class="actions settings-actions" style="margin-top:0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+  <button class="btn" id="themeBtn" type="button">Тема</button>
+  <button class="btn primary" id="exportBtn" type="button">Экспорт</button>
+  <label class="btn" for="importInput">Импорт JSON</label>
+  <input id="importInput" type="file" accept=".json,application/json,text/plain" hidden />
+</div>
+<div class="card" style="box-shadow:none;border:1px dashed var(--line);border-radius:18px;padding:14px;background:var(--surface2)">
+  <div class="form-grid">
+    <div>
+      <label class="small">Добавить служебный год</label>
+      <input id="addYearInput" type="number" inputmode="numeric" placeholder="например 2029" />
+      <div class="small" style="margin-top:6px">Введите первый год (например 2029 для 2029/2030). Служебный год: 1 сентября — 31 августа.</div>
+    </div>
+    <div style="display:grid;gap:10px;align-content:end">
+      <button class="btn" id="addNextYearBtn" type="button">Добавить следующий год</button>
+      <button class="btn primary" id="addYearBtn" type="button">Добавить</button>
+    </div>
+  </div>
+</div>
+<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><button class="btn primary" id="backupBtn" type="button">Создать backup</button><button class="btn danger" id="resetAppBtn" type="button">Сбросить приложение</button></div></div><p class="small" style="margin-top:12px">PDF использует системную печать браузера.</p></div></div></section>
+    </main>
+  </div>
+  <div class="modal" id="pdfModal" hidden><div class="modal-card"><div class="modal-head"><div><h3>Экспорт в PDF</h3><div class="modal-sub">Выберите формат и используйте печать браузера.</div></div><button class="icon-btn" id="pdfModalCloseBtn" type="button">✕</button></div><div class="pdf-section"><h4>Календарная сетка</h4><div class="pdf-grid"><button class="pdf-option active" data-pdf-type="month-grid" type="button"><strong>Календарь месяца</strong><span>Сетка текущего месяца для печати.</span></button><button class="pdf-option" data-pdf-type="custom-range-calendar" type="button"><strong>Календарь периода</strong><span>Печать для выбранного диапазона дат.</span></button></div></div><div class="pdf-section"><h4>Список событий и отчёты</h4><div class="pdf-grid"><button class="pdf-option" data-pdf-type="month-agenda" type="button"><strong>Список событий месяца</strong><span>Список событий за текущий месяц.</span></button><button class="pdf-option" data-pdf-type="half-year-agenda" type="button"><strong>События за полгода</strong><span>Список событий за 6 месяцев.</span></button><button class="pdf-option" data-pdf-type="year-agenda" type="button"><strong>События за год</strong><span>Список событий за 12 месяцев.</span></button><button class="pdf-option" data-pdf-type="custom-range" type="button"><strong>Список за период</strong><span>Список событий за любой диапазон дат.</span></button><button class="pdf-option" data-pdf-type="year-overview" type="button"><strong>Годовой обзор</strong><span>Табличная сводка по служебному году.</span></button><button class="pdf-option" data-pdf-type="notes-report" type="button"><strong>Отчёт по заметкам</strong><span>Недельные заметки по выбранному году.</span></button></div></div><div class="card" id="pdfRangeCard" style="margin-top:14px;padding:14px;border-radius:18px;display:none;box-shadow:none;"><div class="form-grid"><label><span class="small">Начало периода</span><input id="pdfRangeStartInput" type="date" /></label><label><span class="small">Конец периода</span><input id="pdfRangeEndInput" type="date" /></label></div><p class="small" id="pdfRangeHelp" style="margin:10px 0 0;">Выбери даты начала и конца периода.</p></div><div class="pdf-hint" id="pdfHint">Если окно печати не появилось, разрешите всплывающее окно/печать в браузере.</div><div class="editor-actions"><button class="btn" id="pdfCancelBtn" type="button">Закрыть</button><button class="btn primary" id="pdfExportConfirmBtn" type="button">Печать</button></div></div></div>
+  <nav class="bottom-nav" id="bottomNav"><div class="bottom-nav-row" id="bottomNavRow"></div></nav>
+  <div class="modal" id="exportModal" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <h3>Экспорт</h3>
+          <div class="modal-sub">Выберите формат экспорта: резервный JSON или календарь (.ics) для Google/Apple.</div>
+        </div>
+        <button class="icon-btn" id="exportModalCloseBtn" type="button">✕</button>
+      </div>
+      <div class="pdf-section">
+        <h4>Файлы</h4>
+        <div class="pdf-grid">
+          <button class="pdf-option active" data-export-type="json" type="button"><strong>JSON backup</strong><span>Полная резервная копия данных приложения.</span></button>
+          <button class="pdf-option" data-export-type="ics" type="button"><strong>Календарь (.ics)</strong><span>Импорт в Google Calendar и Apple Calendar.</span></button>
+        </div>
+      </div>
+      <div class="card" id="exportRangeCard" style="margin-top:14px;padding:14px;border-radius:18px;display:none;box-shadow:none;">
+        <div class="form-grid">
+          <label><span class="small">Начало периода</span><input id="exportRangeStartInput" type="date" /></label>
+          <label><span class="small">Конец периода</span><input id="exportRangeEndInput" type="date" /></label>
+        </div>
+        <p class="small" id="exportRangeHelp" style="margin:10px 0 0;">Для .ics будет экспортирован выбранный диапазон дат.</p>
+        <div class="small" style="margin-top:8px;">Подсказка: для Google Calendar откройте «Настройки → Импорт и экспорт → Импорт», выберите .ics. Для Apple Calendar просто откройте файл.</div>
+      </div>
+      <div class="editor-actions"><button class="btn" id="exportCancelBtn" type="button">Закрыть</button><button class="btn primary" id="exportConfirmBtn" type="button">Скачать</button></div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toastWrap"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
