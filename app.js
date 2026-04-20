@@ -34,7 +34,7 @@ const App={/* FINAL v8.5 bugfixes: drawer clickability above bottom nav, single 
       actualYearForServiceMonth(serviceYear,month){return month>=App.config.serviceYearStartMonth?serviceYear:serviceYear+1},
       actualDateForServiceMonth(serviceYear,month,day=1){return new Date(App.utils.actualYearForServiceMonth(serviceYear,month),month,day)},
       orderedServiceMonths(){return [8,9,10,11,0,1,2,3,4,5,6,7]},
-      escapeHtml(str){return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]))},
+      escapeHtml(str){return String(str).replace(/[&<>"']/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',''':'&#39;' }[s]));},
       toast(message){const el=document.createElement('div');el.className='toast';el.textContent=message;App.els.toastWrap.appendChild(el);setTimeout(()=>el.remove(),3500)}
     },
     store:{
