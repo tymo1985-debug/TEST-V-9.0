@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Service Year Planner v10.0</title>
+  <title>Service Year Planner v9.1</title>
   <meta name="theme-color" content="#14532d" />
   <link rel="manifest" href="manifest.webmanifest">
   <style>
@@ -68,28 +68,13 @@
   .day-cell:hover .day-add-btn{display:flex;} @media (hover:none){.day-add-btn{display:flex;opacity:.78;}}
   #calendarLayoutPresetSelect{display:none !important}
   @media print{body::before,.sidebar,.topbar,.calendar-side,.bottom-nav,.mobile-overlay,.toast-wrap,.editor,.modal{display:none !important}.app{grid-template-columns:1fr !important}.main{padding:0 !important}.calendar-shell,.card{box-shadow:none !important;border:1px solid #ccc !important}}
-  
-/* === v10 enhancements === */
-.quick-panel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:14px 24px 18px;border-bottom:1px solid color-mix(in srgb,var(--line) 70%, transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--surface2) 70%, var(--surface)),var(--surface))}
-.quick-card{background:var(--surface2);border:1px solid var(--line);border-radius:18px;padding:12px 14px;display:grid;gap:8px;min-width:0}
-.quick-card h4{font-size:13px;color:var(--muted);font-weight:600;margin:0}.quick-main{font-size:18px;font-weight:700}.quick-sub{font-size:12px;color:var(--muted)}
-.quick-actions{display:flex;gap:8px;flex-wrap:wrap}.quick-actions .btn{padding:8px 12px;border-radius:12px;box-shadow:none}
-.preview-popover{position:fixed;z-index:2200;min-width:290px;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 44px rgba(0,0,0,.18);padding:14px;display:grid;gap:10px}.preview-popover[hidden]{display:none!important}
-.preview-popover h4{margin:0;font-size:16px}.preview-grid{display:grid;gap:8px}.preview-row{display:flex;justify-content:space-between;gap:12px}.preview-label{font-size:12px;color:var(--muted)}.preview-value{font-weight:600;text-align:right}.preview-actions{display:flex;gap:8px;flex-wrap:wrap}.preview-actions .btn,.preview-actions a.btn{padding:8px 12px;border-radius:12px;box-shadow:none;text-decoration:none}
-.event-bar.dragging,.event-bar.resizing{opacity:.86;outline:2px solid color-mix(in srgb,var(--accent) 35%, transparent)}
-.event-handle{position:absolute;top:0;width:10px;height:100%;cursor:ew-resize;opacity:0}.event-handle.left{left:-2px}.event-handle.right{right:-2px}.event-bar:hover .event-handle{opacity:1}
-.empty-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}.empty-actions .btn{box-shadow:none}
-.event-row .event-actions,.note-row .note-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-@media (max-width:1100px){.quick-panel{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:767px){.quick-panel{grid-template-columns:1fr;padding:12px 16px}.quick-card{padding:12px}.preview-popover{left:12px!important;right:12px!important;bottom:88px!important;top:auto!important;max-width:none!important;width:auto!important}.editor{bottom:88px}.event-bar{min-height:20px}.day-add-btn{width:28px;height:28px}}
-
-</style>
+  </style>
 </head>
 <body>
   <div class="mobile-overlay" id="mobileOverlay" hidden></div>
   <div class="app" id="appRoot">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v10.0 • index.html + app.js</p></div></div>
+      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.1 • index.html + app.js</p></div></div>
       <nav class="menu" id="desktopNav"></nav>
       <div class="summary"><strong>Быстрый статус</strong><div id="sideStatus" class="small"></div></div>
     </aside>
@@ -97,7 +82,7 @@
       <div class="offline-banner" id="offlineBanner">Вы офлайн. Изменения сохраняются локально.</div>
       <header class="topbar">
         <div>
-          <div class="version-badge">Версия: v10.0</div>
+          <div class="version-badge">Версия: v9.1</div>
           <h2 id="screenTitle">Календарь</h2>
           <p id="screenSubtitle"></p>
         </div>
