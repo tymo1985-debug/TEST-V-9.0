@@ -184,7 +184,8 @@
       serviceYearBounds(year) { return { start: new Date(year, App.config.serviceYearStartMonth, 1), end: new Date(year + 1, App.config.serviceYearStartMonth, 0) }; },
       clampColor(color, fallback = '#1f7a45') { return /^#[0-9a-f]{6}$/i.test(String(color || '')) ? color : fallback; },
       slug(value) { return String(value || '').toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9\-а-яёіїєґ]/gi,''); },
-      escapeHtml(str) { return String(str).replace(/[&<>"']/g, (s) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s])); },
+      escapeHtml(str) { return String(str ?? '').replace(/[&<>"']/g, (s) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s])); },
+      escapeAttr(str) { return this.escapeHtml(str); },
       prettyDate(date) { const d = new Date(date); if (Number.isNaN(d.getTime())) return '—'; return d.toLocaleDateString(this.lang(), { day:'2-digit', month:'short' }); },
       prettyDateLong(date) { const d = new Date(date); if (Number.isNaN(d.getTime())) return '—'; return d.toLocaleDateString(this.lang(), { day:'2-digit', month:'long', year:'numeric' }); },
       uniqueBy(items, makeKey) { const seen = new Set(); const out = []; items.forEach((item) => { const key = makeKey(item); if (seen.has(key)) return; seen.add(key); out.push(item); }); return out; },
@@ -228,10 +229,10 @@
         const out = { ...settings }; if (typeof out.showTeamPanel !== 'boolean') out.showTeamPanel = true; if (!out.language) out.language = 'ru'; if (!out.theme) out.theme = 'light'; if (!out.layoutPreset) out.layoutPreset = 'classic'; return out;
       },
       createDefaultData() {
-        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.4-full' } };
+        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.4.1-fixed' } };
       },
       convertLegacyBackup(legacy) {
-        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.4-full', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
+        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.4.1-fixed', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
         const eventMap = new Map(); const legacyMeetings = Array.isArray(legacy.meetings) ? legacy.meetings : [];
         const ensureEvent = (name, source = {}) => { const cleanName = String(name || '').trim(); if (!cleanName) return ''; if (eventMap.has(cleanName)) return eventMap.get(cleanName); const id = `evt_${App.utils.slug(cleanName) || App.utils.uid('evt')}`; const scheduleParts = []; if (source.wd && source.tWD) scheduleParts.push(`${source.wd} ${source.tWD}`); if (source.we && source.tWE) scheduleParts.push(`${source.we} ${source.tWE}`); app.events.push({ id, name: cleanName, color: App.utils.clampColor(source.color, '#1f7a45'), address: source.addr || source.address || '', schedule: scheduleParts.join(', ') }); eventMap.set(cleanName, id); return id; };
         legacyMeetings.forEach((meeting) => ensureEvent(meeting?.name, meeting || {}));
@@ -256,7 +257,7 @@
       },
       normalizeApp(appData) {
         const app = appData && typeof appData === 'object' ? appData : this.createDefaultData();
-        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.4-full' };
+        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.4.1-fixed' };
         app.events = App.utils.uniqueBy(app.events.map((item) => ({ id: item.id || App.utils.uid('evt'), name: item.name || 'Без названия', color: App.utils.clampColor(item.color), address: item.address || '', schedule: item.schedule || '' })), (item) => [item.name,item.color,item.address,item.schedule].join('|'));
         app.entries = App.utils.uniqueBy(app.entries.filter((item) => item && item.start && item.end).map((item) => ({ id: item.id || App.utils.uid('entry'), eventId: item.eventId || '', start: App.utils.iso(item.start), end: App.utils.iso(item.end), title: item.title || '', note: item.note || '', flags: { f302: !!item?.flags?.f302, letter: !!item?.flags?.letter }, source: item.source || 'entry' })), (item) => [item.eventId,item.title,item.note,item.start,item.end].join('|'));
         Object.keys(app.serviceYears).forEach((year) => {
@@ -299,9 +300,46 @@
         return App.utils.uniqueBy(filtered, (item) => [item.eventId,item.title,item.note,item.start.toISOString().slice(0,10),item.end.toISOString().slice(0,10)].join('|')).sort((a,b) => a.start - b.start || a.end - b.end);
       },
       collectIcsItems(startDate, endDate) {
-        const start = App.utils.parseLocalDate(startDate); const end = App.utils.parseLocalDate(endDate); if (!start || !end) return [];
-        const items = App.state.app.entries.filter((entry) => { const es = App.utils.parseLocalDate(entry.start); const ee = App.utils.parseLocalDate(entry.end); return es && ee && App.utils.overlaps(es, ee, start, end); }).map((entry) => { const event = this.getEventById(entry.eventId); return { title: entry.title || event?.name || App.utils.t('event'), description: entry.note || '', location: event?.address || '', start: entry.start, end: App.utils.iso(App.utils.addDays(App.utils.parseLocalDate(entry.end), 1)) }; });
-        return App.utils.uniqueBy(items, (item) => [item.title,item.description,item.location,item.start,item.end].join('|'));
+        const start = App.utils.parseLocalDate(startDate);
+        const end = App.utils.parseLocalDate(endDate);
+        if (!start || !end) return [];
+
+        const entryItems = App.state.app.entries
+          .filter((entry) => {
+            const es = App.utils.parseLocalDate(entry.start);
+            const ee = App.utils.parseLocalDate(entry.end);
+            return es && ee && App.utils.overlaps(es, ee, start, end);
+          })
+          .map((entry) => {
+            const event = this.getEventById(entry.eventId);
+            return {
+              title: entry.title || event?.name || App.utils.t('event'),
+              description: entry.note || '',
+              location: event?.address || '',
+              start: entry.start,
+              end: App.utils.iso(App.utils.addDays(App.utils.parseLocalDate(entry.end), 1))
+            };
+          });
+
+        const weekItems = [];
+        Object.values(App.state.app.serviceYears || {}).forEach((serviceYear) => {
+          Object.values(serviceYear?.weeks || {}).forEach((week) => {
+            if (!week?.eventId) return;
+            const ws = App.utils.parseLocalDate(week.start);
+            const we = App.utils.parseLocalDate(week.end);
+            if (!ws || !we || !App.utils.overlaps(ws, we, start, end)) return;
+            const event = this.getEventById(week.eventId);
+            weekItems.push({
+              title: event?.name || App.utils.t('event'),
+              description: week.note || '',
+              location: event?.address || '',
+              start: week.start,
+              end: App.utils.iso(App.utils.addDays(App.utils.parseLocalDate(week.end), 1))
+            });
+          });
+        });
+
+        return App.utils.uniqueBy([...entryItems, ...weekItems], (item) => [item.title,item.description,item.location,item.start,item.end].join('|'));
       },
       getCalendarItemById(itemId) {
         if (!itemId) return null; const [source, refId] = String(itemId).split(':');
@@ -585,11 +623,11 @@
       },
       renderCalendar() {
         this.renderYearOptions(); this.renderLayoutOptions(); const year = App.state.calendarYear; const month = App.state.calendarMonth; if (App.els.monthLabel) App.els.monthLabel.textContent = `${App.utils.monthName(month)} ${year}`; const monthStart = new Date(year, month, 1); const monthEnd = new Date(year, month + 1, 0); const serviceYear = App.utils.getServiceYearForDate(monthStart); if (App.els.calendarServiceYearLabel) App.els.calendarServiceYearLabel.textContent = `${App.utils.t('service_year')}: ${App.utils.serviceYearLabel(serviceYear)}`; if (App.els.calendarRangeLabel) App.els.calendarRangeLabel.textContent = `${App.utils.prettyDateLong(monthStart)} — ${App.utils.prettyDateLong(monthEnd)}`; if (App.els.calendarPanelYearLabel) App.els.calendarPanelYearLabel.textContent = `${App.utils.t('context')}: ${App.utils.serviceYearLabel(serviceYear)}`;
-        const filterOptions = ['<option value="all">' + App.utils.t('all_events') + '</option>'].concat(App.state.app.events.map((event) => `<option value="${event.id}">${App.utils.escapeHtml(event.name)}</option>`)); if (App.els.calendarEventQuickFilter) { App.els.calendarEventQuickFilter.innerHTML = filterOptions.join(''); App.els.calendarEventQuickFilter.value = App.state.calendarEventFilter; } if (App.els.eventFilter) { App.els.eventFilter.innerHTML = filterOptions.join(''); App.els.eventFilter.value = App.state.calendarEventFilter; }
+        const filterOptions = ['<option value="all">' + App.utils.t('all_events') + '</option>'].concat(App.state.app.events.map((event) => `<option value="${App.utils.escapeAttr(event.id)}">${App.utils.escapeHtml(event.name)}</option>`)); if (App.els.calendarEventQuickFilter) { App.els.calendarEventQuickFilter.innerHTML = filterOptions.join(''); App.els.calendarEventQuickFilter.value = App.state.calendarEventFilter; } if (App.els.eventFilter) { App.els.eventFilter.innerHTML = filterOptions.join(''); App.els.eventFilter.value = App.state.calendarEventFilter; }
         const weeks = this.buildMonthGrid(month, year); const items = App.data.buildCalendarItemsForMonth(month, year); const itemsByWeek = new Map(); weeks.forEach((week) => itemsByWeek.set(week.id, [])); items.forEach((item) => { weeks.forEach((week) => { const weekStart = week.days[0].date; const weekEnd = week.days[6].date; if (App.utils.overlaps(item.start, item.end, weekStart, weekEnd)) { const leftIndex = Math.max(0, App.utils.daysDiff(item.start, weekStart)); const rightIndex = Math.min(6, App.utils.daysDiff(item.end, weekStart)); itemsByWeek.get(week.id).push({ ...item, leftIndex, rightIndex, span: rightIndex - leftIndex + 1 }); } }); });
-        if (App.els.calendarGrid) App.els.calendarGrid.innerHTML = `<div class="grid-cal"><div class="dow-row"><div class="dow-corner"></div><div class="dow-days">${App.utils.dayNames().map((name) => `<div class="dow">${name}</div>`).join('')}</div></div>${weeks.map((week) => { const bars = (itemsByWeek.get(week.id) || []).slice(0, 4); const extraCount = Math.max(0, (itemsByWeek.get(week.id) || []).length - 4); return `<div class="week-row"><button class="week-num" data-open-week="${week.id}" type="button">W${week.number}</button><div class="week-days">${week.days.map((day) => `<div class="day-cell ${day.inMonth ? '' : 'inactive'} ${day.isWeekend ? 'weekend' : ''} ${day.isToday ? 'today today-col' : ''}" data-day="${day.iso}"><div><span class="day-num">${day.day}</span>${day.day === 1 ? `<span class="day-month">${App.utils.monthName(day.month).slice(0, 3)}</span>` : ''}</div><button class="day-add-btn" data-add-date="${day.iso}" type="button" title="${App.utils.t('add_on_date')}">+</button></div>`).join('')}${bars.map((bar, rowIndex) => `<button class="event-bar" data-edit-calendar-item="${bar.id}" type="button" style="left:calc(${(bar.leftIndex / 7) * 100}% + 6px);width:calc(${(bar.span / 7) * 100}% - 12px);top:${28 + rowIndex * 20}px;background:${bar.color};">${App.utils.escapeHtml(bar.title)}</button>`).join('')}${extraCount ? `<div class="small" style="position:absolute;left:12px;bottom:6px">+ ${extraCount}</div>` : ''}</div></div>`; }).join('')}</div>`;
+        if (App.els.calendarGrid) App.els.calendarGrid.innerHTML = `<div class="grid-cal"><div class="dow-row"><div class="dow-corner"></div><div class="dow-days">${App.utils.dayNames().map((name) => `<div class="dow">${name}</div>`).join('')}</div></div>${weeks.map((week) => { const bars = (itemsByWeek.get(week.id) || []).slice(0, 4); const extraCount = Math.max(0, (itemsByWeek.get(week.id) || []).length - 4); return `<div class="week-row"><button class="week-num" data-open-week="${App.utils.escapeAttr(week.id)}" type="button">W${week.number}</button><div class="week-days">${week.days.map((day) => `<div class="day-cell ${day.inMonth ? '' : 'inactive'} ${day.isWeekend ? 'weekend' : ''} ${day.isToday ? 'today today-col' : ''}" data-day="${day.iso}"><div><span class="day-num">${day.day}</span>${day.day === 1 ? `<span class="day-month">${App.utils.monthName(day.month).slice(0, 3)}</span>` : ''}</div><button class="day-add-btn" data-add-date="${App.utils.escapeAttr(day.iso)}" type="button" title="${App.utils.t('add_on_date')}">+</button></div>`).join('')}${bars.map((bar, rowIndex) => `<button class="event-bar" data-edit-calendar-item="${App.utils.escapeAttr(bar.id)}" type="button" style="left:calc(${(bar.leftIndex / 7) * 100}% + 6px);width:calc(${(bar.span / 7) * 100}% - 12px);top:${28 + rowIndex * 20}px;background:${App.utils.clampColor(bar.color)};">${App.utils.escapeHtml(bar.title)}</button>`).join('')}${extraCount ? `<div class="small" style="position:absolute;left:12px;bottom:6px">+ ${extraCount}</div>` : ''}</div></div>`; }).join('')}</div>`;
         if (App.els.calendarYearSelect) { App.els.calendarYearSelect.innerHTML = Array.from({ length: 9 }, (_, i) => year - 4 + i).map((y) => `<option value="${y}">${y}</option>`).join(''); App.els.calendarYearSelect.value = String(year); }
-        if (App.els.calendarQuickList) App.els.calendarQuickList.innerHTML = items.slice(0, 12).map((item) => `<button class="side-item" type="button" data-detail-calendar-item="${item.id}"><strong>${App.utils.escapeHtml(item.title)}</strong><div class="small">${App.utils.prettyDate(item.start)} — ${App.utils.prettyDate(item.end)}</div><div class="small">${App.utils.escapeHtml(item.note || App.utils.t('no_note'))}</div></button>`).join('') || `<div class="empty">${App.utils.t('no_events_month')}</div>`;
+        if (App.els.calendarQuickList) App.els.calendarQuickList.innerHTML = items.slice(0, 12).map((item) => `<button class="side-item" type="button" data-detail-calendar-item="${App.utils.escapeAttr(item.id)}"><strong>${App.utils.escapeHtml(item.title)}</strong><div class="small">${App.utils.prettyDate(item.start)} — ${App.utils.prettyDate(item.end)}</div><div class="small">${App.utils.escapeHtml(item.note || App.utils.t('no_note'))}</div></button>`).join('') || `<div class="empty">${App.utils.t('no_events_month')}</div>`;
         const detail = items.find((item) => item.id === App.state.calendarDetailId) || items[0] || null; this.renderCalendarDetails(detail);
         document.querySelectorAll('[data-detail-calendar-item]').forEach((btn) => btn.addEventListener('click', () => { const item = items.find((entry) => entry.id === btn.dataset.detailCalendarItem); App.state.calendarDetailId = item?.id || null; App.ui.renderCalendarDetails(item || null); }));
         document.querySelectorAll('[data-add-date]').forEach((btn) => btn.addEventListener('click', (e) => { e.stopPropagation(); App.actions.openCalendarEditorForCreate(btn.dataset.addDate); }));
@@ -610,7 +648,7 @@
         App.els.calendarEditor.hidden = false;
         App.els.editorTitle.textContent = isEdit ? App.utils.t('edit_event') : App.utils.t('new_event');
         App.els.editorMeta.textContent = `${data.start || ''} — ${data.end || data.start || ''}`;
-        App.els.editorEventSelect.innerHTML = ['<option value="">' + App.utils.t('choose_template') + '</option>'].concat(App.state.app.events.map((event) => `<option value="${event.id}">${App.utils.escapeHtml(event.name)}</option>`)).join('');
+        App.els.editorEventSelect.innerHTML = ['<option value="">' + App.utils.t('choose_template') + '</option>'].concat(App.state.app.events.map((event) => `<option value="${App.utils.escapeAttr(event.id)}">${App.utils.escapeHtml(event.name)}</option>`)).join('');
         App.els.editorEventSelect.value = data.eventId || '';
         App.els.editorStart.value = data.start || '';
         App.els.editorEnd.value = data.end || data.start || '';
@@ -623,11 +661,11 @@
       },
       renderWeeks() {
         this.renderYearOptions(); this.ensureWeekDeleteButton(); const year = App.state.selectedYear; const weeks = App.data.getWeeksForYear(year); const query = (App.state.weekSearch || '').trim().toLowerCase(); const filtered = weeks.filter((week) => { const event = App.data.getEventById(week.eventId); const haystack = [week.note, event?.name, week.weekId, App.utils.prettyDate(week.start), App.utils.prettyDate(week.end)].join(' ').toLowerCase(); const filterMatch = App.state.calendarEventFilter === 'all' || week.eventId === App.state.calendarEventFilter; return (!query || haystack.includes(query)) && filterMatch; });
-        if (App.els.weekList) App.els.weekList.innerHTML = filtered.map((week) => { const event = App.data.getEventById(week.eventId); return `<button class="week-item ${App.state.selectedWeekId === week.weekId ? 'active' : ''}" data-week-select="${week.weekId}" type="button"><div class="week-item-top"><strong>${App.utils.prettyDate(week.start)} — ${App.utils.prettyDate(week.end)}</strong><span class="badge">W${App.utils.weekNumber(week.start)}</span></div><div class="pill-row" style="margin-top:8px"><span class="pill"><span class="dot" style="background:${event?.color || '#cbd5e1'}"></span>${App.utils.escapeHtml(event?.name || App.utils.t('no_template'))}</span><span class="pill">${App.utils.t(App.config.priorities[week.priority] || 'priority_normal')}</span>${week.flagLetter ? `<span class="pill">${App.utils.t('letter')}</span>` : ''}${week.flagS302 ? `<span class="pill">${App.utils.t('s302')}</span>` : ''}</div><div class="small" style="margin-top:8px">${App.utils.escapeHtml(week.note || App.utils.t('no_note'))}</div></button>`; }).join('') || `<div class="empty">${App.utils.t('no_events_found')}</div>`;
+        if (App.els.weekList) App.els.weekList.innerHTML = filtered.map((week) => { const event = App.data.getEventById(week.eventId); return `<button class="week-item ${App.state.selectedWeekId === week.weekId ? 'active' : ''}" data-week-select="${App.utils.escapeAttr(week.weekId)}" type="button"><div class="week-item-top"><strong>${App.utils.prettyDate(week.start)} — ${App.utils.prettyDate(week.end)}</strong><span class="badge">W${App.utils.weekNumber(week.start)}</span></div><div class="pill-row" style="margin-top:8px"><span class="pill"><span class="dot" style="background:${event?.color || '#cbd5e1'}"></span>${App.utils.escapeHtml(event?.name || App.utils.t('no_template'))}</span><span class="pill">${App.utils.t(App.config.priorities[week.priority] || 'priority_normal')}</span>${week.flagLetter ? `<span class="pill">${App.utils.t('letter')}</span>` : ''}${week.flagS302 ? `<span class="pill">${App.utils.t('s302')}</span>` : ''}</div><div class="small" style="margin-top:8px">${App.utils.escapeHtml(week.note || App.utils.t('no_note'))}</div></button>`; }).join('') || `<div class="empty">${App.utils.t('no_events_found')}</div>`;
         document.querySelectorAll('[data-week-select]').forEach((btn) => btn.addEventListener('click', () => { App.state.selectedWeekId = btn.dataset.weekSelect; App.ui.renderWeeks(); }));
         const selected = filtered.find((week) => week.weekId === App.state.selectedWeekId) || filtered[0] || weeks[0] || null; App.state.selectedWeekId = selected?.weekId || null; if (!selected) { if (App.els.weekEditorEmpty) App.els.weekEditorEmpty.hidden = false; if (App.els.weekEditor) App.els.weekEditor.hidden = true; return; }
         if (App.els.weekEditorTitle) App.els.weekEditorTitle.textContent = `${App.utils.t('week_details')}: ${App.utils.prettyDateLong(selected.start)} — ${App.utils.prettyDateLong(selected.end)}`; if (App.els.weekEditorEmpty) App.els.weekEditorEmpty.hidden = true; if (App.els.weekEditor) App.els.weekEditor.hidden = false;
-        const eventOptions = ['<option value="">' + App.utils.t('no_template') + '</option>'].concat(App.state.app.events.map((event) => `<option value="${event.id}">${App.utils.escapeHtml(event.name)}</option>`)); if (App.els.weekEventSelect) { App.els.weekEventSelect.innerHTML = eventOptions.join(''); App.els.weekEventSelect.value = selected.eventId || ''; } if (App.els.weekPrioritySelect) App.els.weekPrioritySelect.value = selected.priority || 'normal'; if (App.els.flagLetter) App.els.flagLetter.checked = !!selected.flagLetter; if (App.els.flagS302) App.els.flagS302.checked = !!selected.flagS302; if (App.els.weekNoteInput) App.els.weekNoteInput.value = selected.note || '';
+        const eventOptions = ['<option value="">' + App.utils.t('no_template') + '</option>'].concat(App.state.app.events.map((event) => `<option value="${App.utils.escapeAttr(event.id)}">${App.utils.escapeHtml(event.name)}</option>`)); if (App.els.weekEventSelect) { App.els.weekEventSelect.innerHTML = eventOptions.join(''); App.els.weekEventSelect.value = selected.eventId || ''; } if (App.els.weekPrioritySelect) App.els.weekPrioritySelect.value = selected.priority || 'normal'; if (App.els.flagLetter) App.els.flagLetter.checked = !!selected.flagLetter; if (App.els.flagS302) App.els.flagS302.checked = !!selected.flagS302; if (App.els.weekNoteInput) App.els.weekNoteInput.value = selected.note || '';
       },
       renderEvents() {
         if (App.els.eventsList) App.els.eventsList.innerHTML = App.state.app.events.map((event) => `
@@ -638,10 +676,10 @@
               <div class="small">${event.address ? `<a href="${App.utils.mapUrl(event.address)}" target="_blank" rel="noopener noreferrer">${App.utils.escapeHtml(event.address)}</a>` : App.utils.escapeHtml(App.utils.t('no_address'))}</div>
             </div>
             <div style="display:grid;gap:8px;justify-items:end">
-              <span class="pill"><span class="dot" style="background:${event.color}"></span>${event.color}</span>
+              <span class="pill"><span class="dot" style="background:${App.utils.clampColor(event.color)}"></span>${App.utils.escapeHtml(event.color)}</span>
               <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-                <button class="btn" type="button" data-edit-event="${event.id}">${App.utils.t('edit')}</button>
-                <button class="btn danger" type="button" data-delete-event="${event.id}">${App.utils.t('delete_template')}</button>
+                <button class="btn" type="button" data-edit-event="${App.utils.escapeAttr(event.id)}">${App.utils.t('edit')}</button>
+                <button class="btn danger" type="button" data-delete-event="${App.utils.escapeAttr(event.id)}">${App.utils.t('delete_template')}</button>
               </div>
             </div>
           </div>`).join('') || `<div class="empty">${App.utils.t('no_events_month')}</div>`;
@@ -675,8 +713,8 @@
               <div style="margin-top:8px">${App.utils.escapeHtml(week.note)}</div>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-              <button class="btn" type="button" data-jump-week="${week.weekId}" data-jump-year="${year}">${App.utils.t('open')}</button>
-              <button class="btn danger" type="button" data-delete-note="${week.weekId}" data-delete-note-year="${year}">${App.utils.t('delete_note')}</button>
+              <button class="btn" type="button" data-jump-week="${App.utils.escapeAttr(week.weekId)}" data-jump-year="${year}">${App.utils.t('open')}</button>
+              <button class="btn danger" type="button" data-delete-note="${App.utils.escapeAttr(week.weekId)}" data-delete-note-year="${year}">${App.utils.t('delete_note')}</button>
             </div>
           </div>`).join('') || `<div class="empty">${App.utils.t('no_notes')}</div>`;
         document.querySelectorAll('[data-jump-week]').forEach((btn) => btn.addEventListener('click', () => {
