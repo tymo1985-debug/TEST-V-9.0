@@ -1,30 +1,33 @@
-// Service Worker for Service Year Planner v9.x
-// Optimized for GitHub Pages / static hosting
-const VERSION = 'syp-v9.0.4';
-const CACHE_STATIC = `static-${VERSION}`;
-const CACHE_RUNTIME = `runtime-${VERSION}`;
+// Service Worker for Service Year Planner
+// Auto-update app shell without manual VERSION bumps.
+// index.html / app.js / manifest / sw.js -> network-first
+// images/fonts -> cache-first
+// everything else -> stale-while-revalidate
 
-// Precache: keep paths relative so GitHub Pages subpaths work.
-// Each asset is attempted individually so install doesn't fail if a file is missing.
-const PRECACHE_URLS = [
+const CACHE_STATIC = 'syp-static';
+const CACHE_RUNTIME = 'syp-runtime';
+const APP_SHELL_URLS = [
   './',
   './index.html',
   './app.js',
+  './favicon.ico',
   './manifest.webmanifest',
   './icons/icon-192.png',
-  './icons/icon-512.png',
+  './icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_STATIC);
-    for (const url of PRECACHE_URLS) {
+    for (const url of APP_SHELL_URLS) {
       try {
         const req = new Request(url, { cache: 'reload' });
         const res = await fetch(req);
-        if (res && res.ok) await cache.put(req, res);
+        if (res && res.ok) {
+          await cache.put(url, res.clone());
+        }
       } catch (_) {
-        // Ignore missing assets to keep install robust
+        // Ignore missing assets to keep install robust.
       }
     }
     self.skipWaiting();
@@ -34,43 +37,106 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map((key) => {
-      if (![CACHE_STATIC, CACHE_RUNTIME].includes(key)) return caches.delete(key);
-    }));
+    await Promise.all(
+      keys.map((key) => {
+        const isCurrent = key === CACHE_STATIC || key === CACHE_RUNTIME;
+        const isLegacy = key.startsWith('static-') || key.startsWith('runtime-') || key.startsWith('syp-v');
+        if (!isCurrent && isLegacy) {
+          return caches.delete(key);
+        }
+        return Promise.resolve(false);
+      })
+    );
+
+    if ('navigationPreload' in self.registration) {
+      try {
+        await self.registration.navigationPreload.enable();
+      } catch (_) {}
+    }
+
     await self.clients.claim();
   })());
 });
 
 function isNavigationRequest(request) {
-  return request.mode === 'navigate' ||
-    (request.method === 'GET' && (request.headers.get('accept') || '').includes('text/html'));
+  return request.mode === 'navigate' || (
+    request.method === 'GET' &&
+    (request.headers.get('accept') || '').includes('text/html')
+  );
+}
+
+function isSameOrigin(url) {
+  return url.origin === self.location.origin;
+}
+
+function isAppShellRequest(request) {
+  const url = new URL(request.url);
+  if (!isSameOrigin(url)) return false;
+
+  const pathname = url.pathname;
+  const shellFiles = ['/index.html', '/app.js', '/manifest.webmanifest', '/sw.js'];
+
+  return (
+    pathname.endsWith('/') ||
+    shellFiles.some((file) => pathname.endsWith(file)) ||
+    request.destination === 'script' ||
+    request.destination === 'style' ||
+    request.destination === 'manifest' ||
+    request.destination === 'document'
+  );
 }
 
 async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
+
   const res = await fetch(request);
-  const cache = await caches.open(CACHE_RUNTIME);
-  try { if (res && res.ok) cache.put(request, res.clone()); } catch (_) {}
+  if (res && res.ok) {
+    const cache = await caches.open(CACHE_RUNTIME);
+    try {
+      await cache.put(request, res.clone());
+    } catch (_) {}
+  }
   return res;
 }
 
-async function networkFirst(request) {
+async function networkFirst(request, fallbackUrl = './index.html') {
   const cache = await caches.open(CACHE_RUNTIME);
   try {
-    const res = await fetch(request);
+    const res = await fetch(request, { cache: 'no-cache' });
     if (res && res.ok) {
-      try { cache.put(request, res.clone()); } catch (_) {}
+      try {
+        await cache.put(request, res.clone());
+      } catch (_) {}
     }
     return res;
   } catch (_) {
     const cached = await caches.match(request);
     if (cached) return cached;
-    // Offline fallback to whichever HTML exists
-    return (await caches.match('./index.html')) ||
-           (await caches.match('./service_year_planner_v9_0_index.html')) ||
-           Response.error();
+
+    const fallback = fallbackUrl
+      ? (await caches.match(fallbackUrl)) || (await caches.match('./'))
+      : null;
+
+    return fallback || Response.error();
   }
+}
+
+async function staleWhileRevalidate(request) {
+  const cached = await caches.match(request);
+  const fetchPromise = fetch(request)
+    .then(async (res) => {
+      if (res && res.ok) {
+        const cache = await caches.open(CACHE_RUNTIME);
+        try {
+          await cache.put(request, res.clone());
+        } catch (_) {}
+      }
+      return res;
+    })
+    .catch(() => cached);
+
+  return cached || fetchPromise;
 }
 
 self.addEventListener('fetch', (event) => {
@@ -80,32 +146,24 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
-  // HTML navigations: network-first for freshest content
   if (isNavigationRequest(request)) {
-    event.respondWith(networkFirst(request));
+    event.respondWith((async () => {
+      const preload = await event.preloadResponse;
+      if (preload) return preload;
+      return networkFirst(request, './index.html');
+    })());
     return;
   }
 
-  // Static assets: cache-first
-  const dest = request.destination;
-  if (['script', 'style', 'image', 'font'].includes(dest)) {
+  if (isAppShellRequest(request)) {
+    event.respondWith(networkFirst(request, request.destination === 'document' ? './index.html' : null));
+    return;
+  }
+
+  if (['image', 'font'].includes(request.destination)) {
     event.respondWith(cacheFirst(request));
     return;
   }
 
-  // Default: stale-while-revalidate-ish
-  event.respondWith((async () => {
-    const cached = await caches.match(request);
-    const fetchPromise = fetch(request)
-      .then(async (res) => {
-        if (res && res.ok) {
-          const cache = await caches.open(CACHE_RUNTIME);
-          try { cache.put(request, res.clone()); } catch (_) {}
-        }
-        return res;
-      })
-      .catch(() => cached);
-
-    return cached || fetchPromise;
-  })());
+  event.respondWith(staleWhileRevalidate(request));
 });
