@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Service Year Planner v9.4.1</title>
+  <title>Service Year Planner v9.4.2</title>
   <meta name="theme-color" content="#14532d" />
   <link rel="manifest" href="manifest.webmanifest">
   <style>
@@ -19,6 +19,7 @@
   .summary{margin-top:auto;padding:14px;border-radius:16px;background:rgba(255,255,255,.1);font-size:14px}.summary strong{display:block;margin-bottom:8px}
   .main{padding:28px;min-width:0}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.topbar h2{margin:0;font-size:28px}.topbar p{margin:6px 0 0;color:var(--muted)}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .btn,.chip,select,input,textarea{font:inherit}.btn,.chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:12px 14px;border-radius:14px;cursor:pointer;box-shadow:var(--shadow)}
+  button,.btn,.chip,.icon-btn,.nav-btn,.bottom-nav-btn,.week-item,.side-item,.event-bar,.pdf-option,a.btn,label.btn,input,select,textarea{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
   .btn.primary{background:var(--accent);color:#fff;border-color:transparent}.btn.danger{background:var(--danger);color:#fff;border-color:transparent}.btn.full{width:100%}
   .screen{display:none}.screen.active{display:block}.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:18px}.grid{display:grid;gap:18px}.split{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
   input[type="text"],input[type="date"],input[type="color"],input[type="number"],textarea,select{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;padding:12px 14px}
@@ -46,7 +47,7 @@
   .app.menu-open .bottom-nav{display:none !important}
   .app.menu-open .sidebar{z-index:1501 !important}
   .bottom-nav-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.bottom-nav-btn{appearance:none;border:1px solid transparent;background:transparent;color:var(--muted);border-radius:16px;padding:10px 6px;display:grid;gap:4px;place-items:center;font:inherit;cursor:pointer;min-width:0}.bottom-nav-btn .icon{font-size:18px;line-height:1}.bottom-nav-btn .label{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.bottom-nav-btn.active{background:var(--surface2);color:var(--text);border-color:var(--line)}
-  .mobile-overlay{position:fixed;inset:0;background:rgba(15,23,18,.42);backdrop-filter:none;z-index:1500;pointer-events:auto}.mobile-overlay[hidden]{display:none !important}.mobile-menu-btn{display:none !important}
+  .mobile-overlay{position:fixed;inset:0;background:rgba(15,23,18,.42);backdrop-filter:none;z-index:1500;display:none;pointer-events:none}.mobile-overlay.show{display:block !important;pointer-events:auto !important}.mobile-overlay[hidden]{display:none !important;pointer-events:none !important}.mobile-menu-btn{display:none !important}
   :root[data-layout="classic"]{}
   :root[data-layout="compact"] .week-row{min-height:72px}:root[data-layout="compact"] .week-days{min-height:72px}:root[data-layout="compact"] .day-cell{min-height:72px;padding:6px 6px 6px 8px}:root[data-layout="compact"] .event-bar{font-size:11px;padding:2px 8px}:root[data-layout="compact"] .calendar-shell{border-radius:20px}
   :root[data-layout="spacious"] .week-row{min-height:128px}:root[data-layout="spacious"] .week-days{min-height:128px}:root[data-layout="spacious"] .day-cell{min-height:128px;padding:12px}:root[data-layout="spacious"] .event-bar{font-size:13px;padding:4px 12px}:root[data-layout="spacious"] .calendar-shell{border-radius:32px}
@@ -60,7 +61,7 @@
   @media (max-width:1280px){.calendar-layout{grid-template-columns:1fr}}
   @media (min-width:1201px){.app{grid-template-columns:280px 1fr !important}.sidebar{display:flex !important;position:relative !important;left:auto !important;top:auto !important;width:auto !important;z-index:1 !important}.bottom-nav{display:none !important}.mobile-menu-btn{display:none !important}.mobile-overlay{display:none !important}}
   @media (min-width:768px) and (max-width:1200px){body::before{display:none!important}.app{grid-template-columns:1fr!important}.sidebar{position:fixed;left:-296px;top:0;bottom:0;width:280px;transition:left .24s ease;z-index:1501}.mobile-menu-btn{display:inline-flex!important}.app.menu-open .sidebar{left:0}.main{padding:18px}.dow-row,.week-row{grid-template-columns:38px 1fr}.topbar h2{font-size:24px}}
-  @media (max-width:767px){body::before{display:none !important}.app{grid-template-columns:1fr !important}.sidebar{display:flex !important;position:fixed !important;top:0 !important;left:-296px !important;bottom:0 !important;width:280px !important;z-index:1501 !important;transition:left .24s ease !important;filter:none !important;opacity:1 !important;pointer-events:auto !important}.app.menu-open .sidebar{left:0 !important}.mobile-menu-btn{display:inline-flex !important}.mobile-overlay{display:block !important}.bottom-nav{display:block !important}.main{padding:16px 16px 96px !important}.topbar{position:sticky;top:0;z-index:1200;background:var(--bg);padding-top:4px}.actions{gap:8px}.actions .btn,.actions label.btn{padding:10px 12px}.split,.form-grid,.pdf-grid{grid-template-columns:1fr !important}.editor{position:fixed;left:12px;right:12px;top:auto;bottom:88px;width:auto}.dow-row,.week-row{display:grid;grid-template-columns:46px 1fr;}.topbar h2{font-size:24px}}
+  @media (max-width:767px){body::before{display:none !important}.app{grid-template-columns:1fr !important}.sidebar{display:flex !important;position:fixed !important;top:0 !important;left:-296px !important;bottom:0 !important;width:280px !important;z-index:1501 !important;transition:left .24s ease !important;filter:none !important;opacity:1 !important;pointer-events:auto !important}.app.menu-open .sidebar{left:0 !important}.mobile-menu-btn{display:inline-flex !important}.mobile-overlay.show{display:block !important}.bottom-nav{display:block !important}.main{padding:16px 16px 96px !important}.topbar{position:sticky;top:0;z-index:1200;background:var(--bg);padding-top:4px}.actions{gap:8px}.actions .btn,.actions label.btn{padding:10px 12px}.split,.form-grid,.pdf-grid{grid-template-columns:1fr !important}.editor{position:fixed;left:12px;right:12px;top:auto;bottom:88px;width:auto}.dow-row,.week-row{display:grid;grid-template-columns:46px 1fr;}.topbar h2{font-size:24px}}
   .week-row:hover .week-days{background: rgba(20,83,45,.06)}
   .day-cell.today-col{background: linear-gradient(to bottom, rgba(20,83,45,.08), transparent 55%)}
   .day-cell.today-col.weekend{background: linear-gradient(to bottom, rgba(20,83,45,.10), transparent 55%)}
@@ -76,7 +77,7 @@
   <div class="mobile-overlay" id="mobileOverlay" hidden></div>
   <div class="app" id="appRoot">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.4.1 • index.html + app.js</p></div></div>
+      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.4.2 • index.html + app.js</p></div></div>
       <nav class="menu" id="desktopNav"></nav>
       <div class="summary"><strong>Быстрый статус</strong><div id="sideStatus" class="small"></div></div>
     </aside>
@@ -84,7 +85,7 @@
       <div class="offline-banner" id="offlineBanner">Вы офлайн. Изменения сохраняются локально.</div>
       <header class="topbar">
         <div>
-          <div class="version-badge">Версия: v9.4.1</div>
+          <div class="version-badge">Версия: v9.4.2</div>
           <h2 id="screenTitle">Календарь</h2>
           <p id="screenSubtitle"></p>
         </div>
