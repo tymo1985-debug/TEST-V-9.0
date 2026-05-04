@@ -1,5 +1,5 @@
 
-// Service Year Planner v9.4.6 calendar side details + menu and team panel removal
+// Service Year Planner v9.4.7 compatible side details + accent color
 (function () {
   'use strict';
 
@@ -276,13 +276,13 @@
 
     store: {
       ensureSettingsDefaults(settings = {}) {
-        const out = { ...settings }; if (typeof out.showTeamPanel !== 'boolean') out.showTeamPanel = true; if (!out.language) out.language = 'ru'; if (!out.theme) out.theme = 'light'; if (!out.layoutPreset) out.layoutPreset = 'classic'; if (!out.calendarView) out.calendarView = 'month'; return out;
+        const out = { ...settings }; if (typeof out.showTeamPanel !== 'boolean') out.showTeamPanel = true; if (!out.language) out.language = 'ru'; if (!out.theme) out.theme = 'light'; if (!out.layoutPreset) out.layoutPreset = 'classic'; if (!out.calendarView) out.calendarView = 'month'; if (!out.accentColor) out.accentColor = 'green'; return out;
       },
       createDefaultData() {
-        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.4.6-side-details-menu-fix' } };
+        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.4.7-compatible-side-accent' } };
       },
       convertLegacyBackup(legacy) {
-        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.4.6-side-details-menu-fix', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
+        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.4.7-compatible-side-accent', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
         const eventMap = new Map(); const legacyMeetings = Array.isArray(legacy.meetings) ? legacy.meetings : [];
         const ensureEvent = (name, source = {}) => { const cleanName = String(name || '').trim(); if (!cleanName) return ''; if (eventMap.has(cleanName)) return eventMap.get(cleanName); const id = `evt_${App.utils.slug(cleanName) || App.utils.uid('evt')}`; const scheduleParts = []; if (source.wd && source.tWD) scheduleParts.push(`${source.wd} ${source.tWD}`); if (source.we && source.tWE) scheduleParts.push(`${source.we} ${source.tWE}`); app.events.push({ id, name: cleanName, color: App.utils.clampColor(source.color, '#1f7a45'), address: source.addr || source.address || '', schedule: scheduleParts.join(', ') }); eventMap.set(cleanName, id); return id; };
         legacyMeetings.forEach((meeting) => ensureEvent(meeting?.name, meeting || {}));
@@ -307,7 +307,7 @@
       },
       normalizeApp(appData) {
         const app = appData && typeof appData === 'object' ? appData : this.createDefaultData();
-        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.4.6-side-details-menu-fix' };
+        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.4.7-compatible-side-accent' };
         app.events = App.utils.uniqueBy(app.events.map((item) => ({ id: item.id || App.utils.uid('evt'), name: item.name || 'Без названия', color: App.utils.clampColor(item.color), address: item.address || '', schedule: item.schedule || '' })), (item) => [item.name,item.color,item.address,item.schedule].join('|'));
         app.entries = App.utils.uniqueBy(app.entries.filter((item) => item && item.start && item.end).map((item) => ({ id: item.id || App.utils.uid('entry'), eventId: item.eventId || '', start: App.utils.iso(item.start), end: App.utils.iso(item.end), title: item.title || '', note: item.note || '', flags: { f302: !!item?.flags?.f302, letter: !!item?.flags?.letter }, source: item.source || 'entry' })), (item) => [item.eventId,item.title,item.note,item.start,item.end].join('|'));
         Object.keys(app.serviceYears).forEach((year) => {
@@ -315,7 +315,7 @@
           Object.keys(sy.weeks).forEach((weekId) => { const w = sy.weeks[weekId]; if (!w) return; const start = App.utils.iso(w.start || weekId); const end = App.utils.iso(w.end || App.utils.addDays(App.utils.parseLocalDate(start), 6)); sy.weeks[weekId] = { id: w.id || weekId, weekId, start, end, eventId: w.eventId || '', priority: w.priority || 'normal', flagLetter: !!w.flagLetter, flagS302: !!w.flagS302, note: w.note || '' }; });
           app.serviceYears[year] = sy;
         });
-        app.meta.version = '9.4.6-side-details-menu-fix';
+        app.meta.version = '9.4.7-compatible-side-accent';
         return app;
       },
       migrate(appData) { return this.normalizeApp(appData && appData.schema === 'sp-backup-v2' ? this.convertLegacyBackup(appData) : appData); },
@@ -524,7 +524,7 @@
           'editorCancelBtn','editorDeleteBtn','editorSaveBtn','calendarServiceYearLabel','calendarPanelYearLabel',
           'calendarQuickList','calendarSideTitle','calendarSideMeta','calendarSideDetails','calendarEventQuickFilter',
           'toggleTeamPanelBtn','calendarLayout','eventsList','eventNameInput','eventColorInput','eventAddressInput',
-          'eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','notesList','languageSelect','themeSelect',
+          'eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','notesList','languageSelect','themeSelect','accentSelect',
           'settingsPdfBtn','backupBtn','resetAppBtn','themeBtn','exportBtn','importInput','pdfModal','pdfModalCloseBtn',
           'pdfCancelBtn','pdfExportConfirmBtn','pdfRangeCard','pdfRangeStartInput','pdfRangeEndInput','pdfRangeHelp','pdfHint',
           'bottomNav','bottomNavRow','mobileOverlay','mobileMenuToggleBtn','exportModal','exportModalCloseBtn','exportCancelBtn',
@@ -565,8 +565,8 @@
         const q = (sel) => document.querySelector(sel);
         const qa = (sel) => Array.from(document.querySelectorAll(sel));
         const brandH1 = q('.brand h1'); if (brandH1) brandH1.textContent = App.utils.t('appTitle');
-        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.4.6 • index.html + app.js`;
-        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.4.6`;
+        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.4.7 • index.html + app.js`;
+        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.4.7`;
         if (App.els.themeBtn) App.els.themeBtn.textContent = App.utils.t('theme');
         if (App.els.exportBtn) App.els.exportBtn.textContent = App.utils.t('export');
         const importLabel = q('label[for="importInput"]'); if (importLabel) importLabel.textContent = App.utils.t('import_json');
@@ -658,6 +658,7 @@
         this.ensureEditorNoteField();
         this.localizeStaticTexts();
         this.applyTheme();
+        this.applyAccent();
         this.applyLayout();
         this.removeTeamPanel();
         this.renderNav();
@@ -688,6 +689,26 @@
         const currentSY = App.utils.getServiceYearForDate(new Date()); App.data.ensureServiceYear(currentSY); App.data.getWeeksForYear(currentSY); const keys = Object.keys(App.state.app.serviceYears).map(Number).sort((a,b) => a - b); if (!keys.length) keys.push(currentSY); if (!keys.includes(App.state.selectedYear)) App.state.selectedYear = keys[keys.length - 1]; const options = keys.map((year) => `<option value="${year}">${App.utils.serviceYearLabel(year)}</option>`).join(''); if (App.els.yearSelect) { App.els.yearSelect.innerHTML = options; App.els.yearSelect.value = String(App.state.selectedYear); }
       },
       renderLayoutOptions() { const options = App.config.layoutPresets.map((item) => `<option value="${item.value}">${item.label}</option>`).join(''); ['layoutPresetSelect','calendarLayoutPresetSelect'].forEach((id) => { const el = App.els[id]; if (!el) return; el.innerHTML = options; el.value = App.state.app.settings.layoutPreset; }); },
+      applyAccent() {
+        const palettes = {
+          green:{accent:'#14532d',accent2:'#0d3d22',rgb:'20,83,45'},
+          blue:{accent:'#1d4ed8',accent2:'#1e3a8a',rgb:'29,78,216'},
+          purple:{accent:'#7e22ce',accent2:'#581c87',rgb:'126,34,206'},
+          teal:{accent:'#0f766e',accent2:'#115e59',rgb:'15,118,110'},
+          amber:{accent:'#b45309',accent2:'#78350f',rgb:'180,83,9'},
+          red:{accent:'#b91c1c',accent2:'#7f1d1d',rgb:'185,28,28'},
+          slate:{accent:'#334155',accent2:'#0f172a',rgb:'51,65,85'}
+        };
+        const key = App.state.app?.settings?.accentColor || 'green';
+        const p = palettes[key] || palettes.green;
+        document.documentElement.style.setProperty('--accent', p.accent);
+        document.documentElement.style.setProperty('--accent2', p.accent2);
+        document.documentElement.style.setProperty('--accent-rgb', p.rgb);
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', p.accent);
+        if (App.els.accentSelect) App.els.accentSelect.value = palettes[key] ? key : 'green';
+        try { localStorage.setItem('service-year-planner-accent', palettes[key] ? key : 'green'); } catch (_) {}
+      },
       applyTheme() { document.documentElement.setAttribute('data-theme', App.state.app.settings.theme || 'light'); if (App.els.themeSelect) App.els.themeSelect.value = App.state.app.settings.theme || 'light'; },
       applyLayout() { document.documentElement.setAttribute('data-layout', App.state.app.settings.layoutPreset || 'classic'); if (App.els.calendarLayout) App.els.calendarLayout.classList.remove('team-hidden'); },
       buildMonthGrid(month, year) {
@@ -708,18 +729,18 @@
           .sy-day:hover{background:var(--surface2);border-color:var(--line)}
           .sy-day.today{background:var(--accent);color:#fff}
           .sy-day.weekend:not(.today){background:var(--cal-weekend-bg)}
-          .sy-day.has-events:not(.today){border-color:rgba(20,83,45,.25)}
+          .sy-day.has-events:not(.today){border-color:rgba(var(--accent-rgb,20,83,45),.25)}
           .sy-event-dots{display:flex;gap:2px;justify-content:center;min-height:4px}
           .sy-event-dot{width:4px;height:4px;border-radius:999px;display:block}
           .sy-empty{min-height:30px}
-          .sy-day.selected{outline:2px solid var(--accent);outline-offset:1px;background:rgba(20,83,45,.10)}
+          .sy-day.selected{outline:2px solid var(--accent);outline-offset:1px;background:rgba(var(--accent-rgb,20,83,45),.10)}
           .sy-day .sy-count{position:absolute;right:3px;top:2px;font-size:9px;color:var(--muted)}
           .sy-month-summary{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;min-height:16px}
           .sy-month-summary .dot{width:7px;height:7px}
           .sy-legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:14px 18px 0;background:var(--surface2)}
           .sy-legend-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 10px;font-size:12px;color:var(--text)}
           .sy-legend-sample{width:12px;height:12px;border-radius:999px;display:inline-block;background:var(--accent)}
-          .sy-legend-sample.outline{background:transparent;border:2px solid rgba(20,83,45,.35)}
+          .sy-legend-sample.outline{background:transparent;border:2px solid rgba(var(--accent-rgb,20,83,45),.35)}
           .sy-legend-sample.today{background:var(--accent)}
           .sy-compact-hint{display:none;padding:8px 18px 0;background:var(--surface2)}
           @media (max-width:1100px){.service-year-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
@@ -735,12 +756,12 @@
           .app.menu-open .sidebar{left:0 !important;z-index:2500 !important;pointer-events:auto !important}
           .calendar-layout{grid-template-columns:minmax(0,1fr) minmax(320px,380px) !important;align-items:start}
           .calendar-side{display:block !important;position:sticky;top:86px;align-self:start;max-height:calc(100dvh - 110px);overflow:auto;-webkit-overflow-scrolling:touch}
-          .calendar-side .side-card:first-child{display:none !important}
+          .calendar-side .team-panel-card{display:none !important}
           .calendar-layout.team-hidden{grid-template-columns:minmax(0,1fr) minmax(320px,380px) !important}
           .calendar-layout.team-hidden .calendar-side{display:block !important}
           .day-cell{cursor:pointer}
-          .day-cell.selected-day{outline:2px solid var(--accent);outline-offset:-2px;background:rgba(20,83,45,.10)}
-          .day-cell.selected-day.weekend{background:rgba(20,83,45,.14)}
+          .day-cell.selected-day{outline:2px solid var(--accent);outline-offset:-2px;background:rgba(var(--accent-rgb,20,83,45),.10)}
+          .day-cell.selected-day.weekend{background:rgba(var(--accent-rgb,20,83,45),.14)}
           @media (max-width:820px){.calendar-layout{grid-template-columns:1fr !important}.calendar-side{position:static;max-height:none;overflow:visible}.calendar-side .side-card:not(:first-child){margin-top:12px}}
 `;
         document.head.appendChild(style);
@@ -997,7 +1018,7 @@
         }));
         document.querySelectorAll('[data-delete-note]').forEach((btn) => btn.addEventListener('click', () => App.actions.deleteNote(btn.dataset.deleteNoteYear, btn.dataset.deleteNote)));
       },
-      renderSettings() { if (App.els.languageSelect) App.els.languageSelect.value = App.state.app.settings.language || 'ru'; if (App.els.addYearInput && !App.els.addYearInput.value) App.els.addYearInput.value = String(Math.max(...Object.keys(App.state.app.serviceYears).map(Number), App.utils.getServiceYearForDate(new Date())) + 1); },
+      renderSettings() { if (App.els.languageSelect) App.els.languageSelect.value = App.state.app.settings.language || 'ru'; if (App.els.accentSelect) App.els.accentSelect.value = App.state.app.settings.accentColor || 'green'; if (App.els.addYearInput && !App.els.addYearInput.value) App.els.addYearInput.value = String(Math.max(...Object.keys(App.state.app.serviceYears).map(Number), App.utils.getServiceYearForDate(new Date())) + 1); },
       closeMobileMenu() { if (App.els.appRoot) App.els.appRoot.classList.remove('menu-open'); if (App.els.mobileOverlay) { App.els.mobileOverlay.hidden = true; App.els.mobileOverlay.classList.remove('show'); App.els.mobileOverlay.style.display = 'none'; App.els.mobileOverlay.style.pointerEvents = 'none'; } },
       toggleMobileMenu() { if (!App.els.appRoot) return; const open = !App.els.appRoot.classList.contains('menu-open'); App.els.appRoot.classList.toggle('menu-open', open); if (App.els.mobileOverlay) { App.els.mobileOverlay.hidden = true; App.els.mobileOverlay.classList.remove('show'); App.els.mobileOverlay.style.display = 'none'; App.els.mobileOverlay.style.pointerEvents = 'none'; } }
     },
@@ -1013,6 +1034,7 @@
       App.els.saveEventBtn?.addEventListener('click', () => App.actions.saveEventTemplate());
       App.els.themeBtn?.addEventListener('click', () => { App.state.app.settings.theme = App.state.app.settings.theme === 'dark' ? 'light' : 'dark'; App.store.save(); App.ui.renderAll(); });
       App.els.themeSelect?.addEventListener('change', (e) => { App.state.app.settings.theme = e.target.value; App.store.save(); App.ui.renderAll(); });
+      App.els.accentSelect?.addEventListener('change', (e) => { App.state.app.settings.accentColor = e.target.value; App.store.save(); App.ui.applyAccent(); });
       App.els.languageSelect?.addEventListener('change', (e) => { App.state.app.settings.language = e.target.value; App.store.save(); App.ui.renderAll(); });
       App.els.layoutPresetSelect?.addEventListener('change', (e) => { App.state.app.settings.layoutPreset = e.target.value; App.store.save(); App.ui.renderAll(); });
       App.els.calendarLayoutPresetSelect?.addEventListener('change', (e) => { App.state.app.settings.layoutPreset = e.target.value; App.store.save(); App.ui.renderAll(); });
@@ -1063,6 +1085,7 @@
       this.state.teamPanelHidden = false;
       this.state.calendarView = this.state.app.settings.calendarView || 'month';
       this.state.app.settings.showTeamPanel = true;
+      try { if (!this.state.app.settings.accentColor) this.state.app.settings.accentColor = localStorage.getItem('service-year-planner-accent') || 'green'; } catch (_) { if (!this.state.app.settings.accentColor) this.state.app.settings.accentColor = 'green'; }
       this.ui.closeMobileMenu();
       this.ui.renderAll();
       this.bind();

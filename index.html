@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Service Year Planner v9.4.6</title>
+  <title>Service Year Planner v9.4.7</title>
   <meta name="theme-color" content="#14532d" />
   <link rel="manifest" href="manifest.webmanifest">
   <style>
@@ -72,7 +72,7 @@
  @media (max-width:1200px){body::before{display:none!important}}
  @media print{body::before,.sidebar,.topbar,.calendar-side,.bottom-nav,.mobile-overlay,.toast-wrap,.editor,.modal{display:none !important}.app{grid-template-columns:1fr !important}.main{padding:0 !important}.calendar-shell,.card{box-shadow:none !important;border:1px solid #ccc !important}}
  
- /* v9.4.6 cleanup: no team panel, reliable menu, side details panel, dynamic accent */
+ /* v9.4.7 cleanup: no team panel, reliable menu, side details panel, dynamic accent */
  .mobile-overlay{display:none !important;pointer-events:none !important;z-index:0 !important;background:transparent !important}
  .app.menu-open .sidebar{left:0 !important;z-index:2500 !important;pointer-events:auto !important}
  .calendar-layout{grid-template-columns:minmax(0,1fr) minmax(320px,380px) !important;align-items:start}
@@ -89,13 +89,20 @@
  @media (max-width:820px){.calendar-layout{grid-template-columns:1fr !important}.calendar-side{position:static;max-height:none;overflow:visible}.calendar-side .side-card{margin-top:12px}}
  @media (max-width:767px){.mobile-overlay.show{display:none !important;pointer-events:none !important}.app.menu-open .sidebar{left:0 !important;z-index:2500 !important}}
 
+ 
+/* v9.4.7 compatibility: details panel must stay visible when team panel is removed */
+.calendar-side .team-panel-card{display:none !important}
+.calendar-side .calendar-details-card{display:block !important}
+.calendar-layout{grid-template-columns:minmax(0,1fr) minmax(320px,380px) !important}
+.mobile-overlay,.mobile-overlay.show{display:none !important;pointer-events:none !important}
+
  </style>
 </head>
 <body>
   <div class="mobile-overlay" id="mobileOverlay" hidden></div>
   <div class="app" id="appRoot">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.4.6 • index.html + app.js</p></div></div>
+      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.4.7 • index.html + app.js</p></div></div>
       <nav class="menu" id="desktopNav"></nav>
       <div class="summary"><strong>Быстрый статус</strong><div id="sideStatus" class="small"></div></div>
     </aside>
@@ -103,7 +110,7 @@
       <div class="offline-banner" id="offlineBanner">Вы офлайн. Изменения сохраняются локально.</div>
       <header class="topbar">
         <div>
-          <div class="version-badge">Версия: v9.4.6</div>
+          <div class="version-badge">Версия: v9.4.7</div>
           <h2 id="screenTitle">Календарь</h2>
           <p id="screenSubtitle"></p>
         </div>
@@ -230,66 +237,5 @@
   </div>
   <div class="toast-wrap" id="toastWrap"></div>
   <script src="app.js" defer></script>
- 
-<script>
-(function(){
-  'use strict';
-  const palettes = {
-    green:{accent:'#14532d',accent2:'#0d3d22',rgb:'20,83,45'},
-    blue:{accent:'#1d4ed8',accent2:'#1e3a8a',rgb:'29,78,216'},
-    purple:{accent:'#7e22ce',accent2:'#581c87',rgb:'126,34,206'},
-    teal:{accent:'#0f766e',accent2:'#115e59',rgb:'15,118,110'},
-    amber:{accent:'#b45309',accent2:'#78350f',rgb:'180,83,9'},
-    red:{accent:'#b91c1c',accent2:'#7f1d1d',rgb:'185,28,28'},
-    slate:{accent:'#334155',accent2:'#0f172a',rgb:'51,65,85'}
-  };
-  function applyAccent(key){
-    const name = palettes[key] ? key : 'green';
-    const p = palettes[name];
-    const root = document.documentElement;
-    root.style.setProperty('--accent', p.accent);
-    root.style.setProperty('--accent2', p.accent2);
-    root.style.setProperty('--accent-rgb', p.rgb);
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', p.accent);
-    const select = document.getElementById('accentSelect');
-    if (select) select.value = name;
-    try { localStorage.setItem('service-year-planner-accent', name); } catch (_) {}
-  }
-  function bindAccent(){
-    const app = window.App;
-    const fromApp = app?.state?.app?.settings?.accentColor;
-    let saved = fromApp;
-    try { saved = saved || localStorage.getItem('service-year-planner-accent'); } catch (_) {}
-    applyAccent(saved || 'green');
-    const select = document.getElementById('accentSelect');
-    if (!select || select.dataset.boundAccent === '1') return;
-    select.dataset.boundAccent = '1';
-    select.addEventListener('change', () => {
-      applyAccent(select.value);
-      try {
-        if (window.App?.state?.app?.settings) {
-          window.App.state.app.settings.accentColor = select.value;
-          window.App.store?.save?.();
-        }
-      } catch (_) {}
-    });
-    // Patch app render so language/theme rerenders do not reset the selected accent.
-    try {
-      if (window.App?.ui && !window.App.ui.__accentPatch) {
-        const oldRenderAll = window.App.ui.renderAll.bind(window.App.ui);
-        window.App.ui.renderAll = function(){
-          oldRenderAll();
-          const current = window.App?.state?.app?.settings?.accentColor || localStorage.getItem('service-year-planner-accent') || 'green';
-          applyAccent(current);
-          bindAccent();
-        };
-        window.App.ui.__accentPatch = true;
-      }
-    } catch (_) {}
-  }
-  document.addEventListener('DOMContentLoaded', bindAccent);
-})();
-</script>
 </body>
 </html>
