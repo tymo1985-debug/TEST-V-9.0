@@ -1,5 +1,5 @@
 
-// Service Year Planner v9.4.8 drawer sidebar + font size + clean calendar
+// Service Year Planner v9.4.9 responsive calendar polish
 (function () {
   'use strict';
 
@@ -279,10 +279,10 @@
         const out = { ...settings }; if (typeof out.showTeamPanel !== 'boolean') out.showTeamPanel = true; if (!out.language) out.language = 'ru'; if (!out.theme) out.theme = 'light'; if (!out.layoutPreset) out.layoutPreset = 'classic'; if (!out.calendarView) out.calendarView = 'month'; if (!out.accentColor) out.accentColor = 'green'; if (!out.fontSize) out.fontSize = 'normal'; return out;
       },
       createDefaultData() {
-        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.4.8-drawer-font-clean' } };
+        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.4.9-responsive-calendar-polish' } };
       },
       convertLegacyBackup(legacy) {
-        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.4.8-drawer-font-clean', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
+        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.4.9-responsive-calendar-polish', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
         const eventMap = new Map(); const legacyMeetings = Array.isArray(legacy.meetings) ? legacy.meetings : [];
         const ensureEvent = (name, source = {}) => { const cleanName = String(name || '').trim(); if (!cleanName) return ''; if (eventMap.has(cleanName)) return eventMap.get(cleanName); const id = `evt_${App.utils.slug(cleanName) || App.utils.uid('evt')}`; const scheduleParts = []; if (source.wd && source.tWD) scheduleParts.push(`${source.wd} ${source.tWD}`); if (source.we && source.tWE) scheduleParts.push(`${source.we} ${source.tWE}`); app.events.push({ id, name: cleanName, color: App.utils.clampColor(source.color, '#1f7a45'), address: source.addr || source.address || '', schedule: scheduleParts.join(', ') }); eventMap.set(cleanName, id); return id; };
         legacyMeetings.forEach((meeting) => ensureEvent(meeting?.name, meeting || {}));
@@ -307,7 +307,7 @@
       },
       normalizeApp(appData) {
         const app = appData && typeof appData === 'object' ? appData : this.createDefaultData();
-        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.4.8-drawer-font-clean' };
+        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.4.9-responsive-calendar-polish' };
         app.events = App.utils.uniqueBy(app.events.map((item) => ({ id: item.id || App.utils.uid('evt'), name: item.name || 'Без названия', color: App.utils.clampColor(item.color), address: item.address || '', schedule: item.schedule || '' })), (item) => [item.name,item.color,item.address,item.schedule].join('|'));
         app.entries = App.utils.uniqueBy(app.entries.filter((item) => item && item.start && item.end).map((item) => ({ id: item.id || App.utils.uid('entry'), eventId: item.eventId || '', start: App.utils.iso(item.start), end: App.utils.iso(item.end), title: item.title || '', note: item.note || '', flags: { f302: !!item?.flags?.f302, letter: !!item?.flags?.letter }, source: item.source || 'entry' })), (item) => [item.eventId,item.title,item.note,item.start,item.end].join('|'));
         Object.keys(app.serviceYears).forEach((year) => {
@@ -315,7 +315,7 @@
           Object.keys(sy.weeks).forEach((weekId) => { const w = sy.weeks[weekId]; if (!w) return; const start = App.utils.iso(w.start || weekId); const end = App.utils.iso(w.end || App.utils.addDays(App.utils.parseLocalDate(start), 6)); sy.weeks[weekId] = { id: w.id || weekId, weekId, start, end, eventId: w.eventId || '', priority: w.priority || 'normal', flagLetter: !!w.flagLetter, flagS302: !!w.flagS302, note: w.note || '' }; });
           app.serviceYears[year] = sy;
         });
-        app.meta.version = '9.4.8-drawer-font-clean';
+        app.meta.version = '9.4.9-responsive-calendar-polish';
         return app;
       },
       migrate(appData) { return this.normalizeApp(appData && appData.schema === 'sp-backup-v2' ? this.convertLegacyBackup(appData) : appData); },
@@ -524,12 +524,15 @@
           'editorCancelBtn','editorDeleteBtn','editorSaveBtn','calendarServiceYearLabel','calendarPanelYearLabel',
           'calendarQuickList','calendarSideTitle','calendarSideMeta','calendarSideDetails','calendarEventQuickFilter',
           'toggleTeamPanelBtn','calendarLayout','eventsList','eventNameInput','eventColorInput','eventAddressInput',
-          'eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','notesList','languageSelect','themeSelect','fontSizeSelect','accentSelect','fontSizeSelect',
+          'eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','notesList','languageSelect','themeSelect','accentSelect','fontSizeSelect',
           'settingsPdfBtn','backupBtn','resetAppBtn','themeBtn','exportBtn','importInput','pdfModal','pdfModalCloseBtn',
           'pdfCancelBtn','pdfExportConfirmBtn','pdfRangeCard','pdfRangeStartInput','pdfRangeEndInput','pdfRangeHelp','pdfHint',
           'bottomNav','bottomNavRow','mobileOverlay','mobileMenuToggleBtn','exportModal','exportModalCloseBtn','exportCancelBtn',
           'exportConfirmBtn','exportRangeCard','exportRangeStartInput','exportRangeEndInput','exportRangeHelp','addYearInput','addNextYearBtn','addYearBtn'
         ].forEach((id) => { App.els[id] = document.getElementById(id); });
+      },
+      cleanupCalendarChrome() {
+        document.querySelectorAll('#calendar .legend, .sy-legend, .sy-compact-hint').forEach((node) => node.remove());
       },
       removeTeamPanel() {
         const teamCard = document.getElementById('calendarQuickList')?.closest('.side-card') || document.getElementById('calendarEventQuickFilter')?.closest('.side-card');
@@ -538,6 +541,19 @@
         App.els.calendarEventQuickFilter = null;
         App.els.calendarPanelYearLabel = null;
         if (App.els.calendarLayout) App.els.calendarLayout.classList.remove('team-hidden');
+      },
+      ensureFontSizeControl() {
+        if (document.getElementById('fontSizeSelect')) {
+          App.els.fontSizeSelect = document.getElementById('fontSizeSelect');
+          return;
+        }
+        const layoutSelect = document.getElementById('layoutPresetSelect');
+        const host = layoutSelect?.closest('div');
+        if (!host?.parentNode) return;
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `<label class="small">Размер шрифта интерфейса</label><select id="fontSizeSelect"><option value="small">Маленький</option><option value="normal">Обычный</option><option value="large">Крупный</option><option value="xlarge">Очень крупный</option></select><div class="layout-help">Меняет размер текста, кнопок и календаря.</div>`;
+        host.parentNode.insertBefore(wrap, host);
+        App.els.fontSizeSelect = document.getElementById('fontSizeSelect');
       },
       ensureEditorNoteField() {
         if (!App.els.calendarEditor) return;
@@ -565,8 +581,8 @@
         const q = (sel) => document.querySelector(sel);
         const qa = (sel) => Array.from(document.querySelectorAll(sel));
         const brandH1 = q('.brand h1'); if (brandH1) brandH1.textContent = App.utils.t('appTitle');
-        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.4.8 • index.html + app.js`;
-        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.4.8`;
+        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.4.9 • index.html + app.js`;
+        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.4.9`;
         if (App.els.themeBtn) App.els.themeBtn.textContent = App.utils.t('theme');
         if (App.els.exportBtn) App.els.exportBtn.textContent = App.utils.t('export');
         const importLabel = q('label[for="importInput"]'); if (importLabel) importLabel.textContent = App.utils.t('import_json');
@@ -656,6 +672,7 @@
       renderAll() {
         this.ensureCalendarViewStyles();
         this.ensureEditorNoteField();
+        this.ensureFontSizeControl();
         this.localizeStaticTexts();
         this.applyTheme();
         this.applyFontSize();
@@ -665,6 +682,7 @@
         this.renderNav();
         this.renderScreenHeader();
         this.renderCalendar();
+        this.cleanupCalendarChrome();
         this.renderWeeks();
         this.renderEvents();
         this.renderNotes();
@@ -771,7 +789,7 @@
           .day-cell.selected-day.weekend{background:rgba(var(--accent-rgb,20,83,45),.14)}
           @media (max-width:820px){.calendar-layout{grid-template-columns:1fr !important}.calendar-side{position:static;max-height:none;overflow:visible}.calendar-side .side-card:not(:first-child){margin-top:12px}}
 
-          /* v9.4.8 layout cleanup */
+          /* v9.4.9 layout cleanup */
           .legend,.sy-legend,.sy-compact-hint{display:none !important}
           .app{grid-template-columns:1fr !important}
           body::before{display:none !important}
@@ -783,6 +801,46 @@
           .service-year-grid{grid-template-columns:repeat(3,minmax(190px,1fr)) !important;gap:18px !important}
           [data-font-size="small"]{--ui-font-scale:.92}[data-font-size="normal"]{--ui-font-scale:1}[data-font-size="large"]{--ui-font-scale:1.08}[data-font-size="xlarge"]{--ui-font-scale:1.16}
           html{font-size:calc(16px * var(--ui-font-scale,1))}
+
+          /* v9.4.9 responsive polish: fixes screenshot overlap and cleans calendar header */
+          :root{--ui-font-scale:1;--sidebar-width:280px;--calendar-side-width:360px}
+          html{font-size:calc(16px * var(--ui-font-scale,1))}
+          body::before{display:none !important}
+          .app{grid-template-columns:1fr !important}
+          .main{padding:18px 22px 30px !important;width:100%;max-width:none !important}
+          .topbar{display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;align-items:start !important;gap:12px !important;margin-bottom:10px !important;padding:8px 0 8px !important;position:sticky;top:0;z-index:1200;background:var(--bg)}
+          .topbar h2{font-size:1.55rem !important;line-height:1.12 !important;margin-top:4px !important}
+          .topbar p{display:none !important}
+          .version-badge{font-size:.78rem !important;padding:5px 9px !important}
+          .mobile-menu-btn{display:inline-flex !important;padding:10px 14px !important;border-radius:18px !important;white-space:nowrap !important}
+          .sidebar{position:fixed !important;left:calc(-1 * var(--sidebar-width) - 20px) !important;top:0 !important;bottom:0 !important;width:var(--sidebar-width) !important;z-index:2500 !important;transition:left .22s ease !important;box-shadow:0 20px 60px rgba(0,0,0,.24);display:flex !important;pointer-events:auto !important}
+          .app.menu-open .sidebar{left:0 !important}
+          .mobile-overlay,.mobile-overlay.show{display:none !important;pointer-events:none !important}
+          .calendar-toolbar{display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;align-items:center !important;gap:12px !important;padding:16px 18px 12px !important}
+          .calendar-controls{justify-content:flex-end !important;gap:8px !important}
+          .calendar-controls .chip,.calendar-controls select{min-height:42px}
+          .calendar-title{font-size:1.35rem !important;line-height:1.15 !important}
+          .calendar-sub{font-size:.82rem !important;margin-top:4px !important}
+          .calendar-layout{grid-template-columns:minmax(0,1fr) minmax(310px,360px) !important;gap:18px !important;align-items:start}
+          .calendar-side{min-width:0 !important;position:sticky !important;top:88px !important;max-height:calc(100dvh - 106px) !important;overflow:auto !important;-webkit-overflow-scrolling:touch !important;display:block !important}
+          .calendar-details-card{max-width:100% !important;display:block !important}
+          .legend,.sy-legend,.sy-compact-hint{display:none !important}
+          .calendar-side .team-panel-card{display:none !important}
+          .service-year-grid{padding:18px !important;gap:18px !important;grid-template-columns:repeat(3,minmax(190px,1fr)) !important}
+          .sy-month-card{padding:14px !important;border-radius:22px !important}
+          .sy-day{min-height:34px !important;font-size:.78rem !important}
+          .sy-dow span{font-size:.72rem !important}
+          .sy-month-title{font-size:1.02rem !important}
+          .day-cell{min-height:108px}
+          @media (min-width:1600px){:root{--calendar-side-width:390px}.service-year-grid{grid-template-columns:repeat(4,minmax(190px,1fr)) !important}}
+          @media (max-width:1180px){.calendar-layout{grid-template-columns:1fr !important;gap:14px !important}.calendar-side{position:static !important;top:auto !important;max-height:none !important;overflow:visible !important;width:100% !important;display:block !important}.calendar-details-card{width:100% !important;max-width:none !important;margin-top:0 !important}.calendar-toolbar{grid-template-columns:1fr !important;align-items:start !important}.calendar-controls{justify-content:flex-start !important}}
+          @media (max-width:900px){.main{padding:14px 12px 86px !important}.calendar-shell{border-radius:22px !important}.calendar-toolbar{padding:14px !important}.calendar-controls{display:grid !important;grid-template-columns:1fr !important;width:100% !important}.calendar-nav{width:100%;justify-content:space-between}.calendar-controls select,.calendar-controls .chip{width:100% !important}#calendarServiceYearLabel{display:none !important}.calendar-sub{font-size:.8rem !important}.service-year-grid{grid-template-columns:repeat(2,minmax(150px,1fr)) !important;padding:12px !important;gap:12px !important}.sy-month-card{padding:10px !important}.sy-day{min-height:30px !important}.calendar-side{margin-top:12px !important}}
+          @media (max-width:560px){.service-year-grid{grid-template-columns:1fr !important}.topbar{grid-template-columns:1fr !important}.actions{justify-content:flex-start}.bottom-nav-btn .label{font-size:.68rem}}
+          [data-font-size="small"]{--ui-font-scale:.92}
+          [data-font-size="normal"]{--ui-font-scale:1}
+          [data-font-size="large"]{--ui-font-scale:1.08}
+          [data-font-size="xlarge"]{--ui-font-scale:1.16}
+
 `;
         document.head.appendChild(style);
       },
