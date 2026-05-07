@@ -1,5 +1,5 @@
 
-// Service Year Planner v9.5.1 meetings terminology + 10 font sizes
+// Service Year Planner v9.5.2 color names for meetings
 (function () {
   'use strict';
 
@@ -233,6 +233,36 @@
       serviceYearLabel(year) { return `${year}/${year + 1}`; },
       serviceYearBounds(year) { return { start: new Date(year, App.config.serviceYearStartMonth, 1), end: new Date(year + 1, App.config.serviceYearStartMonth, 0) }; },
       clampColor(color, fallback = '#1f7a45') { return /^#[0-9a-f]{6}$/i.test(String(color || '')) ? color : fallback; },
+
+      colorName(color) {
+        const names = {
+          '#1f7a45': { ru:'Зелёный', en:'Green', uk:'Зелений', pl:'Zielony' },
+          '#2563eb': { ru:'Синий', en:'Blue', uk:'Синій', pl:'Niebieski' },
+          '#1976d2': { ru:'Голубой', en:'Sky blue', uk:'Блакитний', pl:'Błękitny' },
+          '#d32f2f': { ru:'Красный', en:'Red', uk:'Червоний', pl:'Czerwony' },
+          '#e53935': { ru:'Алый', en:'Scarlet', uk:'Яскраво-червоний', pl:'Szkarłatny' },
+          '#0097a7': { ru:'Бирюзовый', en:'Turquoise', uk:'Бірюзовий', pl:'Turkusowy' },
+          '#ef6c00': { ru:'Оранжевый', en:'Orange', uk:'Помаранчевий', pl:'Pomarańczowy' },
+          '#7b1fa2': { ru:'Фиолетовый', en:'Purple', uk:'Фіолетовий', pl:'Fioletowy' },
+          '#5d4037': { ru:'Коричневый', en:'Brown', uk:'Коричневий', pl:'Brązowy' },
+          '#00897b': { ru:'Тёмно-бирюзовый', en:'Teal', uk:'Темно-бірюзовий', pl:'Morski' },
+          '#6d4c41': { ru:'Кофейный', en:'Coffee', uk:'Кавовий', pl:'Kawowy' },
+          '#546e7a': { ru:'Серо-синий', en:'Blue gray', uk:'Сіро-синій', pl:'Niebieskoszary' },
+          '#3949ab': { ru:'Индиго', en:'Indigo', uk:'Індиго', pl:'Indygo' },
+          '#8e24aa': { ru:'Пурпурный', en:'Violet', uk:'Пурпуровий', pl:'Purpurowy' },
+          '#f4511e': { ru:'Рыжий', en:'Deep orange', uk:'Рудий', pl:'Rudy' },
+          '#43a047': { ru:'Светло-зелёный', en:'Light green', uk:'Світло-зелений', pl:'Jasnozielony' }
+        };
+        const key = String(color || '').toLowerCase();
+        const lang = this.lang();
+        return names[key]?.[lang] || names[key]?.ru || this.t('color');
+      },
+      colorOptionsHtml(selectedColor = '') {
+        const colors = ['#1f7a45','#2563eb','#1976d2','#d32f2f','#e53935','#0097a7','#ef6c00','#7b1fa2','#5d4037','#00897b','#6d4c41','#546e7a','#3949ab','#8e24aa','#f4511e','#43a047'];
+        const icons = { '#1f7a45':'🟢', '#2563eb':'🔵', '#1976d2':'🔷', '#d32f2f':'🔴', '#e53935':'🔴', '#0097a7':'🔹', '#ef6c00':'🟠', '#7b1fa2':'🟣', '#5d4037':'🟤', '#00897b':'🟦', '#6d4c41':'🟫', '#546e7a':'⚫', '#3949ab':'🔵', '#8e24aa':'🟣', '#f4511e':'🟠', '#43a047':'🟢' };
+        const selected = String(selectedColor || '').toLowerCase();
+        return colors.map((color) => `<option value="${color}" ${selected === color ? 'selected' : ''}>${icons[color]} ${this.escapeHtml(this.colorName(color))}</option>`).join('');
+      },
       slug(value) { return String(value || '').toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9\-а-яёіїєґ]/gi,''); },
       escapeHtml(str) { return String(str ?? '').replace(/[&<>"']/g, (s) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s])); },
       escapeAttr(str) { return this.escapeHtml(str); },
@@ -279,10 +309,10 @@
         const out = { ...settings }; if (typeof out.showTeamPanel !== 'boolean') out.showTeamPanel = true; if (!out.language) out.language = 'ru'; if (!out.theme) out.theme = 'light'; if (!out.layoutPreset) out.layoutPreset = 'classic'; if (!out.calendarView) out.calendarView = 'month'; if (!out.accentColor) out.accentColor = 'green'; if (!out.fontSize) out.fontSize = '100'; return out;
       },
       createDefaultData() {
-        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.5.1-meetings-fontscale' } };
+        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.5.2-color-names' } };
       },
       convertLegacyBackup(legacy) {
-        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.5.1-meetings-fontscale', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
+        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.5.2-color-names', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
         const eventMap = new Map(); const legacyMeetings = Array.isArray(legacy.meetings) ? legacy.meetings : [];
         const ensureEvent = (name, source = {}) => { const cleanName = String(name || '').trim(); if (!cleanName) return ''; if (eventMap.has(cleanName)) return eventMap.get(cleanName); const id = `evt_${App.utils.slug(cleanName) || App.utils.uid('evt')}`; const scheduleParts = []; if (source.wd && source.tWD) scheduleParts.push(`${source.wd} ${source.tWD}`); if (source.we && source.tWE) scheduleParts.push(`${source.we} ${source.tWE}`); app.events.push({ id, name: cleanName, color: App.utils.clampColor(source.color, '#1f7a45'), address: source.addr || source.address || '', schedule: scheduleParts.join(', ') }); eventMap.set(cleanName, id); return id; };
         legacyMeetings.forEach((meeting) => ensureEvent(meeting?.name, meeting || {}));
@@ -307,7 +337,7 @@
       },
       normalizeApp(appData) {
         const app = appData && typeof appData === 'object' ? appData : this.createDefaultData();
-        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.5.1-meetings-fontscale' };
+        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.5.2-color-names' };
         app.events = App.utils.uniqueBy(app.events.map((item) => ({ id: item.id || App.utils.uid('evt'), name: item.name || 'Без названия', color: App.utils.clampColor(item.color), address: item.address || '', schedule: item.schedule || '' })), (item) => [item.name,item.color,item.address,item.schedule].join('|'));
         app.entries = App.utils.uniqueBy(app.entries.filter((item) => item && item.start && item.end).map((item) => ({ id: item.id || App.utils.uid('entry'), eventId: item.eventId || '', start: App.utils.iso(item.start), end: App.utils.iso(item.end), title: item.title || '', note: item.note || '', flags: { f302: !!item?.flags?.f302, letter: !!item?.flags?.letter }, source: item.source || 'entry' })), (item) => [item.eventId,item.title,item.note,item.start,item.end].join('|'));
         Object.keys(app.serviceYears).forEach((year) => {
@@ -315,7 +345,7 @@
           Object.keys(sy.weeks).forEach((weekId) => { const w = sy.weeks[weekId]; if (!w) return; const start = App.utils.iso(w.start || weekId); const end = App.utils.iso(w.end || App.utils.addDays(App.utils.parseLocalDate(start), 6)); sy.weeks[weekId] = { id: w.id || weekId, weekId, start, end, eventId: w.eventId || '', priority: w.priority || 'normal', flagLetter: !!w.flagLetter, flagS302: !!w.flagS302, note: w.note || '' }; });
           app.serviceYears[year] = sy;
         });
-        app.meta.version = '9.5.1-meetings-fontscale';
+        app.meta.version = '9.5.2-color-names';
         return app;
       },
       migrate(appData) { return this.normalizeApp(appData && appData.schema === 'sp-backup-v2' ? this.convertLegacyBackup(appData) : appData); },
@@ -410,6 +440,7 @@
         App.state.editingEventId = null;
         if (App.els.eventNameInput) App.els.eventNameInput.value = '';
         if (App.els.eventColorInput) {
+          App.els.eventColorInput.innerHTML = App.utils.colorOptionsHtml('#1f7a45');
           App.els.eventColorInput.value = '#1f7a45';
           if (!App.els.eventColorInput.value) App.els.eventColorInput.selectedIndex = 0;
         }
@@ -593,13 +624,22 @@
         }
         btn.textContent = App.utils.t('delete_week');
       },
+
+      localizeColorOptions() {
+        if (!App.els.eventColorInput) return;
+        const current = App.els.eventColorInput.value || '#1f7a45';
+        App.els.eventColorInput.innerHTML = App.utils.colorOptionsHtml(current);
+        App.els.eventColorInput.value = current;
+        if (!App.els.eventColorInput.value) App.els.eventColorInput.value = '#1f7a45';
+      },
       localizeStaticTexts() {
         document.documentElement.lang = App.utils.lang();
         const q = (sel) => document.querySelector(sel);
         const qa = (sel) => Array.from(document.querySelectorAll(sel));
+        this.localizeColorOptions();
         const brandH1 = q('.brand h1'); if (brandH1) brandH1.textContent = App.utils.t('appTitle');
-        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.1 • index.html + app.js`;
-        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.1`;
+        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.2 • index.html + app.js`;
+        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.2`;
         if (App.els.themeBtn) App.els.themeBtn.textContent = App.utils.t('theme');
         if (App.els.exportBtn) App.els.exportBtn.textContent = App.utils.t('export');
         const importLabel = q('label[for="importInput"]'); if (importLabel) importLabel.textContent = App.utils.t('import_json');
@@ -810,7 +850,7 @@
           .day-cell.selected-day.weekend{background:rgba(var(--accent-rgb,20,83,45),.14)}
           @media (max-width:820px){.calendar-layout{grid-template-columns:1fr !important}.calendar-side{position:static;max-height:none;overflow:visible}.calendar-side .side-card:not(:first-child){margin-top:12px}}
 
-          /* v9.5.1 layout cleanup */
+          /* v9.5.2 layout cleanup */
           .legend,.sy-legend,.sy-compact-hint{display:none !important}
           .app{grid-template-columns:1fr !important}
           body::before{display:none !important}
@@ -834,7 +874,7 @@
 
           html{font-size:calc(16px * var(--ui-font-scale,1))}
 
-          /* v9.5.1 responsive polish: fixes screenshot overlap and cleans calendar header */
+          /* v9.5.2 responsive polish: fixes screenshot overlap and cleans calendar header */
           :root{--ui-font-scale:1;--sidebar-width:280px;--calendar-side-width:360px}
           html{font-size:calc(16px * var(--ui-font-scale,1))}
           body::before{display:none !important}
@@ -886,7 +926,7 @@
 
 
  #events .event-templates-title{display:none !important}
- /* v9.5.1 sent flags and calendar actions */
+ /* v9.5.2 sent flags and calendar actions */
  .sent-flags{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
  .flag-toggle{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:7px 10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none}
  .flag-toggle input{width:auto;margin:0;accent-color:var(--accent)}
@@ -1134,7 +1174,7 @@
               <div class="small">${event.address ? `<a href="${App.utils.mapUrl(event.address)}" target="_blank" rel="noopener noreferrer">${App.utils.escapeHtml(event.address)}</a>` : App.utils.escapeHtml(App.utils.t('no_address'))}</div>
             </div>
             <div style="display:grid;gap:8px;justify-items:end">
-              <span class="pill"><span class="dot" style="background:${App.utils.clampColor(event.color)}"></span>${App.utils.escapeHtml(event.color)}</span>
+              <span class="pill"><span class="dot" style="background:${App.utils.clampColor(event.color)}"></span>${App.utils.escapeHtml(App.utils.colorName(event.color))}</span>
               <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
                 <button class="btn" type="button" data-edit-event="${App.utils.escapeAttr(event.id)}">${App.utils.t('edit')}</button>
                 <button class="btn danger" type="button" data-delete-event="${App.utils.escapeAttr(event.id)}">${App.utils.t('delete_template')}</button>
@@ -1145,7 +1185,7 @@
           const event = App.data.getEventById(btn.dataset.editEvent);
           App.state.editingEventId = event?.id || null;
           if (App.els.eventNameInput) App.els.eventNameInput.value = event?.name || '';
-          if (App.els.eventColorInput) { App.els.eventColorInput.value = event?.color || '#1f7a45'; if (!App.els.eventColorInput.value) App.els.eventColorInput.selectedIndex = 0; }
+          if (App.els.eventColorInput) { App.els.eventColorInput.innerHTML = App.utils.colorOptionsHtml(event?.color || '#1f7a45'); App.els.eventColorInput.value = event?.color || '#1f7a45'; if (!App.els.eventColorInput.value) App.els.eventColorInput.selectedIndex = 0; }
           if (App.els.eventAddressInput) App.els.eventAddressInput.value = event?.address || '';
           if (App.els.eventScheduleInput) App.els.eventScheduleInput.value = event?.schedule || '';
         }));
