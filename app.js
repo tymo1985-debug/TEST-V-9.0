@@ -1,5 +1,5 @@
 
-// Service Year Planner v9.4.9 responsive calendar polish
+// Service Year Planner v9.5.0 calendar actions + S302/letter flags
 (function () {
   'use strict';
 
@@ -279,10 +279,10 @@
         const out = { ...settings }; if (typeof out.showTeamPanel !== 'boolean') out.showTeamPanel = true; if (!out.language) out.language = 'ru'; if (!out.theme) out.theme = 'light'; if (!out.layoutPreset) out.layoutPreset = 'classic'; if (!out.calendarView) out.calendarView = 'month'; if (!out.accentColor) out.accentColor = 'green'; if (!out.fontSize) out.fontSize = 'normal'; return out;
       },
       createDefaultData() {
-        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.4.9-responsive-calendar-polish' } };
+        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.5.0-calendar-actions-flags' } };
       },
       convertLegacyBackup(legacy) {
-        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.4.9-responsive-calendar-polish', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
+        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.5.0-calendar-actions-flags', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
         const eventMap = new Map(); const legacyMeetings = Array.isArray(legacy.meetings) ? legacy.meetings : [];
         const ensureEvent = (name, source = {}) => { const cleanName = String(name || '').trim(); if (!cleanName) return ''; if (eventMap.has(cleanName)) return eventMap.get(cleanName); const id = `evt_${App.utils.slug(cleanName) || App.utils.uid('evt')}`; const scheduleParts = []; if (source.wd && source.tWD) scheduleParts.push(`${source.wd} ${source.tWD}`); if (source.we && source.tWE) scheduleParts.push(`${source.we} ${source.tWE}`); app.events.push({ id, name: cleanName, color: App.utils.clampColor(source.color, '#1f7a45'), address: source.addr || source.address || '', schedule: scheduleParts.join(', ') }); eventMap.set(cleanName, id); return id; };
         legacyMeetings.forEach((meeting) => ensureEvent(meeting?.name, meeting || {}));
@@ -307,7 +307,7 @@
       },
       normalizeApp(appData) {
         const app = appData && typeof appData === 'object' ? appData : this.createDefaultData();
-        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.4.9-responsive-calendar-polish' };
+        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.5.0-calendar-actions-flags' };
         app.events = App.utils.uniqueBy(app.events.map((item) => ({ id: item.id || App.utils.uid('evt'), name: item.name || 'Без названия', color: App.utils.clampColor(item.color), address: item.address || '', schedule: item.schedule || '' })), (item) => [item.name,item.color,item.address,item.schedule].join('|'));
         app.entries = App.utils.uniqueBy(app.entries.filter((item) => item && item.start && item.end).map((item) => ({ id: item.id || App.utils.uid('entry'), eventId: item.eventId || '', start: App.utils.iso(item.start), end: App.utils.iso(item.end), title: item.title || '', note: item.note || '', flags: { f302: !!item?.flags?.f302, letter: !!item?.flags?.letter }, source: item.source || 'entry' })), (item) => [item.eventId,item.title,item.note,item.start,item.end].join('|'));
         Object.keys(app.serviceYears).forEach((year) => {
@@ -315,7 +315,7 @@
           Object.keys(sy.weeks).forEach((weekId) => { const w = sy.weeks[weekId]; if (!w) return; const start = App.utils.iso(w.start || weekId); const end = App.utils.iso(w.end || App.utils.addDays(App.utils.parseLocalDate(start), 6)); sy.weeks[weekId] = { id: w.id || weekId, weekId, start, end, eventId: w.eventId || '', priority: w.priority || 'normal', flagLetter: !!w.flagLetter, flagS302: !!w.flagS302, note: w.note || '' }; });
           app.serviceYears[year] = sy;
         });
-        app.meta.version = '9.4.9-responsive-calendar-polish';
+        app.meta.version = '9.5.0-calendar-actions-flags';
         return app;
       },
       migrate(appData) { return this.normalizeApp(appData && appData.schema === 'sp-backup-v2' ? this.convertLegacyBackup(appData) : appData); },
@@ -340,11 +340,11 @@
         const viewStart = new Date(year, month, 1); const viewEnd = new Date(year, month + 1, 0); const items = [];
         Object.values(App.state.app.serviceYears).forEach((serviceYear) => {
           Object.values(serviceYear.weeks || {}).forEach((week) => {
-            if (!week.eventId) return; const start = App.utils.parseLocalDate(week.start); const end = App.utils.parseLocalDate(week.end); if (!start || !end) return; if (!App.utils.overlaps(start, end, viewStart, viewEnd)) return; const event = this.getEventById(week.eventId); items.push({ id:`week:${week.weekId}`, source:'week', start, end, eventId: week.eventId, title: event?.name || App.utils.t('event'), color: event?.color || '#1f7a45', note: week.note || '', refId: week.weekId });
+            if (!week.eventId) return; const start = App.utils.parseLocalDate(week.start); const end = App.utils.parseLocalDate(week.end); if (!start || !end) return; if (!App.utils.overlaps(start, end, viewStart, viewEnd)) return; const event = this.getEventById(week.eventId); items.push({ id:`week:${week.weekId}`, source:'week', start, end, eventId: week.eventId, title: event?.name || App.utils.t('event'), color: event?.color || '#1f7a45', note: week.note || '', flags: { f302: !!week.flagS302, letter: !!week.flagLetter }, refId: week.weekId });
           });
         });
         App.state.app.entries.forEach((entry) => {
-          const start = App.utils.parseLocalDate(entry.start); const end = App.utils.parseLocalDate(entry.end); if (!start || !end) return; if (!App.utils.overlaps(start, end, viewStart, viewEnd)) return; const event = this.getEventById(entry.eventId); items.push({ id:`entry:${entry.id}`, source:'entry', start, end, eventId: entry.eventId, title: entry.title || event?.name || App.utils.t('event'), color: event?.color || '#1f7a45', note: entry.note || '', refId: entry.id });
+          const start = App.utils.parseLocalDate(entry.start); const end = App.utils.parseLocalDate(entry.end); if (!start || !end) return; if (!App.utils.overlaps(start, end, viewStart, viewEnd)) return; const event = this.getEventById(entry.eventId); items.push({ id:`entry:${entry.id}`, source:'entry', start, end, eventId: entry.eventId, title: entry.title || event?.name || App.utils.t('event'), color: event?.color || '#1f7a45', note: entry.note || '', flags: { f302: !!entry?.flags?.f302, letter: !!entry?.flags?.letter }, refId: entry.id });
         });
         const filtered = App.state.calendarEventFilter === 'all' ? items : items.filter((item) => item.eventId === App.state.calendarEventFilter);
         return App.utils.uniqueBy(filtered, (item) => [item.eventId,item.title,item.note,item.start.toISOString().slice(0,10),item.end.toISOString().slice(0,10)].join('|')).sort((a,b) => a.start - b.start || a.end - b.end);
@@ -394,12 +394,12 @@
       getCalendarItemById(itemId) {
         if (!itemId) return null; const [source, refId] = String(itemId).split(':');
         if (source === 'entry') {
-          const entry = App.state.app.entries.find((item) => item.id === refId); if (!entry) return null; const event = this.getEventById(entry.eventId); return { id: itemId, source: 'entry', refId, eventId: entry.eventId, title: entry.title || event?.name || App.utils.t('event'), note: entry.note || '', start: entry.start, end: entry.end };
+          const entry = App.state.app.entries.find((item) => item.id === refId); if (!entry) return null; const event = this.getEventById(entry.eventId); return { id: itemId, source: 'entry', refId, eventId: entry.eventId, title: entry.title || event?.name || App.utils.t('event'), note: entry.note || '', flags: { f302: !!entry?.flags?.f302, letter: !!entry?.flags?.letter }, start: entry.start, end: entry.end };
         }
         if (source === 'week') {
           let found = null;
           Object.values(App.state.app.serviceYears).forEach((sy) => { if (sy.weeks && sy.weeks[refId]) found = sy.weeks[refId]; });
-          if (!found) return null; const event = this.getEventById(found.eventId); return { id: itemId, source: 'week', refId, eventId: found.eventId, title: event?.name || App.utils.t('event'), note: found.note || '', start: found.start, end: found.end };
+          if (!found) return null; const event = this.getEventById(found.eventId); return { id: itemId, source: 'week', refId, eventId: found.eventId, title: event?.name || App.utils.t('event'), note: found.note || '', flags: { f302: !!found.flagS302, letter: !!found.flagLetter }, start: found.start, end: found.end };
         }
         return null;
       }
@@ -470,7 +470,7 @@
         } else if (target.mode === 'edit' && target.source === 'week') {
           let week = null; Object.values(App.state.app.serviceYears).forEach((sy) => { if (sy.weeks && sy.weeks[target.refId]) week = sy.weeks[target.refId]; }); if (week) { week.eventId = eventId; week.start = start; week.end = end; week.note = note; }
         } else {
-          App.state.app.entries.push({ id: App.utils.uid('entry'), eventId, start, end, title: event?.name || App.utils.t('event'), note, source: 'entry' });
+          App.state.app.entries.push({ id: App.utils.uid('entry'), eventId, start, end, title: event?.name || App.utils.t('event'), note, flags: { f302: false, letter: false }, source: 'entry' });
         }
         App.state.app.entries = App.utils.uniqueBy(App.state.app.entries, (item) => [item.eventId,item.title,item.note,item.start,item.end].join('|'));
         App.store.save(); App.ui.closeCalendarEditor(); App.ui.renderAll(); App.utils.toast(App.utils.t('calendar_event_saved'));
@@ -483,6 +483,23 @@
           Object.values(App.state.app.serviceYears).forEach((sy) => { if (sy.weeks && sy.weeks[target.refId]) { sy.weeks[target.refId].eventId = ''; sy.weeks[target.refId].note = ''; sy.weeks[target.refId].priority = 'normal'; sy.weeks[target.refId].flagLetter = false; sy.weeks[target.refId].flagS302 = false; } });
         }
         App.store.save(); App.ui.closeCalendarEditor(); App.ui.renderAll(); App.utils.toast(App.utils.t('calendar_event_deleted'));
+      },
+      toggleWeekSentFlag(year, weekId, flagName, checked) {
+        const week = App.state.app.serviceYears?.[year]?.weeks?.[weekId];
+        if (!week) return;
+        if (flagName === 's302') week.flagS302 = !!checked;
+        if (flagName === 'letter') week.flagLetter = !!checked;
+        App.store.save();
+        App.ui.renderCalendar();
+      },
+      toggleEntrySentFlag(entryId, flagName, checked) {
+        const entry = App.state.app.entries.find((item) => item.id === entryId);
+        if (!entry) return;
+        if (!entry.flags) entry.flags = { f302: false, letter: false };
+        if (flagName === 's302') entry.flags.f302 = !!checked;
+        if (flagName === 'letter') entry.flags.letter = !!checked;
+        App.store.save();
+        App.ui.renderCalendar();
       },
       exportJson() { App.utils.downloadText(`service-year-planner-${App.utils.iso(new Date())}.json`, JSON.stringify(App.state.app, null, 2), 'application/json;charset=utf-8'); },
       exportIcs() {
@@ -581,8 +598,8 @@
         const q = (sel) => document.querySelector(sel);
         const qa = (sel) => Array.from(document.querySelectorAll(sel));
         const brandH1 = q('.brand h1'); if (brandH1) brandH1.textContent = App.utils.t('appTitle');
-        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.4.9 • index.html + app.js`;
-        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.4.9`;
+        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.0 • index.html + app.js`;
+        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.0`;
         if (App.els.themeBtn) App.els.themeBtn.textContent = App.utils.t('theme');
         if (App.els.exportBtn) App.els.exportBtn.textContent = App.utils.t('export');
         const importLabel = q('label[for="importInput"]'); if (importLabel) importLabel.textContent = App.utils.t('import_json');
@@ -789,7 +806,7 @@
           .day-cell.selected-day.weekend{background:rgba(var(--accent-rgb,20,83,45),.14)}
           @media (max-width:820px){.calendar-layout{grid-template-columns:1fr !important}.calendar-side{position:static;max-height:none;overflow:visible}.calendar-side .side-card:not(:first-child){margin-top:12px}}
 
-          /* v9.4.9 layout cleanup */
+          /* v9.5.0 layout cleanup */
           .legend,.sy-legend,.sy-compact-hint{display:none !important}
           .app{grid-template-columns:1fr !important}
           body::before{display:none !important}
@@ -802,7 +819,7 @@
           [data-font-size="small"]{--ui-font-scale:.92}[data-font-size="normal"]{--ui-font-scale:1}[data-font-size="large"]{--ui-font-scale:1.08}[data-font-size="xlarge"]{--ui-font-scale:1.16}
           html{font-size:calc(16px * var(--ui-font-scale,1))}
 
-          /* v9.4.9 responsive polish: fixes screenshot overlap and cleans calendar header */
+          /* v9.5.0 responsive polish: fixes screenshot overlap and cleans calendar header */
           :root{--ui-font-scale:1;--sidebar-width:280px;--calendar-side-width:360px}
           html{font-size:calc(16px * var(--ui-font-scale,1))}
           body::before{display:none !important}
@@ -840,6 +857,15 @@
           [data-font-size="normal"]{--ui-font-scale:1}
           [data-font-size="large"]{--ui-font-scale:1.08}
           [data-font-size="xlarge"]{--ui-font-scale:1.16}
+
+
+ /* v9.5.0 sent flags and calendar actions */
+ .sent-flags{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+ .flag-toggle{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:7px 10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none}
+ .flag-toggle input{width:auto;margin:0;accent-color:var(--accent)}
+ .flag-badges{display:inline-flex;gap:5px;flex-wrap:wrap;margin-left:6px;vertical-align:middle}
+ .flag-badge{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:2px 6px;font-size:10px;font-weight:700;color:var(--text)}
+ .calendar-action-grid{display:grid;gap:8px;margin-top:12px}.entry-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.entry-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}.side-item-card{padding:10px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
 
 `;
         document.head.appendChild(style);
@@ -939,7 +965,29 @@
         const weekEvent = App.data.getEventById(week.eventId);
         const weekStart = App.utils.parseLocalDate(week.start);
         const weekEnd = App.utils.parseLocalDate(week.end);
-
+        const weekItem = week.eventId ? {
+          id: `week:${weekId}`,
+          source: 'week',
+          refId: weekId,
+          eventId: week.eventId,
+          title: weekEvent?.name || App.utils.t('event'),
+          note: week.note || '',
+          start: week.start,
+          end: week.end,
+          flags: { f302: !!week.flagS302, letter: !!week.flagLetter }
+        } : null;
+        const flagBadges = (flags = {}) => {
+          const out = [];
+          if (flags.f302) out.push(`<span class="flag-badge">S302</span>`);
+          if (flags.letter) out.push(`<span class="flag-badge">✉</span>`);
+          return out.length ? `<span class="flag-badges">${out.join('')}</span>` : '';
+        };
+        const flagToggles = (scope, id, flags = {}) => `
+          <div class="sent-flags" aria-label="${App.utils.escapeAttr(App.utils.t('sent_status'))}">
+            <span class="small">${App.utils.t('sent_status')}:</span>
+            <label class="flag-toggle"><input type="checkbox" data-${scope}-flag="s302" data-${scope}-id="${App.utils.escapeAttr(id)}" ${flags.f302 ? 'checked' : ''}> ${App.utils.t('s302_short')}</label>
+            <label class="flag-toggle"><input type="checkbox" data-${scope}-flag="letter" data-${scope}-id="${App.utils.escapeAttr(id)}" ${flags.letter ? 'checked' : ''}> ${App.utils.t('letter_short')}</label>
+          </div>`;
         const dayEntries = App.state.app.entries
           .filter((entry) => {
             const es = App.utils.parseLocalDate(entry.start);
@@ -950,54 +998,65 @@
             const event = App.data.getEventById(entry.eventId);
             return {
               id: `entry:${entry.id}`,
+              entryId: entry.id,
+              eventId: entry.eventId,
+              event,
               title: entry.title || event?.name || App.utils.t('event'),
               color: event?.color || '#1f7a45',
               start: entry.start,
               end: entry.end,
-              note: entry.note || ''
+              note: entry.note || '',
+              flags: { f302: !!entry?.flags?.f302, letter: !!entry?.flags?.letter }
             };
           })
           .sort((a,b) => (a.start || '').localeCompare(b.start || ''));
-
         App.els.calendarSideTitle.textContent = App.utils.t('day_details_title');
         App.els.calendarSideMeta.textContent = `${App.utils.prettyDateLong(date)} · W${App.utils.weekNumber(date)} · ${App.utils.prettyDate(weekStart)} — ${App.utils.prettyDate(weekEnd)}`;
-
-        const weekBlock = `
-          <div class="side-row">
-            <div class="side-label">${App.utils.t('week_planned')}</div>
-            <div class="side-value">
-              ${weekEvent ? `<span class="pill"><span class="dot" style="background:${App.utils.clampColor(weekEvent.color)}"></span>${App.utils.escapeHtml(weekEvent.name)}</span>` : App.utils.escapeHtml(App.utils.t('no_template'))}
-            </div>
-          </div>
-          <div class="side-row">
-            <div class="side-label">${App.utils.t('note')}</div>
-            <div class="side-value">${App.utils.escapeHtml(week.note || App.utils.t('no_note'))}</div>
-          </div>
-        `;
-
-        const entriesBlock = `
-          <div class="side-row">
-            <div class="side-label">${App.utils.t('entries_on_day')}</div>
-            <div class="side-value">${dayEntries.length ? '' : App.utils.escapeHtml(App.utils.t('no_entries_day'))}</div>
-          </div>
-          ${dayEntries.map((it) => `
-            <button class="side-item" type="button" data-edit-calendar-item="${App.utils.escapeAttr(it.id)}">
-              <strong>${App.utils.escapeHtml(it.title)}</strong>
-              <div class="small">${it.start} — ${it.end}</div>
-              <div class="small">${App.utils.escapeHtml(it.note || App.utils.t('no_note'))}</div>
-            </button>
-          `).join('')}
-        `;
-
-        App.els.calendarSideDetails.innerHTML = `${weekBlock}
-          <div style="display:grid;gap:10px;margin-top:12px">
+        const weekAddress = weekEvent?.address ? `<a href="${App.utils.mapUrl(weekEvent.address)}" target="_blank" rel="noopener noreferrer">${App.utils.escapeHtml(weekEvent.address)}</a>` : App.utils.escapeHtml(App.utils.t('no_address'));
+        const weekActions = weekItem ? `
+          <div class="side-row"><div class="side-label">${App.utils.t('address')}</div><div class="side-value">${weekAddress}</div></div>
+          <div class="side-row"><div class="side-label">${App.utils.t('schedule')}</div><div class="side-value">${App.utils.escapeHtml(weekEvent?.schedule || App.utils.t('no_schedule'))}</div></div>
+          ${flagToggles('week', weekId, weekItem.flags)}
+          <div class="calendar-action-grid">
             <button class="btn" type="button" id="syAddEntryBtn">${App.utils.t('add_entry')}</button>
             <button class="btn" type="button" id="syEditWeekBtn">${App.utils.t('edit_week_event')}</button>
             <button class="btn" type="button" id="syOpenWeekBtn">${App.utils.t('open_week')}</button>
+            <a class="btn" href="${App.utils.googleCalendarUrl(weekItem, weekEvent)}" target="_blank" rel="noopener noreferrer">${App.utils.t('google_calendar')}</a>
+            <button class="btn" type="button" data-ics-id="${App.utils.escapeAttr(weekItem.id)}">${App.utils.t('apple_calendar')}</button>
+            ${weekEvent?.address ? `<a class="btn" href="${App.utils.mapUrl(weekEvent.address)}" target="_blank" rel="noopener noreferrer">${App.utils.t('google_maps')}</a>` : ''}
+          </div>` : `
+          ${flagToggles('week', weekId, { f302: !!week.flagS302, letter: !!week.flagLetter })}
+          <div class="calendar-action-grid">
+            <button class="btn" type="button" id="syAddEntryBtn">${App.utils.t('add_entry')}</button>
+            <button class="btn" type="button" id="syEditWeekBtn">${App.utils.t('edit_week_event')}</button>
+            <button class="btn" type="button" id="syOpenWeekBtn">${App.utils.t('open_week')}</button>
+          </div>`;
+        const weekBlock = `
+          <div class="side-row">
+            <div class="side-label">${App.utils.t('week_planned')}</div>
+            <div class="side-value">${weekEvent ? `<span class="pill"><span class="dot" style="background:${App.utils.clampColor(weekEvent.color)}"></span>${App.utils.escapeHtml(weekEvent.name)}${flagBadges(weekItem?.flags)}</span>` : App.utils.escapeHtml(App.utils.t('no_template'))}</div>
           </div>
-          <div style="margin-top:12px">${entriesBlock}</div>
-        `;
-
+          <div class="side-row"><div class="side-label">${App.utils.t('note')}</div><div class="side-value">${App.utils.escapeHtml(week.note || App.utils.t('no_note'))}</div></div>
+          ${weekActions}`;
+        const entriesBlock = `
+          <div class="side-row"><div class="side-label">${App.utils.t('entries_on_day')}</div><div class="side-value">${dayEntries.length ? '' : App.utils.escapeHtml(App.utils.t('no_entries_day'))}</div></div>
+          ${dayEntries.map((it) => {
+            const itemData = { id: it.id, source: 'entry', refId: it.entryId, eventId: it.eventId, title: it.title, note: it.note, start: it.start, end: it.end, flags: it.flags };
+            return `<div class="side-item-card">
+              <strong>${App.utils.escapeHtml(it.title)} ${flagBadges(it.flags)}</strong>
+              <div class="small">${it.start} — ${it.end}</div>
+              <div class="small">${App.utils.escapeHtml(it.note || App.utils.t('no_note'))}</div>
+              ${it.event?.address ? `<div class="small" style="margin-top:4px"><a href="${App.utils.mapUrl(it.event.address)}" target="_blank" rel="noopener noreferrer">${App.utils.escapeHtml(it.event.address)}</a></div>` : ''}
+              ${flagToggles('entry', it.entryId, it.flags)}
+              <div class="entry-actions">
+                <button class="btn" type="button" data-edit-calendar-item="${App.utils.escapeAttr(it.id)}">${App.utils.t('edit')}</button>
+                <a class="btn" href="${App.utils.googleCalendarUrl(itemData, it.event)}" target="_blank" rel="noopener noreferrer">${App.utils.t('google_calendar')}</a>
+                <button class="btn" type="button" data-ics-id="${App.utils.escapeAttr(it.id)}">${App.utils.t('apple_calendar')}</button>
+                ${it.event?.address ? `<a class="btn" href="${App.utils.mapUrl(it.event.address)}" target="_blank" rel="noopener noreferrer">${App.utils.t('google_maps')}</a>` : ''}
+              </div>
+            </div>`;
+          }).join('')}`;
+        App.els.calendarSideDetails.innerHTML = `${weekBlock}<div style="margin-top:14px">${entriesBlock}</div>`;
         document.getElementById('syAddEntryBtn')?.addEventListener('click', () => App.actions.openCalendarEditorForCreate(dateIso));
         document.getElementById('syEditWeekBtn')?.addEventListener('click', () => App.actions.openCalendarEditorForItem(`week:${weekId}`));
         document.getElementById('syOpenWeekBtn')?.addEventListener('click', () => {
@@ -1006,11 +1065,13 @@
           App.state.selectedWeekId = weekId;
           App.ui.renderAll();
         });
-
         document.querySelectorAll('[data-edit-calendar-item]').forEach((btn) => btn.addEventListener('click', (e) => {
           e.stopPropagation();
           App.actions.openCalendarEditorForItem(btn.dataset.editCalendarItem);
         }));
+        document.querySelectorAll('[data-ics-id]').forEach((btn) => btn.addEventListener('click', () => App.actions.exportSingleEventIcs(btn.dataset.icsId)));
+        document.querySelectorAll('[data-week-flag]').forEach((input) => input.addEventListener('change', () => App.actions.toggleWeekSentFlag(sy, input.dataset.weekId, input.dataset.weekFlag, input.checked)));
+        document.querySelectorAll('[data-entry-flag]').forEach((input) => input.addEventListener('change', () => App.actions.toggleEntrySentFlag(input.dataset.entryId, input.dataset.entryFlag, input.checked)));
       },
       openCalendarEditor(data, isEdit) {
         this.ensureEditorNoteField();
