@@ -1,5 +1,5 @@
 
-// Service Year Planner v9.5.2 color names for meetings
+// Service Year Planner v9.5.2-fix1 color names for meetings
 (function () {
   'use strict';
 
@@ -638,8 +638,8 @@
         const qa = (sel) => Array.from(document.querySelectorAll(sel));
         this.localizeColorOptions();
         const brandH1 = q('.brand h1'); if (brandH1) brandH1.textContent = App.utils.t('appTitle');
-        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.2 • index.html + app.js`;
-        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.2`;
+        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.2-fix1 • index.html + app.js`;
+        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.2-fix1`;
         if (App.els.themeBtn) App.els.themeBtn.textContent = App.utils.t('theme');
         if (App.els.exportBtn) App.els.exportBtn.textContent = App.utils.t('export');
         const importLabel = q('label[for="importInput"]'); if (importLabel) importLabel.textContent = App.utils.t('import_json');
@@ -983,8 +983,8 @@
             const count = dayItems.length > 3 ? `<span class="sy-count">+${dayItems.length - 3}</span>` : '';
             days.push(`<button class="sy-day ${iso === todayIso ? 'today' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'weekend' : ''} ${dayItems.length ? 'has-events' : ''} ${App.state.calendarSelectedDateIso === iso ? 'selected' : ''}" type="button" data-add-date="${App.utils.escapeAttr(iso)}" title="${App.utils.escapeAttr(App.utils.t('add_on_date'))}"><span>${day}</span>${count}<span class="sy-event-dots">${dots}</span></button>`);
           }
-          const monthLegend = App.utils.uniqueBy(items, (item) => item.eventId).slice(0, 6).map((item) => `<span class="dot" title="${App.utils.escapeAttr(item.title)}" style="background:${App.utils.clampColor(item.color)}"></span>`).join('');
-          return `<section class="sy-month-card"><div class="sy-month-title"><span>${App.utils.monthName(month)}</span><small>${year}</small></div><div class="sy-dow">${dayNames.map((name) => `<span>${name}</span>`).join('')}</div><div class="sy-days">${days.join('')}</div><div class="sy-month-summary">${monthLegend}</div></section>`;
+          // Monthly summary dots removed: the bottom row of colored dots under each month is intentionally hidden.
+          return `<section class="sy-month-card"><div class="sy-month-title"><span>${App.utils.monthName(month)}</span><small>${year}</small></div><div class="sy-dow">${dayNames.map((name) => `<span>${name}</span>`).join('')}</div><div class="sy-days">${days.join('')}</div></section>`;
         }).join('');
         const legendHtml = '';
         if (App.els.calendarGrid) App.els.calendarGrid.innerHTML = `${legendHtml}<div class="service-year-grid">${html}</div>`;
@@ -1324,5 +1324,9 @@
   };
 
   window.App = App;
-  App.init();
+  
+const hideMonthSummaryDotsStyle = document.createElement('style');
+hideMonthSummaryDotsStyle.textContent = '.sy-month-summary{display:none !important}';
+document.head.appendChild(hideMonthSummaryDotsStyle);
+App.init();
 })();

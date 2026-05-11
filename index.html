@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Service Year Planner v9.5.2</title>
+  <title>Service Year Planner v9.5.2-fix1</title>
   <meta name="theme-color" content="#14532d" />
   <link rel="manifest" href="manifest.webmanifest">
   <style>
@@ -142,13 +142,16 @@ body::before{display:none !important}
  
 #events .event-templates-title{display:none !important}
 
+ 
+/* Fix: hide service-year month summary dots at the bottom of each month card */
+.sy-month-summary{display:none !important}
  </style>
 </head>
 <body>
   <div class="mobile-overlay" id="mobileOverlay" hidden></div>
   <div class="app" id="appRoot">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.5.2 • index.html + app.js</p></div></div>
+      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.5.2-fix1 • index.html + app.js</p></div></div>
       <nav class="menu" id="desktopNav"></nav>
       <div class="summary"><strong>Быстрый статус</strong><div id="sideStatus" class="small"></div></div>
     </aside>
@@ -156,7 +159,7 @@ body::before{display:none !important}
       <div class="offline-banner" id="offlineBanner">Вы офлайн. Изменения сохраняются локально.</div>
       <header class="topbar">
         <div>
-          <div class="version-badge">Версия: v9.5.2</div>
+          <div class="version-badge">Версия: v9.5.2-fix1</div>
           <h2 id="screenTitle">Календарь</h2>
           <p id="screenSubtitle"></p>
         </div>
