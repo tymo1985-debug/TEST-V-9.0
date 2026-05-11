@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Service Year Planner v9.5.2-fix1</title>
+  <title>Service Year Planner v9.5.2-fix2</title>
   <meta name="theme-color" content="#14532d" />
   <link rel="manifest" href="manifest.webmanifest">
   <style>
@@ -145,13 +145,29 @@ body::before{display:none !important}
  
 /* Fix: hide service-year month summary dots at the bottom of each month card */
 .sy-month-summary{display:none !important}
- </style>
+ 
+/* v9.5.2-fix2: day popover for service-year mini calendar */
+.day-popover{position:fixed;z-index:3200;min-width:260px;max-width:min(340px,calc(100vw - 24px));background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 55px rgba(0,0,0,.22);padding:14px;font-size:13px;line-height:1.35}
+.day-popover[hidden]{display:none !important}
+.day-popover-title{font-weight:800;font-size:14px;margin-bottom:3px}
+.day-popover-meta{color:var(--muted);font-size:12px;margin-bottom:10px}
+.day-popover-list{display:grid;gap:8px;margin-top:8px}
+.day-popover-event{display:grid;grid-template-columns:10px 1fr;gap:8px;align-items:start;padding:8px;border:1px solid var(--line);background:var(--surface2);border-radius:13px}
+.day-popover-dot{width:10px;height:10px;border-radius:999px;margin-top:4px;display:block}
+.day-popover-event strong{display:block;font-size:13px}
+.day-popover-event span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.day-popover-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.day-popover-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}
+.sy-day.has-events:hover{outline:2px solid var(--accent);outline-offset:1px}
+@media (max-width:680px){.day-popover{left:12px !important;right:12px !important;top:auto !important;bottom:86px !important;max-width:none;width:auto}.day-popover-actions .btn{flex:1 1 auto}}
+
+</style>
 </head>
 <body>
   <div class="mobile-overlay" id="mobileOverlay" hidden></div>
   <div class="app" id="appRoot">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.5.2-fix1 • index.html + app.js</p></div></div>
+      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.5.2-fix2 • index.html + app.js</p></div></div>
       <nav class="menu" id="desktopNav"></nav>
       <div class="summary"><strong>Быстрый статус</strong><div id="sideStatus" class="small"></div></div>
     </aside>
@@ -159,7 +175,7 @@ body::before{display:none !important}
       <div class="offline-banner" id="offlineBanner">Вы офлайн. Изменения сохраняются локально.</div>
       <header class="topbar">
         <div>
-          <div class="version-badge">Версия: v9.5.2-fix1</div>
+          <div class="version-badge">Версия: v9.5.2-fix2</div>
           <h2 id="screenTitle">Календарь</h2>
           <p id="screenSubtitle"></p>
         </div>

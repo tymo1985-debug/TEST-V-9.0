@@ -1,5 +1,5 @@
 
-// Service Year Planner v9.5.2-fix1 color names for meetings
+// Service Year Planner v9.5.2-fix2 color names for meetings
 (function () {
   'use strict';
 
@@ -638,8 +638,8 @@
         const qa = (sel) => Array.from(document.querySelectorAll(sel));
         this.localizeColorOptions();
         const brandH1 = q('.brand h1'); if (brandH1) brandH1.textContent = App.utils.t('appTitle');
-        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.2-fix1 • index.html + app.js`;
-        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.2-fix1`;
+        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.2-fix2 • index.html + app.js`;
+        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.2-fix2`;
         if (App.els.themeBtn) App.els.themeBtn.textContent = App.utils.t('theme');
         if (App.els.exportBtn) App.els.exportBtn.textContent = App.utils.t('export');
         const importLabel = q('label[for="importInput"]'); if (importLabel) importLabel.textContent = App.utils.t('import_json');
@@ -933,6 +933,22 @@
  .flag-badges{display:inline-flex;gap:5px;flex-wrap:wrap;margin-left:6px;vertical-align:middle}
  .flag-badge{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:2px 6px;font-size:10px;font-weight:700;color:var(--text)}
  .calendar-action-grid{display:grid;gap:8px;margin-top:12px}.entry-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.entry-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}.side-item-card{padding:10px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+ 
+ /* v9.5.2-fix2: day popover for service-year mini calendar */
+ .day-popover{position:fixed;z-index:3200;min-width:260px;max-width:min(340px,calc(100vw - 24px));background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 55px rgba(0,0,0,.22);padding:14px;font-size:13px;line-height:1.35}
+ .day-popover[hidden]{display:none !important}
+ .day-popover-title{font-weight:800;font-size:14px;margin-bottom:3px}
+ .day-popover-meta{color:var(--muted);font-size:12px;margin-bottom:10px}
+ .day-popover-list{display:grid;gap:8px;margin-top:8px}
+ .day-popover-event{display:grid;grid-template-columns:10px 1fr;gap:8px;align-items:start;padding:8px;border:1px solid var(--line);background:var(--surface2);border-radius:13px}
+ .day-popover-dot{width:10px;height:10px;border-radius:999px;margin-top:4px;display:block}
+ .day-popover-event strong{display:block;font-size:13px}
+ .day-popover-event span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+ .day-popover-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+ .day-popover-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}
+ .sy-day.has-events:hover{outline:2px solid var(--accent);outline-offset:1px}
+ @media (max-width:680px){.day-popover{left:12px !important;right:12px !important;top:auto !important;bottom:86px !important;max-width:none;width:auto}.day-popover-actions .btn{flex:1 1 auto}}
+ 
 
 `;
         document.head.appendChild(style);
@@ -944,7 +960,57 @@
           return { month, year };
         });
       },
-      renderCalendarYear(serviceYear) {
+     
+getServiceYearDayInfo(dateIso) {
+ const date = App.utils.parseLocalDate(dateIso);
+ if (!date) return null;
+ const sy = App.utils.getServiceYearForDate(date);
+ const weekId = App.utils.weekIdForDate(date);
+ const week = App.data.getWeek(sy, weekId);
+ const weekEvent = App.data.getEventById(week.eventId);
+ const weekStart = App.utils.parseLocalDate(week.start);
+ const weekEnd = App.utils.parseLocalDate(week.end);
+ const weekItem = week.eventId ? { id: `week:${weekId}`, source: 'week', refId: weekId, eventId: week.eventId, title: weekEvent?.name || App.utils.t('event'), color: weekEvent?.color || '#1f7a45', note: week.note || '', start: week.start, end: week.end, flags: { f302: !!week.flagS302, letter: !!week.flagLetter } } : null;
+ const dayEntries = App.state.app.entries.filter((entry) => {
+ const es = App.utils.parseLocalDate(entry.start); const ee = App.utils.parseLocalDate(entry.end);
+ return es && ee && App.utils.overlaps(es, ee, date, date);
+ }).map((entry) => {
+ const event = App.data.getEventById(entry.eventId);
+ return { id: `entry:${entry.id}`, entryId: entry.id, eventId: entry.eventId, event, title: entry.title || event?.name || App.utils.t('event'), color: event?.color || '#1f7a45', start: entry.start, end: entry.end, note: entry.note || '', schedule: event?.schedule || '', address: event?.address || '', flags: { f302: !!entry?.flags?.f302, letter: !!entry?.flags?.letter } };
+ }).sort((a,b) => (a.start || '').localeCompare(b.start || ''));
+ return { date, sy, weekId, week, weekEvent, weekItem, weekStart, weekEnd, dayEntries };
+},
+ensureDayPopover() {
+ let popover = document.getElementById('dayPopover');
+ if (!popover) { popover = document.createElement('div'); popover.id = 'dayPopover'; popover.className = 'day-popover'; popover.hidden = true; document.body.appendChild(popover); }
+ return popover;
+},
+hideDayPopover(force = false) {
+ const popover = document.getElementById('dayPopover'); if (!popover) return;
+ if (!force && App.state.dayPopoverPinned) return;
+ popover.hidden = true; App.state.dayPopoverPinned = false;
+},
+showServiceYearDayPopover(anchor, dateIso, pinned = false) {
+ const info = this.getServiceYearDayInfo(dateIso); if (!info || !anchor) return;
+ App.state.dayPopoverPinned = !!pinned;
+ const popover = this.ensureDayPopover();
+ const rows = [];
+ if (info.weekItem) rows.push({ kind: App.utils.t('week_planned'), title: info.weekItem.title, color: info.weekItem.color, range: `${App.utils.prettyDate(info.weekStart)} — ${App.utils.prettyDate(info.weekEnd)}`, note: info.week.note || App.utils.t('no_note'), schedule: info.weekEvent?.schedule || App.utils.t('no_schedule') });
+ info.dayEntries.forEach((entry) => rows.push({ kind: App.utils.t('type_entry'), title: entry.title, color: entry.color, range: `${App.utils.prettyDate(entry.start)} — ${App.utils.prettyDate(entry.end)}`, note: entry.note || App.utils.t('no_note'), schedule: entry.schedule || App.utils.t('no_schedule') }));
+ const listHtml = rows.length ? rows.map((row) => `<div class="day-popover-event"><i class="day-popover-dot" style="background:${App.utils.clampColor(row.color)}"></i><div><strong>${App.utils.escapeHtml(row.title)}</strong><span>${App.utils.escapeHtml(row.kind)} · ${App.utils.escapeHtml(row.range)}</span><span>${App.utils.escapeHtml(row.schedule)}</span>${row.note && row.note !== App.utils.t('no_note') ? `<span>${App.utils.escapeHtml(row.note)}</span>` : ''}</div></div>`).join('') : `<div class="empty" style="padding:12px">${App.utils.escapeHtml(App.utils.t('no_entries_day'))}</div>`;
+ popover.innerHTML = `<div class="day-popover-title">${App.utils.escapeHtml(App.utils.prettyDateLong(info.date))}</div><div class="day-popover-meta">W${App.utils.weekNumber(info.date)} · ${App.utils.escapeHtml(App.utils.prettyDate(info.weekStart))} — ${App.utils.escapeHtml(App.utils.prettyDate(info.weekEnd))}</div><div class="day-popover-list">${listHtml}</div><div class="day-popover-actions"><button class="btn primary" type="button" data-popover-details="${App.utils.escapeAttr(dateIso)}">${App.utils.t('open')}</button><button class="btn" type="button" data-popover-add="${App.utils.escapeAttr(dateIso)}">${App.utils.t('add_entry')}</button>${info.weekItem ? `<button class="btn" type="button" data-popover-edit-week="${App.utils.escapeAttr(info.weekItem.id)}">${App.utils.t('edit')}</button>` : `<button class="btn" type="button" data-popover-open-week="${App.utils.escapeAttr(info.weekId)}" data-popover-year="${info.sy}">${App.utils.t('open_week')}</button>`}</div>`;
+ const rect = anchor.getBoundingClientRect(); const margin = 12;
+ let left = rect.left + rect.width / 2 - 150; let top = rect.bottom + 8;
+ popover.hidden = false; const box = popover.getBoundingClientRect();
+ left = Math.max(margin, Math.min(left, window.innerWidth - box.width - margin));
+ if (top + box.height + margin > window.innerHeight) top = Math.max(margin, rect.top - box.height - 8);
+ popover.style.left = `${left}px`; popover.style.top = `${top}px`;
+ popover.querySelector('[data-popover-details]')?.addEventListener('click', (e) => { e.stopPropagation(); App.state.calendarSelectedDateIso = dateIso; App.ui.renderServiceYearDayDetails(dateIso); App.ui.hideDayPopover(true); App.els.calendarSideTitle?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
+ popover.querySelector('[data-popover-add]')?.addEventListener('click', (e) => { e.stopPropagation(); App.ui.hideDayPopover(true); App.actions.openCalendarEditorForCreate(dateIso); });
+ popover.querySelector('[data-popover-edit-week]')?.addEventListener('click', (e) => { e.stopPropagation(); App.ui.hideDayPopover(true); App.actions.openCalendarEditorForItem(e.currentTarget.dataset.popoverEditWeek); });
+ popover.querySelector('[data-popover-open-week]')?.addEventListener('click', (e) => { e.stopPropagation(); App.ui.hideDayPopover(true); App.state.selectedScreen = 'weeks'; App.state.selectedYear = Number(e.currentTarget.dataset.popoverYear || info.sy); App.state.selectedWeekId = e.currentTarget.dataset.popoverOpenWeek; App.ui.renderAll(); });
+},
+  renderCalendarYear(serviceYear) {
         this.ensureCalendarViewStyles();
         this.renderYearOptions();
         this.renderLayoutOptions();
@@ -981,7 +1047,7 @@
             const dayItems = items.filter((item) => App.utils.overlaps(item.start, item.end, date, date));
             const dots = dayItems.slice(0, 3).map((item) => `<span class="sy-event-dot" style="background:${App.utils.clampColor(item.color)}"></span>`).join('');
             const count = dayItems.length > 3 ? `<span class="sy-count">+${dayItems.length - 3}</span>` : '';
-            days.push(`<button class="sy-day ${iso === todayIso ? 'today' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'weekend' : ''} ${dayItems.length ? 'has-events' : ''} ${App.state.calendarSelectedDateIso === iso ? 'selected' : ''}" type="button" data-add-date="${App.utils.escapeAttr(iso)}" title="${App.utils.escapeAttr(App.utils.t('add_on_date'))}"><span>${day}</span>${count}<span class="sy-event-dots">${dots}</span></button>`);
+            days.push(`<button class="sy-day ${iso === todayIso ? 'today' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'weekend' : ''} ${dayItems.length ? 'has-events' : ''} ${App.state.calendarSelectedDateIso === iso ? 'selected' : ''}" type="button" data-add-date="${App.utils.escapeAttr(iso)}" title="${App.utils.escapeAttr(dayItems.length ? App.utils.t('day_details_title') : App.utils.t('add_on_date'))}"><span>${day}</span>${count}<span class="sy-event-dots">${dots}</span></button>`);
           }
           // Monthly summary dots removed: the bottom row of colored dots under each month is intentionally hidden.
           return `<section class="sy-month-card"><div class="sy-month-title"><span>${App.utils.monthName(month)}</span><small>${year}</small></div><div class="sy-dow">${dayNames.map((name) => `<span>${name}</span>`).join('')}</div><div class="sy-days">${days.join('')}</div></section>`;
@@ -993,7 +1059,25 @@
         const detail = quickItems.find((item) => item.id === App.state.calendarDetailId) || quickItems[0] || null;
         this.renderCalendarDetails(detail);
         if (App.state.calendarSelectedDateIso) this.renderServiceYearDayDetails(App.state.calendarSelectedDateIso);
-        document.querySelectorAll('[data-add-date]').forEach((btn) => btn.addEventListener('click', (e) => { e.stopPropagation(); App.state.calendarSelectedDateIso = btn.dataset.addDate; App.ui.renderCalendar(); }));
+        
+document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
+ btn.addEventListener('click', (e) => {
+ e.stopPropagation();
+ const dateIso = btn.dataset.addDate;
+ App.state.calendarSelectedDateIso = dateIso;
+ App.ui.renderCalendar();
+ const fresh = Array.from(document.querySelectorAll('.sy-day[data-add-date]')).find((node) => node.dataset.addDate === dateIso) || btn;
+ App.ui.showServiceYearDayPopover(fresh, dateIso, true);
+ });
+ btn.addEventListener('mouseenter', () => {
+ if (!window.matchMedia('(hover:hover)').matches || !btn.classList.contains('has-events')) return;
+ App.ui.showServiceYearDayPopover(btn, btn.dataset.addDate, false);
+ });
+ btn.addEventListener('mouseleave', () => {
+ if (!window.matchMedia('(hover:hover)').matches) return;
+ window.setTimeout(() => App.ui.hideDayPopover(false), 120);
+ });
+});
         document.querySelectorAll('[data-detail-calendar-item]').forEach((btn) => btn.addEventListener('click', () => { const item = quickItems.find((entry) => entry.id === btn.dataset.detailCalendarItem); App.state.calendarDetailId = item?.id || null; App.ui.renderCalendarDetails(item || null); }));
       },
       renderCalendar() {
@@ -1270,6 +1354,7 @@
       App.els.mobileOverlay?.addEventListener('click', () => App.ui.closeMobileMenu());
       // sidebarClickStopper: prevent overlay/pointer issues on small screens
       document.querySelector('.sidebar')?.addEventListener('click', (e) => { e.stopPropagation(); });
+ document.addEventListener('click', (e) => { const popover = document.getElementById('dayPopover'); if (!popover || popover.hidden) return; if (popover.contains(e.target) || e.target.closest('.sy-day')) return; App.ui.hideDayPopover(true); });
       App.els.addYearBtn?.addEventListener('click', () => { if (App.data.addServiceYear(Number(App.els.addYearInput?.value))) App.ui.renderAll(); });
       App.els.addNextYearBtn?.addEventListener('click', () => { const years = Object.keys(App.state.app.serviceYears).map(Number); const nextYear = (years.length ? Math.max(...years) : App.utils.getServiceYearForDate(new Date())) + 1; if (App.data.addServiceYear(nextYear)) { if (App.els.addYearInput) App.els.addYearInput.value = String(nextYear + 1); App.ui.renderAll(); } });
       window.addEventListener('online', () => App.els.offlineBanner?.classList.remove('show'));
@@ -1278,7 +1363,7 @@
       window.addEventListener('pageshow', () => { App.ui.closeMobileMenu(); });
       document.addEventListener('visibilitychange', () => { if (!document.hidden) App.ui.closeMobileMenu(); });
       window.addEventListener('orientationchange', () => { App.ui.closeMobileMenu(); });
-      window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { App.ui.closeCalendarEditor(); App.actions.closePdf(); if (App.els.exportModal) App.els.exportModal.hidden = true; App.ui.closeMobileMenu(); } });
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { App.ui.hideDayPopover(true); App.ui.closeCalendarEditor(); App.actions.closePdf(); if (App.els.exportModal) App.els.exportModal.hidden = true; App.ui.closeMobileMenu(); } });
     },
 
     init() {
