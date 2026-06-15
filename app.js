@@ -1,5 +1,5 @@
 
-// Service Year Planner v9.5.4-events-tools color names for meetings
+// Service Year Planner v9.5.5-year-labels-send-audit color names for meetings
 (function () {
   'use strict';
 
@@ -69,6 +69,8 @@
       delete_note: 'Удалить заметку',
       delete_template: 'Удалить собрание',
       delete_note_confirm: 'Удалить эту заметку?',
+      delete_all_notes: 'Удалить все заметки', delete_all_notes_confirm: 'Удалить все заметки во всех служебных годах? Это действие нельзя отменить.', delete_all_notes_done: 'Все заметки удалены.',
+      auto_check_summary: 'Проверка отправки: нужно отправить — S-302: {s302}, письмо: {letter}.', send_not_yet_due: 'Пока не требуется', send_due_now: 'Нужно отправить', send_overdue: 'Просрочено', s302_deadline_hint: 'S-302: примерно за 6 месяцев до начала события.', letter_deadline_hint: 'Письмо: примерно за 60 дней до начала события.',
       delete_template_confirm: 'Удалить собрание',
       calendar_view_month: 'Вид: месяц',
       calendar_view_year: 'Вид: служебный год',
@@ -91,6 +93,8 @@
       delete_note: 'Delete note',
       delete_template: 'Delete meeting',
       delete_note_confirm: 'Delete this note?',
+      delete_all_notes: 'Delete all notes', delete_all_notes_confirm: 'Delete all notes in all service years? This action cannot be undone.', delete_all_notes_done: 'All notes deleted.',
+      auto_check_summary: 'Sending check: pending — S-302: {s302}, letter: {letter}.', send_not_yet_due: 'Not due yet', send_due_now: 'Needs sending', send_overdue: 'Overdue', s302_deadline_hint: 'S-302: about 6 months before the event starts.', letter_deadline_hint: 'Letter: about 60 days before the event starts.',
       delete_template_confirm: 'Delete event template',
       calendar_view_month: 'View: month',
       calendar_view_year: 'View: service year',
@@ -113,6 +117,8 @@
       delete_note: 'Видалити нотатку',
       delete_template: 'Видалити зібрання',
       delete_note_confirm: 'Видалити цю нотатку?',
+      delete_all_notes: 'Видалити всі нотатки', delete_all_notes_confirm: 'Видалити всі нотатки в усіх службових роках? Цю дію не можна скасувати.', delete_all_notes_done: 'Усі нотатки видалено.',
+      auto_check_summary: 'Перевірка надсилання: потрібно надіслати — S-302: {s302}, лист: {letter}.', send_not_yet_due: 'Поки не потрібно', send_due_now: 'Потрібно надіслати', send_overdue: 'Прострочено', s302_deadline_hint: 'S-302: приблизно за 6 місяців до початку події.', letter_deadline_hint: 'Лист: приблизно за 60 днів до початку події.',
       delete_template_confirm: 'Видалити шаблон події',
       calendar_view_month: 'Вигляд: місяць',
       calendar_view_year: 'Вигляд: службовий рік',
@@ -135,6 +141,8 @@
       delete_note: 'Usuń notatkę',
       delete_template: 'Usuń zebranie',
       delete_note_confirm: 'Usunąć tę notatkę?',
+      delete_all_notes: 'Usuń wszystkie notatki', delete_all_notes_confirm: 'Usunąć wszystkie notatki we wszystkich latach służbowych? Tej czynności nie można cofnąć.', delete_all_notes_done: 'Wszystkie notatki usunięte.',
+      auto_check_summary: 'Kontrola wysyłki: do wysłania — S-302: {s302}, list: {letter}.', send_not_yet_due: 'Jeszcze nie trzeba', send_due_now: 'Do wysłania', send_overdue: 'Po terminie', s302_deadline_hint: 'S-302: około 6 miesięcy przed początkiem wydarzenia.', letter_deadline_hint: 'List: około 60 dni przed początkiem wydarzenia.',
       delete_template_confirm: 'Usunąć szablon wydarzenia',
       calendar_view_month: 'Widok: miesiąc',
       calendar_view_year: 'Widok: rok służbowy',
@@ -307,6 +315,21 @@
           'END:VEVENT','END:VCALENDAR'
         ];
         return `${lines.join('\r\n')}\r\n`;
+      },
+      addMonths(date, months) { const d = new Date(date); const day = d.getDate(); d.setMonth(d.getMonth() + months); if (d.getDate() < day) d.setDate(0); return d; },
+      sendDueInfo(startIso, flags = {}) {
+        const start = this.parseLocalDate(startIso);
+        const today = this.parseLocalDate(this.iso(new Date()));
+        if (!start || !today) return { s302:{ due:false, overdue:false, done:!!flags.f302, deadline:null }, letter:{ due:false, overdue:false, done:!!flags.letter, deadline:null } };
+        const s302Deadline = this.addMonths(start, -6);
+        const letterDeadline = this.addDays(start, -60);
+        const make = (deadline, done) => {
+          const due = today >= deadline;
+          const overdue = due && today > start;
+          const statusKey = done ? 'sent_done' : (!due ? 'send_not_yet_due' : (overdue ? 'send_overdue' : 'send_due_now'));
+          return { deadline, due, overdue, done, pending: due && !done, statusKey };
+        };
+        return { s302: make(s302Deadline, !!flags.f302), letter: make(letterDeadline, !!flags.letter) };
       }
     },
 
@@ -315,10 +338,10 @@
         const out = { ...settings }; if (typeof out.showTeamPanel !== 'boolean') out.showTeamPanel = true; if (!out.language) out.language = 'ru'; if (!out.theme) out.theme = 'light'; if (!out.layoutPreset) out.layoutPreset = 'classic'; if (!out.calendarView) out.calendarView = 'month'; if (!out.accentColor) out.accentColor = 'green'; if (!out.fontSize) out.fontSize = '100'; return out;
       },
       createDefaultData() {
-        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.5.4-events-tools' } };
+        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.5.5-year-labels-send-audit' } };
       },
       convertLegacyBackup(legacy) {
-        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.5.4-events-tools', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
+        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.5.5-year-labels-send-audit', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
         const eventMap = new Map(); const legacyMeetings = Array.isArray(legacy.meetings) ? legacy.meetings : [];
         const ensureEvent = (name, source = {}) => { const cleanName = String(name || '').trim(); if (!cleanName) return ''; if (eventMap.has(cleanName)) return eventMap.get(cleanName); const id = `evt_${App.utils.slug(cleanName) || App.utils.uid('evt')}`; const scheduleParts = []; if (source.wd && source.tWD) scheduleParts.push(`${source.wd} ${source.tWD}`); if (source.we && source.tWE) scheduleParts.push(`${source.we} ${source.tWE}`); app.events.push({ id, name: cleanName, color: App.utils.clampColor(source.color, '#1f7a45'), address: source.addr || source.address || '', schedule: scheduleParts.join(', ') }); eventMap.set(cleanName, id); return id; };
         legacyMeetings.forEach((meeting) => ensureEvent(meeting?.name, meeting || {}));
@@ -343,7 +366,7 @@
       },
       normalizeApp(appData) {
         const app = appData && typeof appData === 'object' ? appData : this.createDefaultData();
-        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.5.4-events-tools' };
+        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.5.5-year-labels-send-audit' };
         app.events = App.utils.uniqueBy(app.events.map((item) => ({ id: item.id || App.utils.uid('evt'), name: item.name || 'Без названия', color: App.utils.clampColor(item.color), address: item.address || '', schedule: item.schedule || '' })), (item) => [item.name,item.color,item.address,item.schedule].join('|'));
         app.entries = App.utils.uniqueBy(app.entries.filter((item) => item && item.start && item.end).map((item) => ({ id: item.id || App.utils.uid('entry'), eventId: item.eventId || '', start: App.utils.iso(item.start), end: App.utils.iso(item.end), title: item.title || '', note: item.note || '', flags: { f302: !!item?.flags?.f302, letter: !!item?.flags?.letter }, source: item.source || 'entry' })), (item) => [item.eventId,item.title,item.note,item.start,item.end].join('|'));
         Object.keys(app.serviceYears).forEach((year) => {
@@ -351,7 +374,7 @@
           Object.keys(sy.weeks).forEach((weekId) => { const w = sy.weeks[weekId]; if (!w) return; const start = App.utils.iso(w.start || weekId); const end = App.utils.iso(w.end || App.utils.addDays(App.utils.parseLocalDate(start), 6)); sy.weeks[weekId] = { id: w.id || weekId, weekId, start, end, eventId: w.eventId || '', priority: w.priority || 'normal', flagLetter: !!w.flagLetter, flagS302: !!w.flagS302, note: w.note || '' }; });
           app.serviceYears[year] = sy;
         });
-        app.meta.version = '9.5.4-events-tools';
+        app.meta.version = '9.5.5-year-labels-send-audit';
         return app;
       },
       migrate(appData) { return this.normalizeApp(appData && appData.schema === 'sp-backup-v2' ? this.convertLegacyBackup(appData) : appData); },
@@ -500,6 +523,17 @@
         App.ui.renderAll();
         App.utils.toast(App.utils.t('delete_note'));
       },
+      deleteAllNotes() {
+        const total = Object.values(App.state.app.serviceYears || {}).reduce((sum, sy) => sum + Object.values(sy.weeks || {}).filter((week) => week.note).length, 0);
+        if (!total) return;
+        if (!window.confirm(App.utils.t('delete_all_notes_confirm'))) return;
+        Object.values(App.state.app.serviceYears || {}).forEach((sy) => Object.values(sy.weeks || {}).forEach((week) => { week.note = ''; }));
+        App.state.noteSearch = '';
+        if (App.els.noteSearch) App.els.noteSearch.value = '';
+        App.store.save();
+        App.ui.renderAll();
+        App.utils.toast(App.utils.t('delete_all_notes_done'));
+      },
       saveWeek() {
         if (!App.state.selectedWeekId) return; const week = App.data.getWeek(App.state.selectedYear, App.state.selectedWeekId); week.eventId = App.els.weekEventSelect?.value || ''; week.priority = App.els.weekPrioritySelect?.value || 'normal'; week.flagLetter = !!App.els.flagLetter?.checked; week.flagS302 = !!App.els.flagS302?.checked; week.note = App.els.weekNoteInput?.value.trim() || ''; App.store.save(); App.ui.renderAll(); App.utils.toast(App.utils.t('week_saved'));
       },
@@ -555,6 +589,29 @@
         if (flagName === 'letter') entry.flags.letter = !!checked;
         App.store.save();
         App.ui.renderCalendar();
+      },
+      runSendChecklistAudit(showToast = true) {
+        const counts = { s302: 0, letter: 0 };
+        Object.values(App.state.app.serviceYears || {}).forEach((sy) => {
+          Object.values(sy.weeks || {}).forEach((week) => {
+            if (!week.eventId) return;
+            const due = App.utils.sendDueInfo(week.start, { f302: !!week.flagS302, letter: !!week.flagLetter });
+            if (due.s302.pending) counts.s302 += 1;
+            if (due.letter.pending) counts.letter += 1;
+          });
+        });
+        (App.state.app.entries || []).forEach((entry) => {
+          if (!entry.flags) entry.flags = { f302: false, letter: false };
+          const due = App.utils.sendDueInfo(entry.start, entry.flags);
+          if (due.s302.pending) counts.s302 += 1;
+          if (due.letter.pending) counts.letter += 1;
+        });
+        App.state.sendAudit = { ...counts, checkedAt: App.utils.iso(new Date()) };
+        App.state.app.meta = App.state.app.meta || {};
+        App.state.app.meta.lastSendChecklistAudit = App.state.sendAudit.checkedAt;
+        App.store.save();
+        if (showToast && (counts.s302 || counts.letter)) App.utils.toast(App.utils.t('auto_check_summary', counts));
+        return counts;
       },
       exportJson() { App.utils.downloadText(`service-year-planner-${App.utils.iso(new Date())}.json`, JSON.stringify(App.state.app, null, 2), 'application/json;charset=utf-8'); },
       exportIcs() {
@@ -668,7 +725,7 @@
           'editorCancelBtn','editorDeleteBtn','editorSaveBtn','calendarServiceYearLabel','calendarPanelYearLabel',
           'calendarQuickList','calendarSideTitle','calendarSideMeta','calendarSideDetails','calendarEventQuickFilter',
           'toggleTeamPanelBtn','calendarLayout','eventsList','eventSearchInput','eventColorFilter','deleteAllEventsBtn','eventsListCount','eventNameInput','eventColorInput','eventAddressInput',
-          'eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','notesList','languageSelect','themeSelect','accentSelect','fontSizeSelect',
+          'eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','deleteAllNotesBtn','notesList','languageSelect','themeSelect','accentSelect','fontSizeSelect',
           'settingsPdfBtn','backupBtn','resetAppBtn','themeBtn','exportBtn','importInput','pdfModal','pdfModalCloseBtn',
           'pdfCancelBtn','pdfExportConfirmBtn','pdfRangeCard','pdfRangeStartInput','pdfRangeEndInput','pdfRangeHelp','pdfHint',
           'bottomNav','bottomNavRow','mobileOverlay','mobileMenuToggleBtn','exportModal','exportModalCloseBtn','exportCancelBtn',
@@ -734,8 +791,8 @@
         const qa = (sel) => Array.from(document.querySelectorAll(sel));
         this.localizeColorOptions();
         const brandH1 = q('.brand h1'); if (brandH1) brandH1.textContent = App.utils.t('appTitle');
-        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.4-events-tools • index.html + app.js`;
-        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.4-events-tools`;
+        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.5-year-labels-send-audit • index.html + app.js`;
+        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.5-year-labels-send-audit`;
         if (App.els.themeBtn) App.els.themeBtn.textContent = App.utils.t('theme');
         if (App.els.exportBtn) App.els.exportBtn.textContent = App.utils.t('export');
         const importLabel = q('label[for="importInput"]'); if (importLabel) importLabel.textContent = App.utils.t('import_json');
@@ -744,6 +801,7 @@
         if (App.els.todayMonthBtn) App.els.todayMonthBtn.textContent = App.utils.t('today');
         if (App.els.weekSearch) App.els.weekSearch.placeholder = App.utils.t('weeks_search');
         if (App.els.noteSearch) App.els.noteSearch.placeholder = App.utils.t('notes_search');
+        if (App.els.deleteAllNotesBtn) App.els.deleteAllNotesBtn.textContent = App.utils.t('delete_all_notes');
         if (App.els.eventScheduleInput) App.els.eventScheduleInput.placeholder = App.utils.t('placeholder_schedule');
         const headings = qa('#events h3, #settings h3');
         if (headings[0]) { headings[0].textContent = ''; headings[0].hidden = true; headings[0].style.display = 'none'; }
@@ -1030,7 +1088,7 @@
  .flag-badge{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:2px 6px;font-size:10px;font-weight:700;color:var(--text)}
  .calendar-action-grid{display:grid;gap:8px;margin-top:12px}.entry-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.entry-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}.side-item-card{padding:10px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
  
- /* v9.5.4-events-tools: day popover for service-year mini calendar */
+ /* v9.5.5-year-labels-send-audit: day popover for service-year mini calendar */
  .day-popover{position:fixed;z-index:3200;min-width:260px;max-width:min(340px,calc(100vw - 24px));background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 55px rgba(0,0,0,.22);padding:14px;font-size:13px;line-height:1.35}
  .day-popover[hidden]{display:none !important}
  .day-popover-title{font-weight:800;font-size:14px;margin-bottom:3px}
@@ -1044,7 +1102,7 @@
  .day-popover-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}
  .sy-day.has-events:hover{outline:2px solid var(--accent);outline-offset:1px}
  
- /* v9.5.4-events-tools: stable popover + sending workflow */
+ /* v9.5.5-year-labels-send-audit: stable popover + sending workflow */
  .calendar-details-card #calendarSideDetails .side-item-card:has(.entry-actions){display:none !important}
 
  .day-popover{pointer-events:auto !important}
@@ -1066,6 +1124,14 @@
  @media (max-width:680px){.day-popover{left:12px !important;right:12px !important;top:auto !important;bottom:86px !important;max-width:none;width:auto}.day-popover-actions .btn{flex:1 1 auto}}
  
 
+
+          /* v9.5.5: visible event names directly in service-year calendar */
+          .sy-day.has-events{min-height:54px !important;align-content:start !important;place-items:stretch !important;padding:3px !important;overflow:hidden !important}
+          .sy-day-number{display:block;text-align:center;line-height:1.05}
+          .sy-event-labels{display:grid;gap:2px;width:100%;margin-top:2px;pointer-events:none}
+          .sy-event-label{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;border-left:3px solid var(--accent);background:rgba(var(--accent-rgb,20,83,45),.08);border-radius:5px;padding:1px 3px;font-size:9px;line-height:1.15;color:var(--text)}
+          .sy-day.today .sy-event-label{background:rgba(255,255,255,.22);color:#fff;border-left-color:#fff !important}
+          @media (max-width:680px){.sy-day.has-events{min-height:48px !important}.sy-event-label{font-size:8px}.sy-event-labels{gap:1px}}
 `;
         document.head.appendChild(style);
       },
@@ -1170,8 +1236,9 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
             const iso = App.utils.iso(date);
             const dayItems = items.filter((item) => App.utils.overlaps(item.start, item.end, date, date));
             const dots = dayItems.slice(0, 3).map((item) => `<span class="sy-event-dot" style="background:${App.utils.clampColor(item.color)}"></span>`).join('');
-            const count = dayItems.length > 3 ? `<span class="sy-count">+${dayItems.length - 3}</span>` : '';
-            days.push(`<button class="sy-day ${iso === todayIso ? 'today' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'weekend' : ''} ${dayItems.length ? 'has-events' : ''} ${App.state.calendarSelectedDateIso === iso ? 'selected' : ''}" type="button" data-add-date="${App.utils.escapeAttr(iso)}" title="${App.utils.escapeAttr(dayItems.length ? App.utils.t('day_details_title') : App.utils.t('add_on_date'))}"><span>${day}</span>${count}<span class="sy-event-dots">${dots}</span></button>`);
+            const labels = dayItems.slice(0, 2).map((item) => `<span class="sy-event-label" style="border-left-color:${App.utils.clampColor(item.color)}">${App.utils.escapeHtml(item.title)}</span>`).join('');
+            const count = dayItems.length > 2 ? `<span class="sy-count">+${dayItems.length - 2}</span>` : '';
+            days.push(`<button class="sy-day ${iso === todayIso ? 'today' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'weekend' : ''} ${dayItems.length ? 'has-events' : ''} ${App.state.calendarSelectedDateIso === iso ? 'selected' : ''}" type="button" data-add-date="${App.utils.escapeAttr(iso)}" title="${App.utils.escapeAttr(dayItems.length ? dayItems.map((item) => item.title).join(' · ') : App.utils.t('add_on_date'))}"><span class="sy-day-number">${day}</span>${count}<span class="sy-event-dots">${dots}</span>${labels ? `<span class="sy-event-labels">${labels}</span>` : ''}</button>`);
           }
           // Monthly summary dots removed: the bottom row of colored dots under each month is intentionally hidden.
           return `<section class="sy-month-card"><div class="sy-month-title"><span>${App.utils.monthName(month)}</span><small>${year}</small></div><div class="sy-dow">${dayNames.map((name) => `<span>${name}</span>`).join('')}</div><div class="sy-days">${days.join('')}</div></section>`;
@@ -1257,21 +1324,23 @@ document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
           if (flags.letter) out.push(`<span class="flag-badge">✉</span>`);
           return out.length ? `<span class="flag-badges">${out.join('')}</span>` : '';
         };
-        const flagToggles = (scope, id, flags = {}) => { 
- const s302Done = !!flags.f302; 
- const letterDone = !!flags.letter; 
- const status = (done) => done ? App.utils.t('sent_done') : App.utils.t('needs_sending'); 
- const card = (flag, label, done) => ` 
- <div class="send-card ${done ? 'is-done' : 'is-pending'}"> 
- <div class="send-card-top"><span>${label}</span><span class="send-status">${status(done)}</span></div> 
- <label class="send-toggle"><input type="checkbox" data-${scope}-flag="${flag}" data-${scope}-id="${App.utils.escapeAttr(id)}" ${done ? 'checked' : ''}> ${App.utils.t('sent_done')}</label> 
- </div>`; 
- return ` 
- <div class="send-control" aria-label="${App.utils.escapeAttr(App.utils.t('sent_status'))}"> 
- <div class="send-control-head"><div><div class="send-control-title">${App.utils.t('send_control')}</div><div class="send-control-hint">${App.utils.t('before_visit_hint')}</div></div></div> 
- <div class="send-control-grid">${card('letter', App.utils.t('letter_short'), letterDone)}${card('s302', App.utils.t('s302_short'), s302Done)}</div> 
- </div>`; 
-};
+        const flagToggles = (scope, id, flags = {}, startIso = '') => {
+          const due = App.utils.sendDueInfo(startIso, flags);
+          const status = (info) => App.utils.t(info.statusKey || 'send_not_yet_due');
+          const deadlineText = (info) => info.deadline ? App.utils.prettyDateLong(info.deadline) : '—';
+          const card = (flag, label, info, hintKey) => `
+            <div class="send-card ${info.done ? 'is-done' : (info.pending ? 'is-pending' : '')}">
+              <div class="send-card-top"><span>${label}</span><span class="send-status">${status(info)}</span></div>
+              <div class="small">${App.utils.t('deadline')}: ${deadlineText(info)}</div>
+              <div class="small">${App.utils.t(hintKey)}</div>
+              <label class="send-toggle"><input type="checkbox" data-${scope}-flag="${flag}" data-${scope}-id="${App.utils.escapeAttr(id)}" ${info.done ? 'checked' : ''}> ${App.utils.t('sent_done')}</label>
+            </div>`;
+          return `
+            <div class="send-control" aria-label="${App.utils.escapeAttr(App.utils.t('sent_status'))}">
+              <div class="send-control-head"><div><div class="send-control-title">${App.utils.t('send_control')}</div><div class="send-control-hint">${App.utils.t('auto_check_summary', App.state.sendAudit || { s302: 0, letter: 0 })}</div></div></div>
+              <div class="send-control-grid">${card('letter', App.utils.t('letter_short'), due.letter, 'letter_deadline_hint')}${card('s302', App.utils.t('s302_short'), due.s302, 's302_deadline_hint')}</div>
+            </div>`;
+        };
         const dayEntries = App.state.app.entries
           .filter((entry) => {
             const es = App.utils.parseLocalDate(entry.start);
@@ -1300,7 +1369,7 @@ document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
         const weekActions = weekItem ? `
           <div class="side-row"><div class="side-label">${App.utils.t('address')}</div><div class="side-value">${weekAddress}</div></div>
           <div class="side-row"><div class="side-label">${App.utils.t('schedule')}</div><div class="side-value">${App.utils.escapeHtml(weekEvent?.schedule || App.utils.t('no_schedule'))}</div></div>
-          ${flagToggles('week', weekId, weekItem.flags)}
+          ${flagToggles('week', weekId, weekItem.flags, week.start)}
           <div class="calendar-action-grid">
             <button class="btn" type="button" id="syAddEntryBtn">${App.utils.t('add_entry')}</button>
             <button class="btn" type="button" id="syEditWeekBtn">${App.utils.t('edit_week_event')}</button>
@@ -1309,7 +1378,7 @@ document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
             <button class="btn" type="button" data-ics-id="${App.utils.escapeAttr(weekItem.id)}">${App.utils.t('apple_calendar')}</button>
             ${weekEvent?.address ? `<a class="btn" href="${App.utils.mapUrl(weekEvent.address)}" target="_blank" rel="noopener noreferrer">${App.utils.t('google_maps')}</a>` : ''}
           </div>` : `
-          ${flagToggles('week', weekId, { f302: !!week.flagS302, letter: !!week.flagLetter })}
+          ${flagToggles('week', weekId, { f302: !!week.flagS302, letter: !!week.flagLetter }, week.start)}
           <div class="calendar-action-grid">
             <button class="btn" type="button" id="syAddEntryBtn">${App.utils.t('add_entry')}</button>
             <button class="btn" type="button" id="syEditWeekBtn">${App.utils.t('edit_week_event')}</button>
@@ -1331,7 +1400,7 @@ document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
               <div class="small">${it.start} — ${it.end}</div>
               <div class="small">${App.utils.escapeHtml(it.note || App.utils.t('no_note'))}</div>
               ${it.event?.address ? `<div class="small" style="margin-top:4px"><a href="${App.utils.mapUrl(it.event.address)}" target="_blank" rel="noopener noreferrer">${App.utils.escapeHtml(it.event.address)}</a></div>` : ''}
-              ${flagToggles('entry', it.entryId, it.flags)}
+              ${flagToggles('entry', it.entryId, it.flags, it.start)}
               <div class="entry-actions">
                 <button class="btn" type="button" data-edit-calendar-item="${App.utils.escapeAttr(it.id)}">${App.utils.t('edit')}</button>
                 <a class="btn" href="${App.utils.googleCalendarUrl(itemData, it.event)}" target="_blank" rel="noopener noreferrer">${App.utils.t('google_calendar')}</a>
@@ -1489,6 +1558,11 @@ document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
             items.push({ year, week, event });
           });
         });
+        if (App.els.deleteAllNotesBtn) {
+          App.els.deleteAllNotesBtn.textContent = App.utils.t('delete_all_notes');
+          App.els.deleteAllNotesBtn.disabled = !items.length;
+          App.els.deleteAllNotesBtn.style.opacity = items.length ? '' : '.55';
+        }
         if (App.els.notesList) App.els.notesList.innerHTML = items.map(({ year, week, event }) => `
           <div class="note-row">
             <div>
@@ -1517,6 +1591,7 @@ document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
     bind() {
       App.els.weekSearch?.addEventListener('input', (e) => { App.state.weekSearch = e.target.value; App.ui.renderWeeks(); });
       App.els.noteSearch?.addEventListener('input', (e) => { App.state.noteSearch = e.target.value; App.ui.renderNotes(); });
+      App.els.deleteAllNotesBtn?.addEventListener('click', () => App.actions.deleteAllNotes());
       App.els.yearSelect?.addEventListener('change', (e) => { App.state.selectedYear = Number(e.target.value); App.state.selectedWeekId = null; App.ui.renderWeeks(); });
       App.els.eventFilter?.addEventListener('change', (e) => { App.state.calendarEventFilter = e.target.value; App.ui.renderAll(); });
       App.els.calendarEventQuickFilter?.addEventListener('change', (e) => { App.state.calendarEventFilter = e.target.value; App.ui.renderAll(); });
@@ -1577,6 +1652,7 @@ document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
       const currentSY = this.utils.getServiceYearForDate(new Date());
       this.data.ensureServiceYear(currentSY);
       this.data.getWeeksForYear(currentSY);
+      this.actions.runSendChecklistAudit(true);
       this.state.selectedYear = currentSY;
       this.state.teamPanelHidden = false;
       this.state.calendarView = this.state.app.settings.calendarView || 'month';
