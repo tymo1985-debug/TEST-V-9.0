@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Service Year Planner v9.5.6-year-bars-send-alert</title>
+  <title>Service Year Planner v9.5.7-manual-sync</title>
   <meta name="theme-color" content="#14532d" />
   <link rel="manifest" href="manifest.webmanifest">
   <style>
@@ -147,7 +147,7 @@ body::before{display:none !important}
 /* Fix: hide service-year month summary dots at the bottom of each month card */
 .sy-month-summary{display:none !important}
  
-/* v9.5.6-year-bars-send-alert: day popover for service-year mini calendar */
+/* v9.5.7-manual-sync: day popover for service-year mini calendar */
 .day-popover{position:fixed;z-index:3200;min-width:260px;max-width:min(340px,calc(100vw - 24px));background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 55px rgba(0,0,0,.22);padding:14px;font-size:13px;line-height:1.35}
 .day-popover[hidden]{display:none !important}
 .day-popover-title{font-weight:800;font-size:14px;margin-bottom:3px}
@@ -163,7 +163,7 @@ body::before{display:none !important}
 @media (max-width:680px){.day-popover{left:12px !important;right:12px !important;top:auto !important;bottom:86px !important;max-width:none;width:auto}.day-popover-actions .btn{flex:1 1 auto}}
 
 
-/* v9.5.6-year-bars-send-alert: stable popover + sending workflow */
+/* v9.5.7-manual-sync: stable popover + sending workflow */
 .day-popover{pointer-events:auto !important}
 .day-popover.is-hovered{box-shadow:0 24px 60px rgba(0,0,0,.26) !important}
 .send-control{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}
@@ -182,15 +182,15 @@ body::before{display:none !important}
 
 .calendar-details-card #calendarSideDetails .side-item-card:has(.entry-actions){display:none !important}
 
-/* v9.5.6: service-year bars instead of dots */
-.sy-days,.sy-event-dots,.sy-event-dot,.sy-event-labels,.sy-event-label{display:none !important}.sy-weeks{display:grid;gap:4px}.sy-week-row{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;min-height:52px;align-items:start}.sy-week-row .sy-day,.sy-week-row .sy-empty{min-height:34px}.sy-period-bar{position:absolute;z-index:3;left:calc((100% / 7) * var(--bar-left) + 2px);width:calc((100% / 7) * var(--bar-span) - 4px);top:calc(21px + (var(--bar-lane) * 15px));height:14px;border:0;border-radius:999px;background:color-mix(in srgb, var(--bar-color) 28%, white);color:#163024;padding:0 7px;font-size:9px;line-height:14px;box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--bar-color) 50%, transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;cursor:pointer}.sy-period-bar span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sy-period-bar:hover{filter:brightness(.98);box-shadow:0 2px 8px rgba(0,0,0,.14), inset 0 0 0 1px var(--bar-color)}.sy-bar-more{position:absolute;right:4px;bottom:0;font-size:9px;color:var(--muted)}#deleteAllNotesBtn{white-space:nowrap}@supports not (background: color-mix(in srgb, red 20%, white)){.sy-period-bar{background:#dff1d7}}@media (max-width:680px){.sy-week-row{min-height:48px}.sy-period-bar{font-size:8px;height:13px;line-height:13px;padding:0 5px;top:calc(20px + (var(--bar-lane) * 14px))}#notes .toolbar{display:grid;grid-template-columns:1fr}}
+.sync-card{box-shadow:none;border:1px dashed var(--line);border-radius:18px;padding:14px;background:var(--surface2)}
+.sync-card h4{margin:0 0 8px;font-size:16px}.sync-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}.sync-actions .btn{box-shadow:none}.sync-status{margin-top:10px;color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
   <div class="mobile-overlay" id="mobileOverlay" hidden></div>
   <div class="app" id="appRoot">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.5.6-year-bars-send-alert • index.html + app.js</p></div></div>
+      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.5.7-manual-sync • index.html + app.js</p></div></div>
       <nav class="menu" id="desktopNav"></nav>
       <div class="summary"><strong>Быстрый статус</strong><div id="sideStatus" class="small"></div></div>
     </aside>
@@ -198,7 +198,7 @@ body::before{display:none !important}
       <div class="offline-banner" id="offlineBanner">Вы офлайн. Изменения сохраняются локально.</div>
       <header class="topbar">
         <div>
-          <div class="version-badge">Версия: v9.5.6-year-bars-send-alert</div>
+          <div class="version-badge">Версия: v9.5.7-manual-sync</div>
           <h2 id="screenTitle">Календарь</h2>
           <p id="screenSubtitle"></p>
         </div>
@@ -256,7 +256,7 @@ body::before{display:none !important}
   <option value="#43a047">🟢 Светло-зелёный</option>
 </select>
 </div><div><label class="small">Адрес</label><input id="eventAddressInput" type="text" /></div><div><label class="small">Расписание</label><input id="eventScheduleInput" type="text" placeholder="Ср 19:00, Сб 10:00" /></div></div><div class="editor-actions"><button class="btn" id="resetEventBtn" type="button">Очистить</button><button class="btn primary" id="saveEventBtn" type="button">Сохранить собрание</button></div></div></div></section>
-      <section id="notes" class="screen"><div class="toolbar"><input id="noteSearch" type="text" placeholder="Поиск по заметкам" /><button class="btn danger" id="deleteAllNotesBtn" type="button">Удалить все заметки</button></div><div class="card"><div id="notesList" class="grid"></div></div></section>
+      <section id="notes" class="screen"><div class="toolbar"><input id="noteSearch" type="text" placeholder="Поиск по заметкам" /></div><div class="card"><div id="notesList" class="grid"></div></div></section>
       <section id="settings" class="screen"><div class="grid" style="grid-template-columns:repeat(2,1fr)"><div class="card"><h3>Внешний вид</h3><div class="form-grid"><div><label class="small">Язык</label><select id="languageSelect"><option value="ru">Русский</option><option value="en">English</option><option value="uk">Українська</option><option value="pl">Polski</option></select></div><div><label class="small">Тема</label><select id="themeSelect"><option value="light">Светлая</option><option value="dark">Тёмная</option></select></div>
 <div>
 <label class="small">Цвет интерфейса</label>
@@ -292,6 +292,17 @@ body::before{display:none !important}
   <button class="btn primary" id="exportBtn" type="button">Экспорт</button>
   <label class="btn" for="importInput">Импорт JSON</label>
   <input id="importInput" type="file" accept=".json,application/json,text/plain" hidden />
+</div>
+
+<div class="sync-card">
+  <h4 id="syncTitle">Ручная синхронизация</h4>
+  <p class="small" id="syncHint">Без API: на основном ноутбуке скачайте файл синхронизации и поместите его в Google Drive. На другом устройстве скачайте этот файл из Drive и загрузите здесь.</p>
+  <div class="sync-actions">
+    <button class="btn primary" id="syncExportBtn" type="button">Скачать синхронизацию</button>
+    <label class="btn" id="syncImportLabel" for="syncImportInput">Загрузить синхронизацию</label>
+    <input id="syncImportInput" type="file" accept=".json,application/json,text/plain" hidden />
+  </div>
+  <div class="sync-status" id="syncStatus">Синхронизация ещё не выполнялась.</div>
 </div>
 <div class="card" style="box-shadow:none;border:1px dashed var(--line);border-radius:18px;padding:14px;background:var(--surface2)">
   <div class="form-grid">

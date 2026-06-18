@@ -1,5 +1,5 @@
 
-// Service Year Planner v9.5.6-year-bars-send-alert color names for meetings
+// Service Year Planner v9.5.7-manual-sync color names for meetings
 (function () {
   'use strict';
 
@@ -51,6 +51,7 @@
       json_backup: 'JSON backup', json_backup_desc: 'Полная резервная копия данных приложения.', ics_calendar: 'Календарь (.ics)', ics_desc: 'Импорт в Google Calendar и Apple Calendar.',
       range_start: 'Начало периода', range_end: 'Конец периода', download: 'Скачать',
       google_hint: 'Подсказка: для Google Calendar откройте «Настройки → Импорт и экспорт → Импорт», выберите .ics. Для Apple Calendar просто откройте файл.',
+      sync_title: 'Ручная синхронизация', sync_hint: 'Без API: на основном ноутбуке скачайте файл синхронизации и поместите его в Google Drive. На другом устройстве скачайте этот файл из Drive и загрузите здесь.', sync_export: 'Скачать синхронизацию', sync_import: 'Загрузить синхронизацию', sync_export_done: 'Файл синхронизации создан. Поместите его в Google Drive.', sync_import_confirm: 'Заменить текущие данные данными из файла синхронизации?', sync_import_done: 'Данные синхронизации загружены.', sync_import_failed: 'Не удалось загрузить файл синхронизации.', sync_no_file: 'Выберите файл синхронизации JSON.', sync_last_export: 'Последняя выгрузка', sync_last_import: 'Последняя загрузка', sync_never: 'Синхронизация ещё не выполнялась.',
       team_panel: 'Панель команды', filter_event: 'Фильтр события', event_details: 'Детали собрания',
       no_events_found: 'Совпадений не найдено.', no_notes: 'Нет заметок.', open: 'Открыть',
       new_event: 'Новое собрание', edit_event: 'Редактирование собрания', choose_template: 'Выберите собрание', start: 'Начало', end: 'Конец', delete_event: 'Удалить собрание',
@@ -69,8 +70,6 @@
       delete_note: 'Удалить заметку',
       delete_template: 'Удалить собрание',
       delete_note_confirm: 'Удалить эту заметку?',
-      delete_all_notes: 'Удалить все заметки', delete_all_notes_confirm: 'Удалить все заметки во всех служебных годах? Это действие нельзя отменить.', delete_all_notes_done: 'Все заметки удалены.',
-      auto_check_summary: 'Проверка отправки: нужно отправить — S-302: {s302}, письмо: {letter}.', auto_check_ok: 'Проверка отправки выполнена: сейчас ничего не требуется.', send_not_yet_due: 'Пока не требуется', send_due_now: 'Нужно отправить', send_overdue: 'Просрочено', s302_deadline_hint: 'S-302: примерно за 6 месяцев до начала события.', letter_deadline_hint: 'Письмо: примерно за 60 дней до начала события.',
       delete_template_confirm: 'Удалить собрание',
       calendar_view_month: 'Вид: месяц',
       calendar_view_year: 'Вид: служебный год',
@@ -89,12 +88,11 @@
       nav_calendar: 'Calendar', nav_weeks: 'Weeks', nav_events: 'Meetings', nav_notes: 'Notes', nav_settings: 'Settings',
       screen_calendar: 'Calendar', screen_weeks: 'Weeks', screen_events: 'Meetings', screen_notes: 'Notes', screen_settings: 'Settings',
       subtitle_calendar: 'Month overview and events for the service year.', subtitle_weeks: 'Weekly planning, notes and priorities.', subtitle_events: 'Meetings, hall addresses and schedules.', subtitle_notes: 'Search and review all weekly notes.', subtitle_settings: 'Theme, language, export, import and year management.',
-      version: 'Version', theme: 'Theme', export: 'Export', import_json: 'Import JSON', hide_team_panel: 'Hide team panel', show_team_panel: 'Show team panel', today: 'Today', all_events: 'All meetings', service_year: 'Service year', context: 'Context', event: 'Meeting', weekend: 'Weekend', today_label: 'Today', no_events_month: 'No events in the selected month.', no_note: 'No note', no_schedule: 'No schedule', no_address: 'Address not specified', no_template: 'No meeting selected', quick_status: 'Quick status', years_count: 'Service years', templates_count: 'Event templates', entries_count: 'Calendar entries', notes_count: 'Notes', weeks_search: 'Search week, note or event', notes_search: 'Search notes', week_details: 'Week details', choose_week: 'Select a week on the left to edit it.', assigned_event: 'Assigned event', priority: 'Priority', priority_normal: 'Normal', priority_important: 'Important', priority_critical: 'Critical', letter: 'Letter', s302: 'S302', week_note: 'Week note', save: 'Save', delete: 'Delete', delete_week: 'Delete week', clear_week_confirm: 'Clear the selected week data?', event_templates: '', events_search: 'Search by name, address or schedule', event_group_filter: 'Group / color', all_event_groups: 'All groups / colors', delete_all_events: 'Delete all meetings', delete_all_events_confirm: 'Delete all meetings and related calendar entries? This action cannot be undone.', delete_all_events_done: 'All meetings deleted.', events_shown_count: 'Shown: {shown} of {total}', event_editor: 'Meeting editor', name: 'Name', color: 'Color', address: 'Address', schedule: 'Schedule', clear: 'Clear', save_event: 'Save meeting', look_and_feel: 'Appearance', language: 'Language', layout: 'Calendar layout', theme_light: 'Light', theme_dark: 'Dark', layout_help: '10 calendar layout options are available.', data_management: 'Data management', pdf_print: 'PDF / Print', add_service_year: 'Add service year', add_next_year: 'Add next year', add: 'Add', create_backup: 'Create backup', reset_app: 'Reset app', print_hint: 'PDF uses browser system print.', export_pdf_title: 'Export to PDF', export_pdf_sub: 'Choose format and use browser print.', month_grid: 'Month calendar', period_calendar: 'Period calendar', month_grid_desc: 'Printable grid for the current month.', period_calendar_desc: 'Print for selected date range.', reports: 'Event lists and reports', month_list: 'Month event list', half_year: 'Half-year events', year_events: 'Year events', list_period: 'Range list', year_overview: 'Year overview', notes_report: 'Notes report', choose_range: 'Choose start and end dates.', close: 'Close', print: 'Print', export_title: 'Export', export_sub: 'Choose export format: JSON backup or calendar (.ics) for Google/Apple.', json_backup: 'JSON backup', json_backup_desc: 'Complete application data backup.', ics_calendar: 'Calendar (.ics)', ics_desc: 'Import into Google Calendar and Apple Calendar.', range_start: 'Start date', range_end: 'End date', download: 'Download', google_hint: 'Tip: in Google Calendar open “Settings → Import & Export → Import”, choose the .ics file. In Apple Calendar just open the file.', team_panel: 'Team panel', filter_event: 'Event filter', event_details: 'Event details', no_events_found: 'No matches found.', no_notes: 'No notes.', open: 'Open', new_event: 'New meeting', edit_event: 'Edit meeting', choose_template: 'Choose template', start: 'Start', end: 'End', delete_event: 'Delete meeting', create_entry_help: 'A separate calendar entry will be created.', edit_entry_help: 'You can change template, dates, note or delete the event.', note: 'Note', google_maps: 'Google Maps', google_calendar: 'Google Calendar', apple_calendar: 'Apple / .ics', edit: 'Edit', type: 'Type', type_week: 'Week', type_entry: 'Entry', template: 'Meeting', imported_backup: 'Legacy backup imported and duplicates cleaned.', imported_json: 'JSON imported successfully.', import_failed: 'Failed to import JSON.', week_saved: 'Week saved.', event_template_saved: 'Event template saved.', calendar_event_saved: 'Calendar event saved.', calendar_event_deleted: 'Event deleted.', week_deleted: 'Week data cleared.', reset_confirm: 'Reset application data?', app_reset: 'Application reset.', invalid_year: 'Enter a valid year, for example 2029.', added_year: 'Added service year {year}', choose_template_dates: 'Choose template and dates.', wrong_end_date: 'End date cannot be earlier than start date.', enter_event_name: 'Enter event name.', offline: 'You are offline. Changes are stored locally.', import_google_single: 'Import event into Google/Apple calendar', add_on_date: 'Add event', placeholder_schedule: 'Wed 19:00, Sat 10:00',
+      version: 'Version', theme: 'Theme', export: 'Export', import_json: 'Import JSON', hide_team_panel: 'Hide team panel', show_team_panel: 'Show team panel', today: 'Today', all_events: 'All meetings', service_year: 'Service year', context: 'Context', event: 'Meeting', weekend: 'Weekend', today_label: 'Today', no_events_month: 'No events in the selected month.', no_note: 'No note', no_schedule: 'No schedule', no_address: 'Address not specified', no_template: 'No meeting selected', quick_status: 'Quick status', years_count: 'Service years', templates_count: 'Event templates', entries_count: 'Calendar entries', notes_count: 'Notes', weeks_search: 'Search week, note or event', notes_search: 'Search notes', week_details: 'Week details', choose_week: 'Select a week on the left to edit it.', assigned_event: 'Assigned event', priority: 'Priority', priority_normal: 'Normal', priority_important: 'Important', priority_critical: 'Critical', letter: 'Letter', s302: 'S302', week_note: 'Week note', save: 'Save', delete: 'Delete', delete_week: 'Delete week', clear_week_confirm: 'Clear the selected week data?', event_templates: '', events_search: 'Search by name, address or schedule', event_group_filter: 'Group / color', all_event_groups: 'All groups / colors', delete_all_events: 'Delete all meetings', delete_all_events_confirm: 'Delete all meetings and related calendar entries? This action cannot be undone.', delete_all_events_done: 'All meetings deleted.', events_shown_count: 'Shown: {shown} of {total}', event_editor: 'Meeting editor', name: 'Name', color: 'Color', address: 'Address', schedule: 'Schedule', clear: 'Clear', save_event: 'Save meeting', look_and_feel: 'Appearance', language: 'Language', layout: 'Calendar layout', theme_light: 'Light', theme_dark: 'Dark', layout_help: '10 calendar layout options are available.', data_management: 'Data management', pdf_print: 'PDF / Print', add_service_year: 'Add service year', add_next_year: 'Add next year', add: 'Add', create_backup: 'Create backup', reset_app: 'Reset app', print_hint: 'PDF uses browser system print.', export_pdf_title: 'Export to PDF', export_pdf_sub: 'Choose format and use browser print.', month_grid: 'Month calendar', period_calendar: 'Period calendar', month_grid_desc: 'Printable grid for the current month.', period_calendar_desc: 'Print for selected date range.', reports: 'Event lists and reports', month_list: 'Month event list', half_year: 'Half-year events', year_events: 'Year events', list_period: 'Range list', year_overview: 'Year overview', notes_report: 'Notes report', choose_range: 'Choose start and end dates.', close: 'Close', print: 'Print', export_title: 'Export', export_sub: 'Choose export format: JSON backup or calendar (.ics) for Google/Apple.', json_backup: 'JSON backup', json_backup_desc: 'Complete application data backup.', ics_calendar: 'Calendar (.ics)', ics_desc: 'Import into Google Calendar and Apple Calendar.', range_start: 'Start date', range_end: 'End date', download: 'Download', google_hint: 'Tip: in Google Calendar open “Settings → Import & Export → Import”, choose the .ics file. In Apple Calendar just open the file.',
+      sync_title: 'Manual sync', sync_hint: 'No API: on the main laptop download the sync file and place it in Google Drive. On another device download that file from Drive and load it here.', sync_export: 'Download sync file', sync_import: 'Load sync file', sync_export_done: 'Sync file created. Place it in Google Drive.', sync_import_confirm: 'Replace current data with data from the sync file?', sync_import_done: 'Sync data loaded.', sync_import_failed: 'Failed to load sync file.', sync_no_file: 'Choose a JSON sync file.', sync_last_export: 'Last download', sync_last_import: 'Last load', sync_never: 'Sync has not been run yet.', team_panel: 'Team panel', filter_event: 'Event filter', event_details: 'Event details', no_events_found: 'No matches found.', no_notes: 'No notes.', open: 'Open', new_event: 'New meeting', edit_event: 'Edit meeting', choose_template: 'Choose template', start: 'Start', end: 'End', delete_event: 'Delete meeting', create_entry_help: 'A separate calendar entry will be created.', edit_entry_help: 'You can change template, dates, note or delete the event.', note: 'Note', google_maps: 'Google Maps', google_calendar: 'Google Calendar', apple_calendar: 'Apple / .ics', edit: 'Edit', type: 'Type', type_week: 'Week', type_entry: 'Entry', template: 'Meeting', imported_backup: 'Legacy backup imported and duplicates cleaned.', imported_json: 'JSON imported successfully.', import_failed: 'Failed to import JSON.', week_saved: 'Week saved.', event_template_saved: 'Event template saved.', calendar_event_saved: 'Calendar event saved.', calendar_event_deleted: 'Event deleted.', week_deleted: 'Week data cleared.', reset_confirm: 'Reset application data?', app_reset: 'Application reset.', invalid_year: 'Enter a valid year, for example 2029.', added_year: 'Added service year {year}', choose_template_dates: 'Choose template and dates.', wrong_end_date: 'End date cannot be earlier than start date.', enter_event_name: 'Enter event name.', offline: 'You are offline. Changes are stored locally.', import_google_single: 'Import event into Google/Apple calendar', add_on_date: 'Add event', placeholder_schedule: 'Wed 19:00, Sat 10:00',
       delete_note: 'Delete note',
       delete_template: 'Delete meeting',
       delete_note_confirm: 'Delete this note?',
-      delete_all_notes: 'Delete all notes', delete_all_notes_confirm: 'Delete all notes in all service years? This action cannot be undone.', delete_all_notes_done: 'All notes deleted.',
-      auto_check_summary: 'Sending check: pending — S-302: {s302}, letter: {letter}.', auto_check_ok: 'Sending check complete: nothing is due now.', send_not_yet_due: 'Not due yet', send_due_now: 'Needs sending', send_overdue: 'Overdue', s302_deadline_hint: 'S-302: about 6 months before the event starts.', letter_deadline_hint: 'Letter: about 60 days before the event starts.',
       delete_template_confirm: 'Delete event template',
       calendar_view_month: 'View: month',
       calendar_view_year: 'View: service year',
@@ -113,12 +111,11 @@
       nav_calendar: 'Календар', nav_weeks: 'Тижні', nav_events: 'Зібрання', nav_notes: 'Нотатки', nav_settings: 'Налаштування',
       screen_calendar: 'Календар', screen_weeks: 'Тижні', screen_events: 'Зібрання', screen_notes: 'Нотатки', screen_settings: 'Налаштування',
       subtitle_calendar: 'Огляд місяця та подій службового року.', subtitle_weeks: 'Тижневе планування, нотатки та пріоритети.', subtitle_events: 'Зібрання, адреси залів і розклад.', subtitle_notes: 'Пошук і перегляд усіх тижневих нотаток.', subtitle_settings: 'Тема, мова, експорт, імпорт і керування роками.',
-      version: 'Версія', theme: 'Тема', export: 'Експорт', import_json: 'Імпорт JSON', hide_team_panel: 'Сховати панель команди', show_team_panel: 'Показати панель команди', today: 'Сьогодні', all_events: 'Усі зібрання', service_year: 'Службовий рік', context: 'Контекст', event: 'Зібрання', weekend: 'Вихідні', today_label: 'Сьогодні', no_events_month: 'У вибраному місяці немає подій.', no_note: 'Без примітки', no_schedule: 'Без розкладу', no_address: 'Адресу не вказано', no_template: 'Зібрання не вибрано', quick_status: 'Швидкий статус', years_count: 'Службових років', templates_count: 'Шаблонів подій', entries_count: 'Записів календаря', notes_count: 'Нотаток', weeks_search: 'Пошук за тижнем, нотаткою чи подією', notes_search: 'Пошук нотаток', week_details: 'Деталі тижня', choose_week: 'Виберіть тиждень ліворуч, щоб редагувати його.', assigned_event: 'Призначена подія', priority: 'Пріоритет', priority_normal: 'Звичайний', priority_important: 'Важливий', priority_critical: 'Критичний', letter: 'Лист', s302: 'S302', week_note: 'Нотатка тижня', save: 'Зберегти', delete: 'Видалити', delete_week: 'Видалити тиждень', clear_week_confirm: 'Очистити дані вибраного тижня?', event_templates: '', events_search: 'Пошук за назвою, адресою або розкладом', event_group_filter: 'Група / колір', all_event_groups: 'Усі групи / кольори', delete_all_events: 'Видалити всі зібрання', delete_all_events_confirm: 'Видалити всі зібрання та пов’язані записи календаря? Цю дію не можна скасувати.', delete_all_events_done: 'Усі зібрання видалено.', events_shown_count: 'Показано: {shown} з {total}', event_editor: 'Редактор зібрання', name: 'Назва', color: 'Колір', address: 'Адреса', schedule: 'Розклад', clear: 'Очистити', save_event: 'Зберегти зібрання', look_and_feel: 'Зовнішній вигляд', language: 'Мова', layout: 'Макет календаря', theme_light: 'Світла', theme_dark: 'Темна', layout_help: 'Доступно 10 варіантів відображення календаря.', data_management: 'Керування даними', pdf_print: 'PDF / Друк', add_service_year: 'Додати службовий рік', add_next_year: 'Додати наступний рік', add: 'Додати', create_backup: 'Створити backup', reset_app: 'Скинути застосунок', print_hint: 'PDF використовує системний друк браузера.', export_pdf_title: 'Експорт у PDF', export_pdf_sub: 'Виберіть формат і використайте друк браузера.', month_grid: 'Календар місяця', period_calendar: 'Календар періоду', month_grid_desc: 'Сітка поточного місяця для друку.', period_calendar_desc: 'Друк для вибраного діапазону дат.', reports: 'Список подій і звіти', month_list: 'Список подій місяця', half_year: 'Події за пів року', year_events: 'Події за рік', list_period: 'Список за період', year_overview: 'Річний огляд', notes_report: 'Звіт по нотатках', choose_range: 'Виберіть дати початку та кінця періоду.', close: 'Закрити', print: 'Друк', export_title: 'Експорт', export_sub: 'Виберіть формат експорту: резервний JSON або календар (.ics) для Google/Apple.', json_backup: 'JSON backup', json_backup_desc: 'Повна резервна копія даних застосунку.', ics_calendar: 'Календар (.ics)', ics_desc: 'Імпорт у Google Calendar та Apple Calendar.', range_start: 'Початок періоду', range_end: 'Кінець періоду', download: 'Завантажити', google_hint: 'Підказка: у Google Calendar відкрийте «Налаштування → Імпорт і експорт → Імпорт», виберіть .ics. Для Apple Calendar просто відкрийте файл.', team_panel: 'Панель команди', filter_event: 'Фільтр події', event_details: 'Деталі події', no_events_found: 'Нічого не знайдено.', no_notes: 'Немає нотаток.', open: 'Відкрити', new_event: 'Нове зібрання', edit_event: 'Редагування зібрання', choose_template: 'Виберіть шаблон', start: 'Початок', end: 'Кінець', delete_event: 'Видалити зібрання', create_entry_help: 'Буде створено окремий запис календаря.', edit_entry_help: 'Ви можете змінити шаблон, дати, нотатку або видалити подію.', note: 'Нотатка', google_maps: 'Google Maps', google_calendar: 'Google Calendar', apple_calendar: 'Apple / .ics', edit: 'Редагувати', type: 'Тип', type_week: 'Тиждень', type_entry: 'Запис', template: 'Зібрання', imported_backup: 'Старий backup імпортовано й очищено від дублів.', imported_json: 'JSON успішно імпортовано.', import_failed: 'Не вдалося імпортувати JSON.', week_saved: 'Тиждень збережено.', event_template_saved: 'Шаблон події збережено.', calendar_event_saved: 'Подію календаря збережено.', calendar_event_deleted: 'Подію видалено.', week_deleted: 'Дані тижня очищено.', reset_confirm: 'Скинути дані застосунку?', app_reset: 'Застосунок скинуто.', invalid_year: 'Введіть коректний рік, наприклад 2029.', added_year: 'Додано службовий рік {year}', choose_template_dates: 'Виберіть шаблон і дати.', wrong_end_date: 'Дата завершення не може бути раніше дати початку.', enter_event_name: 'Введіть назву події.', offline: 'Ви офлайн. Зміни зберігаються локально.', import_google_single: 'Імпортувати подію в Google/Apple календар', add_on_date: 'Додати подію', placeholder_schedule: 'Ср 19:00, Сб 10:00',
+      version: 'Версія', theme: 'Тема', export: 'Експорт', import_json: 'Імпорт JSON', hide_team_panel: 'Сховати панель команди', show_team_panel: 'Показати панель команди', today: 'Сьогодні', all_events: 'Усі зібрання', service_year: 'Службовий рік', context: 'Контекст', event: 'Зібрання', weekend: 'Вихідні', today_label: 'Сьогодні', no_events_month: 'У вибраному місяці немає подій.', no_note: 'Без примітки', no_schedule: 'Без розкладу', no_address: 'Адресу не вказано', no_template: 'Зібрання не вибрано', quick_status: 'Швидкий статус', years_count: 'Службових років', templates_count: 'Шаблонів подій', entries_count: 'Записів календаря', notes_count: 'Нотаток', weeks_search: 'Пошук за тижнем, нотаткою чи подією', notes_search: 'Пошук нотаток', week_details: 'Деталі тижня', choose_week: 'Виберіть тиждень ліворуч, щоб редагувати його.', assigned_event: 'Призначена подія', priority: 'Пріоритет', priority_normal: 'Звичайний', priority_important: 'Важливий', priority_critical: 'Критичний', letter: 'Лист', s302: 'S302', week_note: 'Нотатка тижня', save: 'Зберегти', delete: 'Видалити', delete_week: 'Видалити тиждень', clear_week_confirm: 'Очистити дані вибраного тижня?', event_templates: '', events_search: 'Пошук за назвою, адресою або розкладом', event_group_filter: 'Група / колір', all_event_groups: 'Усі групи / кольори', delete_all_events: 'Видалити всі зібрання', delete_all_events_confirm: 'Видалити всі зібрання та пов’язані записи календаря? Цю дію не можна скасувати.', delete_all_events_done: 'Усі зібрання видалено.', events_shown_count: 'Показано: {shown} з {total}', event_editor: 'Редактор зібрання', name: 'Назва', color: 'Колір', address: 'Адреса', schedule: 'Розклад', clear: 'Очистити', save_event: 'Зберегти зібрання', look_and_feel: 'Зовнішній вигляд', language: 'Мова', layout: 'Макет календаря', theme_light: 'Світла', theme_dark: 'Темна', layout_help: 'Доступно 10 варіантів відображення календаря.', data_management: 'Керування даними', pdf_print: 'PDF / Друк', add_service_year: 'Додати службовий рік', add_next_year: 'Додати наступний рік', add: 'Додати', create_backup: 'Створити backup', reset_app: 'Скинути застосунок', print_hint: 'PDF використовує системний друк браузера.', export_pdf_title: 'Експорт у PDF', export_pdf_sub: 'Виберіть формат і використайте друк браузера.', month_grid: 'Календар місяця', period_calendar: 'Календар періоду', month_grid_desc: 'Сітка поточного місяця для друку.', period_calendar_desc: 'Друк для вибраного діапазону дат.', reports: 'Список подій і звіти', month_list: 'Список подій місяця', half_year: 'Події за пів року', year_events: 'Події за рік', list_period: 'Список за період', year_overview: 'Річний огляд', notes_report: 'Звіт по нотатках', choose_range: 'Виберіть дати початку та кінця періоду.', close: 'Закрити', print: 'Друк', export_title: 'Експорт', export_sub: 'Виберіть формат експорту: резервний JSON або календар (.ics) для Google/Apple.', json_backup: 'JSON backup', json_backup_desc: 'Повна резервна копія даних застосунку.', ics_calendar: 'Календар (.ics)', ics_desc: 'Імпорт у Google Calendar та Apple Calendar.', range_start: 'Початок періоду', range_end: 'Кінець періоду', download: 'Завантажити', google_hint: 'Підказка: у Google Calendar відкрийте «Налаштування → Імпорт і експорт → Імпорт», виберіть .ics. Для Apple Calendar просто відкрийте файл.',
+      sync_title: 'Ручна синхронізація', sync_hint: 'Без API: на основному ноутбуці завантажте файл синхронізації та помістіть його в Google Drive. На іншому пристрої завантажте цей файл із Drive і відкрийте тут.', sync_export: 'Завантажити синхронізацію', sync_import: 'Завантажити з файлу синхронізації', sync_export_done: 'Файл синхронізації створено. Помістіть його в Google Drive.', sync_import_confirm: 'Замінити поточні дані даними з файлу синхронізації?', sync_import_done: 'Дані синхронізації завантажено.', sync_import_failed: 'Не вдалося завантажити файл синхронізації.', sync_no_file: 'Виберіть JSON-файл синхронізації.', sync_last_export: 'Останнє вивантаження', sync_last_import: 'Останнє завантаження', sync_never: 'Синхронізацію ще не виконували.', team_panel: 'Панель команди', filter_event: 'Фільтр події', event_details: 'Деталі події', no_events_found: 'Нічого не знайдено.', no_notes: 'Немає нотаток.', open: 'Відкрити', new_event: 'Нове зібрання', edit_event: 'Редагування зібрання', choose_template: 'Виберіть шаблон', start: 'Початок', end: 'Кінець', delete_event: 'Видалити зібрання', create_entry_help: 'Буде створено окремий запис календаря.', edit_entry_help: 'Ви можете змінити шаблон, дати, нотатку або видалити подію.', note: 'Нотатка', google_maps: 'Google Maps', google_calendar: 'Google Calendar', apple_calendar: 'Apple / .ics', edit: 'Редагувати', type: 'Тип', type_week: 'Тиждень', type_entry: 'Запис', template: 'Зібрання', imported_backup: 'Старий backup імпортовано й очищено від дублів.', imported_json: 'JSON успішно імпортовано.', import_failed: 'Не вдалося імпортувати JSON.', week_saved: 'Тиждень збережено.', event_template_saved: 'Шаблон події збережено.', calendar_event_saved: 'Подію календаря збережено.', calendar_event_deleted: 'Подію видалено.', week_deleted: 'Дані тижня очищено.', reset_confirm: 'Скинути дані застосунку?', app_reset: 'Застосунок скинуто.', invalid_year: 'Введіть коректний рік, наприклад 2029.', added_year: 'Додано службовий рік {year}', choose_template_dates: 'Виберіть шаблон і дати.', wrong_end_date: 'Дата завершення не може бути раніше дати початку.', enter_event_name: 'Введіть назву події.', offline: 'Ви офлайн. Зміни зберігаються локально.', import_google_single: 'Імпортувати подію в Google/Apple календар', add_on_date: 'Додати подію', placeholder_schedule: 'Ср 19:00, Сб 10:00',
       delete_note: 'Видалити нотатку',
       delete_template: 'Видалити зібрання',
       delete_note_confirm: 'Видалити цю нотатку?',
-      delete_all_notes: 'Видалити всі нотатки', delete_all_notes_confirm: 'Видалити всі нотатки в усіх службових роках? Цю дію не можна скасувати.', delete_all_notes_done: 'Усі нотатки видалено.',
-      auto_check_summary: 'Перевірка надсилання: потрібно надіслати — S-302: {s302}, лист: {letter}.', auto_check_ok: 'Перевірку надсилання виконано: зараз нічого не потрібно.', send_not_yet_due: 'Поки не потрібно', send_due_now: 'Потрібно надіслати', send_overdue: 'Прострочено', s302_deadline_hint: 'S-302: приблизно за 6 місяців до початку події.', letter_deadline_hint: 'Лист: приблизно за 60 днів до початку події.',
       delete_template_confirm: 'Видалити шаблон події',
       calendar_view_month: 'Вигляд: місяць',
       calendar_view_year: 'Вигляд: службовий рік',
@@ -137,12 +134,11 @@
       nav_calendar: 'Kalendarz', nav_weeks: 'Tygodnie', nav_events: 'Zebrania', nav_notes: 'Notatki', nav_settings: 'Ustawienia',
       screen_calendar: 'Kalendarz', screen_weeks: 'Tygodnie', screen_events: 'Zebrania', screen_notes: 'Notatki', screen_settings: 'Ustawienia',
       subtitle_calendar: 'Przegląd miesiąca i wydarzeń roku służbowego.', subtitle_weeks: 'Planowanie tygodnia, notatki i priorytety.', subtitle_events: 'Zebrania, adresy sal i harmonogramy.', subtitle_notes: 'Wyszukiwanie i przegląd wszystkich notatek tygodniowych.', subtitle_settings: 'Motyw, język, eksport, import i zarządzanie latami.',
-      version: 'Wersja', theme: 'Motyw', export: 'Eksport', import_json: 'Import JSON', hide_team_panel: 'Ukryj panel zespołu', show_team_panel: 'Pokaż panel zespołu', today: 'Dzisiaj', all_events: 'Wszystkie zebrania', service_year: 'Rok służbowy', context: 'Kontekst', event: 'Zebranie', weekend: 'Weekend', today_label: 'Dzisiaj', no_events_month: 'Brak wydarzeń w wybranym miesiącu.', no_note: 'Brak notatki', no_schedule: 'Brak harmonogramu', no_address: 'Adres nie został podany', no_template: 'Nie wybrano zebrania', quick_status: 'Szybki status', years_count: 'Lat służbowych', templates_count: 'Szablonów wydarzeń', entries_count: 'Wpisów kalendarza', notes_count: 'Notatek', weeks_search: 'Szukaj tygodnia, notatki lub wydarzenia', notes_search: 'Szukaj notatek', week_details: 'Szczegóły tygodnia', choose_week: 'Wybierz tydzień po lewej stronie, aby go edytować.', assigned_event: 'Przypisane wydarzenie', priority: 'Priorytet', priority_normal: 'Normalny', priority_important: 'Ważny', priority_critical: 'Krytyczny', letter: 'List', s302: 'S302', week_note: 'Notatka tygodnia', save: 'Zapisz', delete: 'Usuń', delete_week: 'Usuń tydzień', clear_week_confirm: 'Wyczyścić dane wybranego tygodnia?', event_templates: '', events_search: 'Szukaj według nazwy, adresu lub harmonogramu', event_group_filter: 'Grupa / kolor', all_event_groups: 'Wszystkie grupy / kolory', delete_all_events: 'Usuń wszystkie zebrania', delete_all_events_confirm: 'Usunąć wszystkie zebrania i powiązane wpisy kalendarza? Tej czynności nie można cofnąć.', delete_all_events_done: 'Wszystkie zebrania usunięte.', events_shown_count: 'Pokazano: {shown} z {total}', event_editor: 'Edytor zebrania', name: 'Nazwa', color: 'Kolor', address: 'Adres', schedule: 'Harmonogram', clear: 'Wyczyść', save_event: 'Zapisz zebranie', look_and_feel: 'Wygląd', language: 'Język', layout: 'Układ kalendarza', theme_light: 'Jasny', theme_dark: 'Ciemny', layout_help: 'Dostępnych jest 10 układów kalendarza.', data_management: 'Zarządzanie danymi', pdf_print: 'PDF / Druk', add_service_year: 'Dodaj rok służbowy', add_next_year: 'Dodaj kolejny rok', add: 'Dodaj', create_backup: 'Utwórz backup', reset_app: 'Zresetuj aplikację', print_hint: 'PDF korzysta z systemowego druku przeglądarki.', export_pdf_title: 'Eksport do PDF', export_pdf_sub: 'Wybierz format i użyj drukowania przeglądarki.', month_grid: 'Kalendarz miesiąca', period_calendar: 'Kalendarz okresu', month_grid_desc: 'Siatka bieżącego miesiąca do wydruku.', period_calendar_desc: 'Wydruk dla wybranego zakresu dat.', reports: 'Listy wydarzeń i raporty', month_list: 'Lista wydarzeń miesiąca', half_year: 'Wydarzenia za pół roku', year_events: 'Wydarzenia za rok', list_period: 'Lista za okres', year_overview: 'Przegląd roku', notes_report: 'Raport notatek', choose_range: 'Wybierz datę początkową i końcową.', close: 'Zamknij', print: 'Drukuj', export_title: 'Eksport', export_sub: 'Wybierz format eksportu: kopia JSON lub kalendarz (.ics) dla Google/Apple.', json_backup: 'JSON backup', json_backup_desc: 'Pełna kopia zapasowa danych aplikacji.', ics_calendar: 'Kalendarz (.ics)', ics_desc: 'Import do Google Calendar i Apple Calendar.', range_start: 'Początek okresu', range_end: 'Koniec okresu', download: 'Pobierz', google_hint: 'Wskazówka: w Google Calendar otwórz „Ustawienia → Import i eksport → Import”, wybierz plik .ics. W Apple Calendar po prostu otwórz plik.', team_panel: 'Panel zespołu', filter_event: 'Filtr wydarzeń', event_details: 'Szczegóły wydarzenia', no_events_found: 'Brak wyników.', no_notes: 'Brak notatek.', open: 'Otwórz', new_event: 'Nowe zebranie', edit_event: 'Edycja zebrania', choose_template: 'Wybierz szablon', start: 'Początek', end: 'Koniec', delete_event: 'Usuń zebranie', create_entry_help: 'Zostanie utworzony oddzielny wpis kalendarza.', edit_entry_help: 'Możesz zmienić szablon, daty, notatkę lub usunąć wydarzenie.', note: 'Notatka', google_maps: 'Google Maps', google_calendar: 'Google Calendar', apple_calendar: 'Apple / .ics', edit: 'Edytuj', type: 'Typ', type_week: 'Tydzień', type_entry: 'Wpis', template: 'Zebranie', imported_backup: 'Starszy backup został zaimportowany i oczyszczony z duplikatów.', imported_json: 'JSON został pomyślnie zaimportowany.', import_failed: 'Nie udało się zaimportować JSON.', week_saved: 'Tydzień zapisany.', event_template_saved: 'Szablon wydarzenia zapisany.', calendar_event_saved: 'Wpis kalendarza zapisany.', calendar_event_deleted: 'Wydarzenie usunięte.', week_deleted: 'Dane tygodnia wyczyszczone.', reset_confirm: 'Zresetować dane aplikacji?', app_reset: 'Aplikacja została zresetowana.', invalid_year: 'Wpisz poprawny rok, np. 2029.', added_year: 'Dodano rok służbowy {year}', choose_template_dates: 'Wybierz szablon i daty.', wrong_end_date: 'Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.', enter_event_name: 'Wpisz nazwę wydarzenia.', offline: 'Jesteś offline. Zmiany są zapisywane lokalnie.', import_google_single: 'Importuj wydarzenie do kalendarza Google/Apple', add_on_date: 'Dodaj wydarzenie', placeholder_schedule: 'Śr 19:00, Sob 10:00',
+      version: 'Wersja', theme: 'Motyw', export: 'Eksport', import_json: 'Import JSON', hide_team_panel: 'Ukryj panel zespołu', show_team_panel: 'Pokaż panel zespołu', today: 'Dzisiaj', all_events: 'Wszystkie zebrania', service_year: 'Rok służbowy', context: 'Kontekst', event: 'Zebranie', weekend: 'Weekend', today_label: 'Dzisiaj', no_events_month: 'Brak wydarzeń w wybranym miesiącu.', no_note: 'Brak notatki', no_schedule: 'Brak harmonogramu', no_address: 'Adres nie został podany', no_template: 'Nie wybrano zebrania', quick_status: 'Szybki status', years_count: 'Lat służbowych', templates_count: 'Szablonów wydarzeń', entries_count: 'Wpisów kalendarza', notes_count: 'Notatek', weeks_search: 'Szukaj tygodnia, notatki lub wydarzenia', notes_search: 'Szukaj notatek', week_details: 'Szczegóły tygodnia', choose_week: 'Wybierz tydzień po lewej stronie, aby go edytować.', assigned_event: 'Przypisane wydarzenie', priority: 'Priorytet', priority_normal: 'Normalny', priority_important: 'Ważny', priority_critical: 'Krytyczny', letter: 'List', s302: 'S302', week_note: 'Notatka tygodnia', save: 'Zapisz', delete: 'Usuń', delete_week: 'Usuń tydzień', clear_week_confirm: 'Wyczyścić dane wybranego tygodnia?', event_templates: '', events_search: 'Szukaj według nazwy, adresu lub harmonogramu', event_group_filter: 'Grupa / kolor', all_event_groups: 'Wszystkie grupy / kolory', delete_all_events: 'Usuń wszystkie zebrania', delete_all_events_confirm: 'Usunąć wszystkie zebrania i powiązane wpisy kalendarza? Tej czynności nie można cofnąć.', delete_all_events_done: 'Wszystkie zebrania usunięte.', events_shown_count: 'Pokazano: {shown} z {total}', event_editor: 'Edytor zebrania', name: 'Nazwa', color: 'Kolor', address: 'Adres', schedule: 'Harmonogram', clear: 'Wyczyść', save_event: 'Zapisz zebranie', look_and_feel: 'Wygląd', language: 'Język', layout: 'Układ kalendarza', theme_light: 'Jasny', theme_dark: 'Ciemny', layout_help: 'Dostępnych jest 10 układów kalendarza.', data_management: 'Zarządzanie danymi', pdf_print: 'PDF / Druk', add_service_year: 'Dodaj rok służbowy', add_next_year: 'Dodaj kolejny rok', add: 'Dodaj', create_backup: 'Utwórz backup', reset_app: 'Zresetuj aplikację', print_hint: 'PDF korzysta z systemowego druku przeglądarki.', export_pdf_title: 'Eksport do PDF', export_pdf_sub: 'Wybierz format i użyj drukowania przeglądarki.', month_grid: 'Kalendarz miesiąca', period_calendar: 'Kalendarz okresu', month_grid_desc: 'Siatka bieżącego miesiąca do wydruku.', period_calendar_desc: 'Wydruk dla wybranego zakresu dat.', reports: 'Listy wydarzeń i raporty', month_list: 'Lista wydarzeń miesiąca', half_year: 'Wydarzenia za pół roku', year_events: 'Wydarzenia za rok', list_period: 'Lista za okres', year_overview: 'Przegląd roku', notes_report: 'Raport notatek', choose_range: 'Wybierz datę początkową i końcową.', close: 'Zamknij', print: 'Drukuj', export_title: 'Eksport', export_sub: 'Wybierz format eksportu: kopia JSON lub kalendarz (.ics) dla Google/Apple.', json_backup: 'JSON backup', json_backup_desc: 'Pełna kopia zapasowa danych aplikacji.', ics_calendar: 'Kalendarz (.ics)', ics_desc: 'Import do Google Calendar i Apple Calendar.', range_start: 'Początek okresu', range_end: 'Koniec okresu', download: 'Pobierz', google_hint: 'Wskazówka: w Google Calendar otwórz „Ustawienia → Import i eksport → Import”, wybierz plik .ics. W Apple Calendar po prostu otwórz plik.',
+      sync_title: 'Ręczna synchronizacja', sync_hint: 'Bez API: na głównym laptopie pobierz plik synchronizacji i umieść go w Google Drive. Na innym urządzeniu pobierz ten plik z Drive i wczytaj go tutaj.', sync_export: 'Pobierz synchronizację', sync_import: 'Wczytaj synchronizację', sync_export_done: 'Plik synchronizacji utworzony. Umieść go w Google Drive.', sync_import_confirm: 'Zastąpić bieżące dane danymi z pliku synchronizacji?', sync_import_done: 'Dane synchronizacji wczytane.', sync_import_failed: 'Nie udało się wczytać pliku synchronizacji.', sync_no_file: 'Wybierz plik JSON synchronizacji.', sync_last_export: 'Ostatnie pobranie', sync_last_import: 'Ostatnie wczytanie', sync_never: 'Synchronizacja nie była jeszcze uruchamiana.', team_panel: 'Panel zespołu', filter_event: 'Filtr wydarzeń', event_details: 'Szczegóły wydarzenia', no_events_found: 'Brak wyników.', no_notes: 'Brak notatek.', open: 'Otwórz', new_event: 'Nowe zebranie', edit_event: 'Edycja zebrania', choose_template: 'Wybierz szablon', start: 'Początek', end: 'Koniec', delete_event: 'Usuń zebranie', create_entry_help: 'Zostanie utworzony oddzielny wpis kalendarza.', edit_entry_help: 'Możesz zmienić szablon, daty, notatkę lub usunąć wydarzenie.', note: 'Notatka', google_maps: 'Google Maps', google_calendar: 'Google Calendar', apple_calendar: 'Apple / .ics', edit: 'Edytuj', type: 'Typ', type_week: 'Tydzień', type_entry: 'Wpis', template: 'Zebranie', imported_backup: 'Starszy backup został zaimportowany i oczyszczony z duplikatów.', imported_json: 'JSON został pomyślnie zaimportowany.', import_failed: 'Nie udało się zaimportować JSON.', week_saved: 'Tydzień zapisany.', event_template_saved: 'Szablon wydarzenia zapisany.', calendar_event_saved: 'Wpis kalendarza zapisany.', calendar_event_deleted: 'Wydarzenie usunięte.', week_deleted: 'Dane tygodnia wyczyszczone.', reset_confirm: 'Zresetować dane aplikacji?', app_reset: 'Aplikacja została zresetowana.', invalid_year: 'Wpisz poprawny rok, np. 2029.', added_year: 'Dodano rok służbowy {year}', choose_template_dates: 'Wybierz szablon i daty.', wrong_end_date: 'Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.', enter_event_name: 'Wpisz nazwę wydarzenia.', offline: 'Jesteś offline. Zmiany są zapisywane lokalnie.', import_google_single: 'Importuj wydarzenie do kalendarza Google/Apple', add_on_date: 'Dodaj wydarzenie', placeholder_schedule: 'Śr 19:00, Sob 10:00',
       delete_note: 'Usuń notatkę',
       delete_template: 'Usuń zebranie',
       delete_note_confirm: 'Usunąć tę notatkę?',
-      delete_all_notes: 'Usuń wszystkie notatki', delete_all_notes_confirm: 'Usunąć wszystkie notatki we wszystkich latach służbowych? Tej czynności nie można cofnąć.', delete_all_notes_done: 'Wszystkie notatki usunięte.',
-      auto_check_summary: 'Kontrola wysyłki: do wysłania — S-302: {s302}, list: {letter}.', auto_check_ok: 'Kontrola wysyłki zakończona: teraz nic nie jest wymagane.', send_not_yet_due: 'Jeszcze nie trzeba', send_due_now: 'Do wysłania', send_overdue: 'Po terminie', s302_deadline_hint: 'S-302: około 6 miesięcy przed początkiem wydarzenia.', letter_deadline_hint: 'List: około 60 dni przed początkiem wydarzenia.',
       delete_template_confirm: 'Usunąć szablon wydarzenia',
       calendar_view_month: 'Widok: miesiąc',
       calendar_view_year: 'Widok: rok służbowy',
@@ -315,21 +311,6 @@
           'END:VEVENT','END:VCALENDAR'
         ];
         return `${lines.join('\r\n')}\r\n`;
-      },
-      addMonths(date, months) { const d = new Date(date); const day = d.getDate(); d.setMonth(d.getMonth() + months); if (d.getDate() < day) d.setDate(0); return d; },
-      sendDueInfo(startIso, flags = {}) {
-        const start = this.parseLocalDate(startIso);
-        const today = this.parseLocalDate(this.iso(new Date()));
-        if (!start || !today) return { s302:{ due:false, overdue:false, done:!!flags.f302, deadline:null, pending:false, statusKey:'send_not_yet_due' }, letter:{ due:false, overdue:false, done:!!flags.letter, deadline:null, pending:false, statusKey:'send_not_yet_due' } };
-        const s302Deadline = this.addMonths(start, -6);
-        const letterDeadline = this.addDays(start, -60);
-        const make = (deadline, done) => {
-          const due = today >= deadline;
-          const overdue = due && today > start;
-          const statusKey = done ? 'sent_done' : (!due ? 'send_not_yet_due' : (overdue ? 'send_overdue' : 'send_due_now'));
-          return { deadline, due, overdue, done, pending: due && !done, statusKey };
-        };
-        return { s302: make(s302Deadline, !!flags.f302), letter: make(letterDeadline, !!flags.letter) };
       }
     },
 
@@ -338,10 +319,10 @@
         const out = { ...settings }; if (typeof out.showTeamPanel !== 'boolean') out.showTeamPanel = true; if (!out.language) out.language = 'ru'; if (!out.theme) out.theme = 'light'; if (!out.layoutPreset) out.layoutPreset = 'classic'; if (!out.calendarView) out.calendarView = 'month'; if (!out.accentColor) out.accentColor = 'green'; if (!out.fontSize) out.fontSize = '100'; return out;
       },
       createDefaultData() {
-        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.5.6-year-bars-send-alert' } };
+        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.5.7-manual-sync' } };
       },
       convertLegacyBackup(legacy) {
-        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.5.6-year-bars-send-alert', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
+        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.5.7-manual-sync', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
         const eventMap = new Map(); const legacyMeetings = Array.isArray(legacy.meetings) ? legacy.meetings : [];
         const ensureEvent = (name, source = {}) => { const cleanName = String(name || '').trim(); if (!cleanName) return ''; if (eventMap.has(cleanName)) return eventMap.get(cleanName); const id = `evt_${App.utils.slug(cleanName) || App.utils.uid('evt')}`; const scheduleParts = []; if (source.wd && source.tWD) scheduleParts.push(`${source.wd} ${source.tWD}`); if (source.we && source.tWE) scheduleParts.push(`${source.we} ${source.tWE}`); app.events.push({ id, name: cleanName, color: App.utils.clampColor(source.color, '#1f7a45'), address: source.addr || source.address || '', schedule: scheduleParts.join(', ') }); eventMap.set(cleanName, id); return id; };
         legacyMeetings.forEach((meeting) => ensureEvent(meeting?.name, meeting || {}));
@@ -366,7 +347,7 @@
       },
       normalizeApp(appData) {
         const app = appData && typeof appData === 'object' ? appData : this.createDefaultData();
-        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.5.6-year-bars-send-alert' };
+        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.5.7-manual-sync' };
         app.events = App.utils.uniqueBy(app.events.map((item) => ({ id: item.id || App.utils.uid('evt'), name: item.name || 'Без названия', color: App.utils.clampColor(item.color), address: item.address || '', schedule: item.schedule || '' })), (item) => [item.name,item.color,item.address,item.schedule].join('|'));
         app.entries = App.utils.uniqueBy(app.entries.filter((item) => item && item.start && item.end).map((item) => ({ id: item.id || App.utils.uid('entry'), eventId: item.eventId || '', start: App.utils.iso(item.start), end: App.utils.iso(item.end), title: item.title || '', note: item.note || '', flags: { f302: !!item?.flags?.f302, letter: !!item?.flags?.letter }, source: item.source || 'entry' })), (item) => [item.eventId,item.title,item.note,item.start,item.end].join('|'));
         Object.keys(app.serviceYears).forEach((year) => {
@@ -374,7 +355,7 @@
           Object.keys(sy.weeks).forEach((weekId) => { const w = sy.weeks[weekId]; if (!w) return; const start = App.utils.iso(w.start || weekId); const end = App.utils.iso(w.end || App.utils.addDays(App.utils.parseLocalDate(start), 6)); sy.weeks[weekId] = { id: w.id || weekId, weekId, start, end, eventId: w.eventId || '', priority: w.priority || 'normal', flagLetter: !!w.flagLetter, flagS302: !!w.flagS302, note: w.note || '' }; });
           app.serviceYears[year] = sy;
         });
-        app.meta.version = '9.5.6-year-bars-send-alert';
+        app.meta.version = '9.5.7-manual-sync';
         return app;
       },
       migrate(appData) { return this.normalizeApp(appData && appData.schema === 'sp-backup-v2' ? this.convertLegacyBackup(appData) : appData); },
@@ -523,17 +504,6 @@
         App.ui.renderAll();
         App.utils.toast(App.utils.t('delete_note'));
       },
-      deleteAllNotes() {
-        const total = Object.values(App.state.app.serviceYears || {}).reduce((sum, sy) => sum + Object.values(sy.weeks || {}).filter((week) => week.note).length, 0);
-        if (!total) return;
-        if (!window.confirm(App.utils.t('delete_all_notes_confirm'))) return;
-        Object.values(App.state.app.serviceYears || {}).forEach((sy) => Object.values(sy.weeks || {}).forEach((week) => { week.note = ''; }));
-        App.state.noteSearch = '';
-        if (App.els.noteSearch) App.els.noteSearch.value = '';
-        App.store.save();
-        App.ui.renderAll();
-        App.utils.toast(App.utils.t('delete_all_notes_done'));
-      },
       saveWeek() {
         if (!App.state.selectedWeekId) return; const week = App.data.getWeek(App.state.selectedYear, App.state.selectedWeekId); week.eventId = App.els.weekEventSelect?.value || ''; week.priority = App.els.weekPrioritySelect?.value || 'normal'; week.flagLetter = !!App.els.flagLetter?.checked; week.flagS302 = !!App.els.flagS302?.checked; week.note = App.els.weekNoteInput?.value.trim() || ''; App.store.save(); App.ui.renderAll(); App.utils.toast(App.utils.t('week_saved'));
       },
@@ -590,31 +560,58 @@
         App.store.save();
         App.ui.renderCalendar();
       },
-      runSendChecklistAudit(showToast = true) {
-        const counts = { s302: 0, letter: 0 };
-        Object.values(App.state.app.serviceYears || {}).forEach((sy) => {
-          Object.values(sy.weeks || {}).forEach((week) => {
-            if (!week.eventId) return;
-            const due = App.utils.sendDueInfo(week.start, { f302: !!week.flagS302, letter: !!week.flagLetter });
-            if (due.s302.pending) counts.s302 += 1;
-            if (due.letter.pending) counts.letter += 1;
-          });
-        });
-        (App.state.app.entries || []).forEach((entry) => {
-          if (!entry.flags) entry.flags = { f302: false, letter: false };
-          const due = App.utils.sendDueInfo(entry.start, entry.flags);
-          if (due.s302.pending) counts.s302 += 1;
-          if (due.letter.pending) counts.letter += 1;
-        });
-        App.state.sendAudit = { ...counts, checkedAt: App.utils.iso(new Date()) };
+      exportSyncFile() {
+        const now = new Date().toISOString();
         App.state.app.meta = App.state.app.meta || {};
-        App.state.app.meta.lastSendChecklistAudit = App.state.sendAudit.checkedAt;
+        App.state.app.meta.lastSyncExportAt = now;
+        App.state.app.meta.version = '9.5.7-manual-sync';
         App.store.save();
-        if (showToast) {
-          const message = (counts.s302 || counts.letter) ? App.utils.t('auto_check_summary', counts) : App.utils.t('auto_check_ok');
-          window.setTimeout(() => App.utils.toast(message), 500);
-        }
-        return counts;
+        const payload = {
+          schema: 'service-year-planner-sync-v1',
+          exportedAt: now,
+          appVersion: 'v9.5.7-manual-sync',
+          source: 'manual-file-sync',
+          payload: App.state.app
+        };
+        App.utils.downloadText(`service-year-planner-sync-${App.utils.iso(new Date())}.json`, JSON.stringify(payload, null, 2), 'application/json;charset=utf-8');
+        App.ui.renderSettings();
+        App.utils.toast(App.utils.t('sync_export_done'));
+      },
+      importSyncFile(file) {
+        if (!file) return App.utils.toast(App.utils.t('sync_no_file'));
+        if (!window.confirm(App.utils.t('sync_import_confirm'))) { if (App.els.syncImportInput) App.els.syncImportInput.value = ''; return; }
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(String(reader.result || '{}'));
+            const rawPayload = parsed?.payload || parsed?.app || parsed;
+            App.state.app = App.store.migrate(rawPayload);
+            App.state.app.meta = App.state.app.meta || {};
+            App.state.app.meta.lastSyncImportAt = new Date().toISOString();
+            App.state.app.meta.lastSyncSourceExportedAt = parsed?.exportedAt || '';
+            App.state.app.meta.version = '9.5.7-manual-sync';
+            App.store.save();
+            const years = Object.keys(App.state.app.serviceYears || {}).map(Number).sort((a,b) => a - b);
+            const currentSY = App.utils.getServiceYearForDate(new Date());
+            const preferredSY = years.includes(currentSY) ? currentSY : (years.length ? years[years.length - 1] : currentSY);
+            App.state.selectedYear = preferredSY;
+            App.data.ensureServiceYear(preferredSY);
+            App.data.getWeeksForYear(preferredSY);
+            const bounds = App.utils.serviceYearBounds(preferredSY);
+            const now = new Date();
+            const showDate = (now >= bounds.start && now <= bounds.end) ? now : bounds.start;
+            App.state.calendarYear = showDate.getFullYear();
+            App.state.calendarMonth = showDate.getMonth();
+            App.ui.renderAll();
+            App.utils.toast(App.utils.t('sync_import_done'));
+          } catch (error) {
+            console.error(error);
+            App.utils.toast(App.utils.t('sync_import_failed'));
+          }
+          if (App.els.syncImportInput) App.els.syncImportInput.value = '';
+        };
+        reader.onerror = () => { App.utils.toast(App.utils.t('sync_import_failed')); if (App.els.syncImportInput) App.els.syncImportInput.value = ''; };
+        reader.readAsText(file, 'utf-8');
       },
       exportJson() { App.utils.downloadText(`service-year-planner-${App.utils.iso(new Date())}.json`, JSON.stringify(App.state.app, null, 2), 'application/json;charset=utf-8'); },
       exportIcs() {
@@ -728,11 +725,11 @@
           'editorCancelBtn','editorDeleteBtn','editorSaveBtn','calendarServiceYearLabel','calendarPanelYearLabel',
           'calendarQuickList','calendarSideTitle','calendarSideMeta','calendarSideDetails','calendarEventQuickFilter',
           'toggleTeamPanelBtn','calendarLayout','eventsList','eventSearchInput','eventColorFilter','deleteAllEventsBtn','eventsListCount','eventNameInput','eventColorInput','eventAddressInput',
-          'eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','deleteAllNotesBtn','notesList','languageSelect','themeSelect','accentSelect','fontSizeSelect',
+          'eventScheduleInput','resetEventBtn','saveEventBtn','noteSearch','notesList','languageSelect','themeSelect','accentSelect','fontSizeSelect',
           'settingsPdfBtn','backupBtn','resetAppBtn','themeBtn','exportBtn','importInput','pdfModal','pdfModalCloseBtn',
           'pdfCancelBtn','pdfExportConfirmBtn','pdfRangeCard','pdfRangeStartInput','pdfRangeEndInput','pdfRangeHelp','pdfHint',
           'bottomNav','bottomNavRow','mobileOverlay','mobileMenuToggleBtn','exportModal','exportModalCloseBtn','exportCancelBtn',
-          'exportConfirmBtn','exportRangeCard','exportRangeStartInput','exportRangeEndInput','exportRangeHelp','addYearInput','addNextYearBtn','addYearBtn'
+          'exportConfirmBtn','exportRangeCard','exportRangeStartInput','exportRangeEndInput','exportRangeHelp','syncTitle','syncHint','syncExportBtn','syncImportInput','syncImportLabel','syncStatus','addYearInput','addNextYearBtn','addYearBtn'
         ].forEach((id) => { App.els[id] = document.getElementById(id); });
       },
       cleanupCalendarChrome() {
@@ -794,17 +791,20 @@
         const qa = (sel) => Array.from(document.querySelectorAll(sel));
         this.localizeColorOptions();
         const brandH1 = q('.brand h1'); if (brandH1) brandH1.textContent = App.utils.t('appTitle');
-        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.6-year-bars-send-alert • index.html + app.js`;
-        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.6-year-bars-send-alert`;
+        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.7-manual-sync • index.html + app.js`;
+        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.7-manual-sync`;
         if (App.els.themeBtn) App.els.themeBtn.textContent = App.utils.t('theme');
         if (App.els.exportBtn) App.els.exportBtn.textContent = App.utils.t('export');
+        if (App.els.syncTitle) App.els.syncTitle.textContent = App.utils.t('sync_title');
+        if (App.els.syncHint) App.els.syncHint.textContent = App.utils.t('sync_hint');
+        if (App.els.syncExportBtn) App.els.syncExportBtn.textContent = App.utils.t('sync_export');
+        if (App.els.syncImportLabel) App.els.syncImportLabel.textContent = App.utils.t('sync_import');
         const importLabel = q('label[for="importInput"]'); if (importLabel) importLabel.textContent = App.utils.t('import_json');
         if (App.els.offlineBanner) App.els.offlineBanner.textContent = App.utils.t('offline');
         if (App.els.toggleTeamPanelBtn) App.els.toggleTeamPanelBtn.textContent = App.state.calendarView === 'year' ? App.utils.t('calendar_view_month') : App.utils.t('calendar_view_year');
         if (App.els.todayMonthBtn) App.els.todayMonthBtn.textContent = App.utils.t('today');
         if (App.els.weekSearch) App.els.weekSearch.placeholder = App.utils.t('weeks_search');
         if (App.els.noteSearch) App.els.noteSearch.placeholder = App.utils.t('notes_search');
-        if (App.els.deleteAllNotesBtn) App.els.deleteAllNotesBtn.textContent = App.utils.t('delete_all_notes');
         if (App.els.eventScheduleInput) App.els.eventScheduleInput.placeholder = App.utils.t('placeholder_schedule');
         const headings = qa('#events h3, #settings h3');
         if (headings[0]) { headings[0].textContent = ''; headings[0].hidden = true; headings[0].style.display = 'none'; }
@@ -1091,7 +1091,7 @@
  .flag-badge{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:2px 6px;font-size:10px;font-weight:700;color:var(--text)}
  .calendar-action-grid{display:grid;gap:8px;margin-top:12px}.entry-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.entry-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}.side-item-card{padding:10px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
  
- /* v9.5.6-year-bars-send-alert: day popover for service-year mini calendar */
+ /* v9.5.7-manual-sync: day popover for service-year mini calendar */
  .day-popover{position:fixed;z-index:3200;min-width:260px;max-width:min(340px,calc(100vw - 24px));background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 55px rgba(0,0,0,.22);padding:14px;font-size:13px;line-height:1.35}
  .day-popover[hidden]{display:none !important}
  .day-popover-title{font-weight:800;font-size:14px;margin-bottom:3px}
@@ -1105,7 +1105,7 @@
  .day-popover-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}
  .sy-day.has-events:hover{outline:2px solid var(--accent);outline-offset:1px}
  
- /* v9.5.6-year-bars-send-alert: stable popover + sending workflow */
+ /* v9.5.7-manual-sync: stable popover + sending workflow */
  .calendar-details-card #calendarSideDetails .side-item-card:has(.entry-actions){display:none !important}
 
  .day-popover{pointer-events:auto !important}
@@ -1127,10 +1127,6 @@
  @media (max-width:680px){.day-popover{left:12px !important;right:12px !important;top:auto !important;bottom:86px !important;max-width:none;width:auto}.day-popover-actions .btn{flex:1 1 auto}}
  
 
-
-          /* v9.5.6: service-year bars instead of dots */
-          .sy-days,.sy-event-dots,.sy-event-dot,.sy-event-labels,.sy-event-label{display:none !important}
-          .sy-weeks{display:grid;gap:4px}.sy-week-row{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;min-height:52px;align-items:start}.sy-week-row .sy-day,.sy-week-row .sy-empty{min-height:34px}.sy-period-bar{position:absolute;z-index:3;left:calc((100% / 7) * var(--bar-left) + 2px);width:calc((100% / 7) * var(--bar-span) - 4px);top:calc(21px + (var(--bar-lane) * 15px));height:14px;border:0;border-radius:999px;background:color-mix(in srgb, var(--bar-color) 28%, white);color:#163024;padding:0 7px;font-size:9px;line-height:14px;box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--bar-color) 50%, transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;cursor:pointer}.sy-period-bar span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sy-period-bar:hover{filter:brightness(.98);box-shadow:0 2px 8px rgba(0,0,0,.14), inset 0 0 0 1px var(--bar-color)}.sy-bar-more{position:absolute;right:4px;bottom:0;font-size:9px;color:var(--muted)}@supports not (background: color-mix(in srgb, red 20%, white)){.sy-period-bar{background:#dff1d7}}@media (max-width:680px){.sy-week-row{min-height:48px}.sy-period-bar{font-size:8px;height:13px;line-height:13px;padding:0 5px;top:calc(20px + (var(--bar-lane) * 14px))}}
 `;
         document.head.appendChild(style);
       },
@@ -1205,7 +1201,9 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
         this.renderLayoutOptions();
         const bounds = App.utils.serviceYearBounds(serviceYear);
         const yearItems = [];
-        this.buildServiceYearMonths(serviceYear).forEach(({ month, year }) => { yearItems.push(...App.data.buildCalendarItemsForMonth(month, year)); });
+        this.buildServiceYearMonths(serviceYear).forEach(({ month, year }) => {
+          yearItems.push(...App.data.buildCalendarItemsForMonth(month, year));
+        });
         const filteredYearItems = App.utils.uniqueBy(yearItems, (item) => [item.id,item.eventId,item.start.toISOString().slice(0,10),item.end.toISOString().slice(0,10)].join('|'));
         if (App.els.monthLabel) App.els.monthLabel.textContent = `${App.utils.t('service_year')} ${App.utils.serviceYearLabel(serviceYear)}`;
         if (App.els.calendarServiceYearLabel) App.els.calendarServiceYearLabel.textContent = `${App.utils.t('service_year')}: ${App.utils.serviceYearLabel(serviceYear)}`;
@@ -1215,60 +1213,57 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
         const filterOptions = ['<option value="all">' + App.utils.t('all_events') + '</option>'].concat(App.state.app.events.map((event) => `<option value="${App.utils.escapeAttr(event.id)}">${App.utils.escapeHtml(event.name)}</option>`));
         if (App.els.calendarEventQuickFilter) { App.els.calendarEventQuickFilter.innerHTML = filterOptions.join(''); App.els.calendarEventQuickFilter.value = App.state.calendarEventFilter; }
         if (App.els.eventFilter) { App.els.eventFilter.innerHTML = filterOptions.join(''); App.els.eventFilter.value = App.state.calendarEventFilter; }
-        if (App.els.calendarYearSelect) { App.els.calendarYearSelect.innerHTML = Array.from({ length: 9 }, (_, i) => serviceYear - 4 + i).map((y) => `<option value="${y}">${App.utils.serviceYearLabel(y)}</option>`).join(''); App.els.calendarYearSelect.value = String(serviceYear); }
+        if (App.els.calendarYearSelect) {
+          App.els.calendarYearSelect.innerHTML = Array.from({ length: 9 }, (_, i) => serviceYear - 4 + i).map((y) => `<option value="${y}">${App.utils.serviceYearLabel(y)}</option>`).join('');
+          App.els.calendarYearSelect.value = String(serviceYear);
+        }
         const dayNames = App.utils.dayNames();
         const todayIso = App.utils.iso(new Date());
-        const renderMonth = ({ month, year }) => {
+        const html = this.buildServiceYearMonths(serviceYear).map(({ month, year }) => {
           const monthStart = new Date(year, month, 1);
           const monthEnd = new Date(year, month + 1, 0);
+          const firstOffset = (monthStart.getDay() + 6) % 7;
+          const days = [];
+          for (let i = 0; i < firstOffset; i += 1) days.push('<div class="sy-empty"></div>');
           const items = App.data.buildCalendarItemsForMonth(month, year);
-          const rows = [];
-          let weekStart = App.utils.startOfWeek(monthStart);
-          const lastWeekStart = App.utils.startOfWeek(monthEnd);
-          while (weekStart <= lastWeekStart) {
-            const weekEnd = App.utils.addDays(weekStart, 6);
-            const dayCells = [];
-            for (let i = 0; i < 7; i += 1) {
-              const date = App.utils.addDays(weekStart, i);
-              const iso = App.utils.iso(date);
-              if (date.getMonth() !== month) dayCells.push('<div class="sy-empty"></div>');
-              else {
-                const hasEvents = items.some((item) => App.utils.overlaps(item.start, item.end, date, date));
-                dayCells.push(`<button class="sy-day ${iso === todayIso ? 'today' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'weekend' : ''} ${hasEvents ? 'has-events' : ''} ${App.state.calendarSelectedDateIso === iso ? 'selected' : ''}" type="button" data-add-date="${App.utils.escapeAttr(iso)}" title="${App.utils.escapeAttr(hasEvents ? App.utils.t('day_details_title') : App.utils.t('add_on_date'))}"><span>${date.getDate()}</span></button>`);
-              }
-            }
-            const overlapping = items.filter((item) => {
-              const segmentStart = new Date(Math.max(item.start.getTime(), monthStart.getTime(), weekStart.getTime()));
-              const segmentEnd = new Date(Math.min(item.end.getTime(), monthEnd.getTime(), weekEnd.getTime()));
-              return segmentStart <= segmentEnd;
-            });
-            const weekBars = overlapping.slice(0, 3).map((item, lane) => {
-              const segmentStart = new Date(Math.max(item.start.getTime(), monthStart.getTime(), weekStart.getTime()));
-              const segmentEnd = new Date(Math.min(item.end.getTime(), monthEnd.getTime(), weekEnd.getTime()));
-              const left = Math.max(0, App.utils.daysDiff(segmentStart, weekStart));
-              const right = Math.min(6, App.utils.daysDiff(segmentEnd, weekStart));
-              const span = Math.max(1, right - left + 1);
-              const color = App.utils.clampColor(item.color);
-              return `<button class="sy-period-bar" data-detail-calendar-item="${App.utils.escapeAttr(item.id)}" type="button" style="--bar-left:${left};--bar-span:${span};--bar-lane:${lane};--bar-color:${color};" title="${App.utils.escapeAttr(item.title)}"><span>${App.utils.escapeHtml(item.title)}</span></button>`;
-            }).join('');
-            const overflow = Math.max(0, overlapping.length - 3);
-            rows.push(`<div class="sy-week-row">${dayCells.join('')}${weekBars}${overflow ? `<span class="sy-bar-more">+${overflow}</span>` : ''}</div>`);
-            weekStart = App.utils.addDays(weekStart, 7);
+          for (let day = 1; day <= monthEnd.getDate(); day += 1) {
+            const date = new Date(year, month, day);
+            const iso = App.utils.iso(date);
+            const dayItems = items.filter((item) => App.utils.overlaps(item.start, item.end, date, date));
+            const dots = dayItems.slice(0, 3).map((item) => `<span class="sy-event-dot" style="background:${App.utils.clampColor(item.color)}"></span>`).join('');
+            const count = dayItems.length > 3 ? `<span class="sy-count">+${dayItems.length - 3}</span>` : '';
+            days.push(`<button class="sy-day ${iso === todayIso ? 'today' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'weekend' : ''} ${dayItems.length ? 'has-events' : ''} ${App.state.calendarSelectedDateIso === iso ? 'selected' : ''}" type="button" data-add-date="${App.utils.escapeAttr(iso)}" title="${App.utils.escapeAttr(dayItems.length ? App.utils.t('day_details_title') : App.utils.t('add_on_date'))}"><span>${day}</span>${count}<span class="sy-event-dots">${dots}</span></button>`);
           }
-          return `<section class="sy-month-card"><div class="sy-month-title"><span>${App.utils.monthName(month)}</span><small>${year}</small></div><div class="sy-dow">${dayNames.map((name) => `<span>${name}</span>`).join('')}</div><div class="sy-weeks">${rows.join('')}</div></section>`;
-        };
-        if (App.els.calendarGrid) App.els.calendarGrid.innerHTML = `<div class="service-year-grid">${this.buildServiceYearMonths(serviceYear).map(renderMonth).join('')}</div>`;
+          // Monthly summary dots removed: the bottom row of colored dots under each month is intentionally hidden.
+          return `<section class="sy-month-card"><div class="sy-month-title"><span>${App.utils.monthName(month)}</span><small>${year}</small></div><div class="sy-dow">${dayNames.map((name) => `<span>${name}</span>`).join('')}</div><div class="sy-days">${days.join('')}</div></section>`;
+        }).join('');
+        const legendHtml = '';
+        if (App.els.calendarGrid) App.els.calendarGrid.innerHTML = `${legendHtml}<div class="service-year-grid">${html}</div>`;
         const quickItems = filteredYearItems.sort((a,b) => a.start - b.start || a.end - b.end);
         if (App.els.calendarQuickList) App.els.calendarQuickList.innerHTML = quickItems.slice(0, 24).map((item) => `<button class="side-item" type="button" data-detail-calendar-item="${App.utils.escapeAttr(item.id)}"><strong>${App.utils.escapeHtml(item.title)}</strong><div class="small">${App.utils.prettyDate(item.start)} — ${App.utils.prettyDate(item.end)}</div><div class="small">${App.utils.escapeHtml(item.note || App.utils.t('no_note'))}</div></button>`).join('') || `<div class="empty">${App.utils.t('no_events_month')}</div>`;
         const detail = quickItems.find((item) => item.id === App.state.calendarDetailId) || quickItems[0] || null;
         this.renderCalendarDetails(detail);
         if (App.state.calendarSelectedDateIso) this.renderServiceYearDayDetails(App.state.calendarSelectedDateIso);
-        document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
-          btn.addEventListener('click', (e) => { e.stopPropagation(); const dateIso = btn.dataset.addDate; App.state.calendarSelectedDateIso = dateIso; App.ui.renderCalendar(); const fresh = Array.from(document.querySelectorAll('.sy-day[data-add-date]')).find((node) => node.dataset.addDate === dateIso) || btn; App.ui.showServiceYearDayPopover(fresh, dateIso, true); });
-          btn.addEventListener('mouseenter', () => { if (!window.matchMedia('(hover:hover)').matches || !btn.classList.contains('has-events')) return; App.ui.showServiceYearDayPopover(btn, btn.dataset.addDate, false); });
-          btn.addEventListener('mouseleave', () => { if (!window.matchMedia('(hover:hover)').matches) return; window.setTimeout(() => App.ui.hideDayPopover(false), 260); });
-        });
-        document.querySelectorAll('[data-detail-calendar-item]').forEach((btn) => btn.addEventListener('click', (e) => { e.stopPropagation(); const item = quickItems.find((entry) => entry.id === btn.dataset.detailCalendarItem) || App.data.getCalendarItemById(btn.dataset.detailCalendarItem); App.state.calendarDetailId = item?.id || null; App.ui.renderCalendarDetails(item || null); }));
+        
+document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
+ btn.addEventListener('click', (e) => {
+ e.stopPropagation();
+ const dateIso = btn.dataset.addDate;
+ App.state.calendarSelectedDateIso = dateIso;
+ App.ui.renderCalendar();
+ const fresh = Array.from(document.querySelectorAll('.sy-day[data-add-date]')).find((node) => node.dataset.addDate === dateIso) || btn;
+ App.ui.showServiceYearDayPopover(fresh, dateIso, true);
+ });
+ btn.addEventListener('mouseenter', () => {
+ if (!window.matchMedia('(hover:hover)').matches || !btn.classList.contains('has-events')) return;
+ App.ui.showServiceYearDayPopover(btn, btn.dataset.addDate, false);
+ });
+ btn.addEventListener('mouseleave', () => {
+ if (!window.matchMedia('(hover:hover)').matches) return;
+ window.setTimeout(() => App.ui.hideDayPopover(false), 260);
+ });
+});
+        document.querySelectorAll('[data-detail-calendar-item]').forEach((btn) => btn.addEventListener('click', () => { const item = quickItems.find((entry) => entry.id === btn.dataset.detailCalendarItem); App.state.calendarDetailId = item?.id || null; App.ui.renderCalendarDetails(item || null); }));
       },
       renderCalendar() {
         const viewMonthStart = new Date(App.state.calendarYear, App.state.calendarMonth, 1);
@@ -1323,23 +1318,21 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
           if (flags.letter) out.push(`<span class="flag-badge">✉</span>`);
           return out.length ? `<span class="flag-badges">${out.join('')}</span>` : '';
         };
-        const flagToggles = (scope, id, flags = {}, startIso = '') => {
-          const due = App.utils.sendDueInfo(startIso, flags);
-          const status = (info) => App.utils.t(info.statusKey || 'send_not_yet_due');
-          const deadlineText = (info) => info.deadline ? App.utils.prettyDateLong(info.deadline) : '—';
-          const card = (flag, label, info, hintKey) => `
-            <div class="send-card ${info.done ? 'is-done' : (info.pending ? 'is-pending' : '')}">
-              <div class="send-card-top"><span>${label}</span><span class="send-status">${status(info)}</span></div>
-              <div class="small">${App.utils.t('deadline')}: ${deadlineText(info)}</div>
-              <div class="small">${App.utils.t(hintKey)}</div>
-              <label class="send-toggle"><input type="checkbox" data-${scope}-flag="${flag}" data-${scope}-id="${App.utils.escapeAttr(id)}" ${info.done ? 'checked' : ''}> ${App.utils.t('sent_done')}</label>
-            </div>`;
-          return `
-            <div class="send-control" aria-label="${App.utils.escapeAttr(App.utils.t('sent_status'))}">
-              <div class="send-control-head"><div><div class="send-control-title">${App.utils.t('send_control')}</div><div class="send-control-hint">${App.utils.t('auto_check_summary', App.state.sendAudit || { s302: 0, letter: 0 })}</div></div></div>
-              <div class="send-control-grid">${card('letter', App.utils.t('letter_short'), due.letter, 'letter_deadline_hint')}${card('s302', App.utils.t('s302_short'), due.s302, 's302_deadline_hint')}</div>
-            </div>`;
-        };
+        const flagToggles = (scope, id, flags = {}) => { 
+ const s302Done = !!flags.f302; 
+ const letterDone = !!flags.letter; 
+ const status = (done) => done ? App.utils.t('sent_done') : App.utils.t('needs_sending'); 
+ const card = (flag, label, done) => ` 
+ <div class="send-card ${done ? 'is-done' : 'is-pending'}"> 
+ <div class="send-card-top"><span>${label}</span><span class="send-status">${status(done)}</span></div> 
+ <label class="send-toggle"><input type="checkbox" data-${scope}-flag="${flag}" data-${scope}-id="${App.utils.escapeAttr(id)}" ${done ? 'checked' : ''}> ${App.utils.t('sent_done')}</label> 
+ </div>`; 
+ return ` 
+ <div class="send-control" aria-label="${App.utils.escapeAttr(App.utils.t('sent_status'))}"> 
+ <div class="send-control-head"><div><div class="send-control-title">${App.utils.t('send_control')}</div><div class="send-control-hint">${App.utils.t('before_visit_hint')}</div></div></div> 
+ <div class="send-control-grid">${card('letter', App.utils.t('letter_short'), letterDone)}${card('s302', App.utils.t('s302_short'), s302Done)}</div> 
+ </div>`; 
+};
         const dayEntries = App.state.app.entries
           .filter((entry) => {
             const es = App.utils.parseLocalDate(entry.start);
@@ -1368,7 +1361,7 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
         const weekActions = weekItem ? `
           <div class="side-row"><div class="side-label">${App.utils.t('address')}</div><div class="side-value">${weekAddress}</div></div>
           <div class="side-row"><div class="side-label">${App.utils.t('schedule')}</div><div class="side-value">${App.utils.escapeHtml(weekEvent?.schedule || App.utils.t('no_schedule'))}</div></div>
-          ${flagToggles('week', weekId, weekItem.flags, week.start)}
+          ${flagToggles('week', weekId, weekItem.flags)}
           <div class="calendar-action-grid">
             <button class="btn" type="button" id="syAddEntryBtn">${App.utils.t('add_entry')}</button>
             <button class="btn" type="button" id="syEditWeekBtn">${App.utils.t('edit_week_event')}</button>
@@ -1377,7 +1370,7 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
             <button class="btn" type="button" data-ics-id="${App.utils.escapeAttr(weekItem.id)}">${App.utils.t('apple_calendar')}</button>
             ${weekEvent?.address ? `<a class="btn" href="${App.utils.mapUrl(weekEvent.address)}" target="_blank" rel="noopener noreferrer">${App.utils.t('google_maps')}</a>` : ''}
           </div>` : `
-          ${flagToggles('week', weekId, { f302: !!week.flagS302, letter: !!week.flagLetter }, week.start)}
+          ${flagToggles('week', weekId, { f302: !!week.flagS302, letter: !!week.flagLetter })}
           <div class="calendar-action-grid">
             <button class="btn" type="button" id="syAddEntryBtn">${App.utils.t('add_entry')}</button>
             <button class="btn" type="button" id="syEditWeekBtn">${App.utils.t('edit_week_event')}</button>
@@ -1399,7 +1392,7 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
               <div class="small">${it.start} — ${it.end}</div>
               <div class="small">${App.utils.escapeHtml(it.note || App.utils.t('no_note'))}</div>
               ${it.event?.address ? `<div class="small" style="margin-top:4px"><a href="${App.utils.mapUrl(it.event.address)}" target="_blank" rel="noopener noreferrer">${App.utils.escapeHtml(it.event.address)}</a></div>` : ''}
-              ${flagToggles('entry', it.entryId, it.flags, it.start)}
+              ${flagToggles('entry', it.entryId, it.flags)}
               <div class="entry-actions">
                 <button class="btn" type="button" data-edit-calendar-item="${App.utils.escapeAttr(it.id)}">${App.utils.t('edit')}</button>
                 <a class="btn" href="${App.utils.googleCalendarUrl(itemData, it.event)}" target="_blank" rel="noopener noreferrer">${App.utils.t('google_calendar')}</a>
@@ -1557,11 +1550,6 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
             items.push({ year, week, event });
           });
         });
-        if (App.els.deleteAllNotesBtn) {
-          App.els.deleteAllNotesBtn.textContent = App.utils.t('delete_all_notes');
-          App.els.deleteAllNotesBtn.disabled = !items.length;
-          App.els.deleteAllNotesBtn.style.opacity = items.length ? '' : '.55';
-        }
         if (App.els.notesList) App.els.notesList.innerHTML = items.map(({ year, week, event }) => `
           <div class="note-row">
             <div>
@@ -1582,7 +1570,7 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
         }));
         document.querySelectorAll('[data-delete-note]').forEach((btn) => btn.addEventListener('click', () => App.actions.deleteNote(btn.dataset.deleteNoteYear, btn.dataset.deleteNote)));
       },
-      renderSettings() { if (App.els.languageSelect) App.els.languageSelect.value = App.state.app.settings.language || 'ru'; if (App.els.accentSelect) App.els.accentSelect.value = App.state.app.settings.accentColor || 'green'; if (App.els.fontSizeSelect) App.els.fontSizeSelect.value = App.state.app.settings.fontSize || '100'; if (App.els.addYearInput && !App.els.addYearInput.value) App.els.addYearInput.value = String(Math.max(...Object.keys(App.state.app.serviceYears).map(Number), App.utils.getServiceYearForDate(new Date())) + 1); },
+      renderSettings() { if (App.els.languageSelect) App.els.languageSelect.value = App.state.app.settings.language || 'ru'; if (App.els.accentSelect) App.els.accentSelect.value = App.state.app.settings.accentColor || 'green'; if (App.els.fontSizeSelect) App.els.fontSizeSelect.value = App.state.app.settings.fontSize || '100'; if (App.els.addYearInput && !App.els.addYearInput.value) App.els.addYearInput.value = String(Math.max(...Object.keys(App.state.app.serviceYears).map(Number), App.utils.getServiceYearForDate(new Date())) + 1); if (App.els.syncStatus) { const meta = App.state.app.meta || {}; const fmt = (value) => value ? new Date(value).toLocaleString(App.utils.lang()) : ''; const parts = []; if (meta.lastSyncExportAt) parts.push(`${App.utils.t('sync_last_export')}: ${fmt(meta.lastSyncExportAt)}`); if (meta.lastSyncImportAt) parts.push(`${App.utils.t('sync_last_import')}: ${fmt(meta.lastSyncImportAt)}`); App.els.syncStatus.textContent = parts.join(' · ') || App.utils.t('sync_never'); } },
       closeMobileMenu() { if (App.els.appRoot) App.els.appRoot.classList.remove('menu-open'); if (App.els.mobileOverlay) { App.els.mobileOverlay.hidden = true; App.els.mobileOverlay.classList.remove('show'); App.els.mobileOverlay.style.display = 'none'; App.els.mobileOverlay.style.pointerEvents = 'none'; } },
       toggleMobileMenu() { if (!App.els.appRoot) return; const open = !App.els.appRoot.classList.contains('menu-open'); App.els.appRoot.classList.toggle('menu-open', open); if (App.els.mobileOverlay) { App.els.mobileOverlay.hidden = true; App.els.mobileOverlay.classList.remove('show'); App.els.mobileOverlay.style.display = 'none'; App.els.mobileOverlay.style.pointerEvents = 'none'; } }
     },
@@ -1590,7 +1578,6 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
     bind() {
       App.els.weekSearch?.addEventListener('input', (e) => { App.state.weekSearch = e.target.value; App.ui.renderWeeks(); });
       App.els.noteSearch?.addEventListener('input', (e) => { App.state.noteSearch = e.target.value; App.ui.renderNotes(); });
-      App.els.deleteAllNotesBtn?.addEventListener('click', () => App.actions.deleteAllNotes());
       App.els.yearSelect?.addEventListener('change', (e) => { App.state.selectedYear = Number(e.target.value); App.state.selectedWeekId = null; App.ui.renderWeeks(); });
       App.els.eventFilter?.addEventListener('change', (e) => { App.state.calendarEventFilter = e.target.value; App.ui.renderAll(); });
       App.els.calendarEventQuickFilter?.addEventListener('change', (e) => { App.state.calendarEventFilter = e.target.value; App.ui.renderAll(); });
@@ -1624,6 +1611,8 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
       App.els.exportModalCloseBtn?.addEventListener('click', () => { if (App.els.exportModal) App.els.exportModal.hidden = true; });
       App.els.exportCancelBtn?.addEventListener('click', () => { if (App.els.exportModal) App.els.exportModal.hidden = true; });
       App.els.exportConfirmBtn?.addEventListener('click', () => { if (App.state.exportType === 'ics') App.actions.exportIcs(); else App.actions.exportJson(); if (App.els.exportModal) App.els.exportModal.hidden = true; });
+      App.els.syncExportBtn?.addEventListener('click', () => App.actions.exportSyncFile());
+      App.els.syncImportInput?.addEventListener('change', (e) => App.actions.importSyncFile(e.target.files?.[0] || null));
       document.querySelectorAll('[data-export-type]').forEach((btn) => btn.addEventListener('click', () => { App.state.exportType = btn.dataset.exportType; document.querySelectorAll('[data-export-type]').forEach((node) => node.classList.toggle('active', node === btn)); if (App.els.exportRangeCard) App.els.exportRangeCard.style.display = App.state.exportType === 'ics' ? 'block' : 'none'; }));
       document.querySelectorAll('[data-pdf-type]').forEach((btn) => btn.addEventListener('click', () => { App.state.pdfExportType = btn.dataset.pdfType; document.querySelectorAll('[data-pdf-type]').forEach((node) => node.classList.toggle('active', node === btn)); if (App.els.pdfRangeCard) App.els.pdfRangeCard.style.display = ['custom-range-calendar','custom-range'].includes(App.state.pdfExportType) ? 'block' : 'none'; }));
       App.els.backupBtn?.addEventListener('click', () => App.actions.exportJson());
@@ -1660,7 +1649,6 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
       this.ui.closeMobileMenu();
       this.ui.renderAll();
       this.bind();
-      this.actions.runSendChecklistAudit(true);
       this.ui.closeMobileMenu();
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', async () => {
