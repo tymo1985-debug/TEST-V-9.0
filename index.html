@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Service Year Planner v9.5.7-manual-sync</title>
+  <title>Service Year Planner v9.5.9-year-week-bars</title>
   <meta name="theme-color" content="#14532d" />
   <link rel="manifest" href="manifest.webmanifest">
   <style>
@@ -147,7 +147,7 @@ body::before{display:none !important}
 /* Fix: hide service-year month summary dots at the bottom of each month card */
 .sy-month-summary{display:none !important}
  
-/* v9.5.7-manual-sync: day popover for service-year mini calendar */
+/* v9.5.9-year-week-bars: day popover for service-year mini calendar */
 .day-popover{position:fixed;z-index:3200;min-width:260px;max-width:min(340px,calc(100vw - 24px));background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 55px rgba(0,0,0,.22);padding:14px;font-size:13px;line-height:1.35}
 .day-popover[hidden]{display:none !important}
 .day-popover-title{font-weight:800;font-size:14px;margin-bottom:3px}
@@ -163,7 +163,7 @@ body::before{display:none !important}
 @media (max-width:680px){.day-popover{left:12px !important;right:12px !important;top:auto !important;bottom:86px !important;max-width:none;width:auto}.day-popover-actions .btn{flex:1 1 auto}}
 
 
-/* v9.5.7-manual-sync: stable popover + sending workflow */
+/* v9.5.9-year-week-bars: stable popover + sending workflow */
 .day-popover{pointer-events:auto !important}
 .day-popover.is-hovered{box-shadow:0 24px 60px rgba(0,0,0,.26) !important}
 .send-control{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}
@@ -184,13 +184,30 @@ body::before{display:none !important}
 
 .sync-card{box-shadow:none;border:1px dashed var(--line);border-radius:18px;padding:14px;background:var(--surface2)}
 .sync-card h4{margin:0 0 8px;font-size:16px}.sync-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}.sync-actions .btn{box-shadow:none}.sync-status{margin-top:10px;color:var(--muted);font-size:12px}
+
+/* v9.5.8: annual view keeps current day/event visible in the side panel */
+.sy-day.selected{outline:2px solid var(--accent) !important;outline-offset:1px !important;background:rgba(var(--accent-rgb),.14) !important}
+.sy-day.today.selected{box-shadow:0 0 0 3px rgba(var(--accent-rgb),.18) !important}
+
+/* v9.5.9: year view shows weekly event bars instead of dots */
+.sy-days,.sy-event-dots,.sy-event-dot{display:none !important}
+.sy-weeks{display:grid;gap:4px}
+.sy-week-row{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;min-height:56px;align-items:start}
+.sy-week-row .sy-day,.sy-week-row .sy-empty{min-height:34px !important}
+.sy-period-bar{position:absolute;z-index:4;left:calc((100% / 7) * var(--bar-left) + 2px);width:calc((100% / 7) * var(--bar-span) - 4px);top:calc(22px + (var(--bar-lane) * 16px));height:15px;border:0;border-radius:999px;background:color-mix(in srgb, var(--bar-color) 24%, white);color:var(--text);padding:0 7px;font-size:9px;line-height:15px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--bar-color) 50%, transparent)}
+.sy-period-bar::before{content:'';display:inline-block;width:6px;height:6px;border-radius:999px;background:var(--bar-color);margin-right:4px;vertical-align:1px}
+.sy-period-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}
+.sy-period-bar:hover{box-shadow:0 2px 8px rgba(0,0,0,.14), inset 0 0 0 1px var(--bar-color)}
+.sy-bar-more{position:absolute;right:4px;bottom:0;z-index:5;border:0;background:transparent;color:var(--muted);font-size:9px;cursor:pointer;padding:0}
+@supports not (background: color-mix(in srgb, red 20%, white)){.sy-period-bar{background:#dff1d7}}
+@media (max-width:680px){.sy-week-row{min-height:52px}.sy-period-bar{font-size:8px;height:14px;line-height:14px;padding:0 5px;top:calc(21px + (var(--bar-lane) * 15px))}}
 </style>
 </head>
 <body>
   <div class="mobile-overlay" id="mobileOverlay" hidden></div>
   <div class="app" id="appRoot">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.5.7-manual-sync • index.html + app.js</p></div></div>
+      <div class="brand"><div class="logo">SY</div><div><h1>Service Year Planner</h1><p>v9.5.9-year-week-bars • index.html + app.js</p></div></div>
       <nav class="menu" id="desktopNav"></nav>
       <div class="summary"><strong>Быстрый статус</strong><div id="sideStatus" class="small"></div></div>
     </aside>
@@ -198,7 +215,7 @@ body::before{display:none !important}
       <div class="offline-banner" id="offlineBanner">Вы офлайн. Изменения сохраняются локально.</div>
       <header class="topbar">
         <div>
-          <div class="version-badge">Версия: v9.5.7-manual-sync</div>
+          <div class="version-badge">Версия: v9.5.9-year-week-bars</div>
           <h2 id="screenTitle">Календарь</h2>
           <p id="screenSubtitle"></p>
         </div>

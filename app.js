@@ -1,5 +1,5 @@
 
-// Service Year Planner v9.5.7-manual-sync color names for meetings
+// Service Year Planner v9.5.9-year-week-bars color names for meetings
 (function () {
   'use strict';
 
@@ -319,10 +319,10 @@
         const out = { ...settings }; if (typeof out.showTeamPanel !== 'boolean') out.showTeamPanel = true; if (!out.language) out.language = 'ru'; if (!out.theme) out.theme = 'light'; if (!out.layoutPreset) out.layoutPreset = 'classic'; if (!out.calendarView) out.calendarView = 'month'; if (!out.accentColor) out.accentColor = 'green'; if (!out.fontSize) out.fontSize = '100'; return out;
       },
       createDefaultData() {
-        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.5.7-manual-sync' } };
+        return { settings: this.ensureSettingsDefaults({}), serviceYears: {}, events: [{ id:'evt_midweek', name:'Серединное собрание', color:'#1f7a45', address:'', schedule:'Ср 19:00' }, { id:'evt_weekend', name:'Выходное служение', color:'#2563eb', address:'', schedule:'Сб 10:00' }], entries: [], meta: { version:'9.5.9-year-week-bars' } };
       },
       convertLegacyBackup(legacy) {
-        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.5.7-manual-sync', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
+        const app = this.createDefaultData(); app.events = []; app.meta = { version:'9.5.9-year-week-bars', importedFrom: legacy.schema || 'legacy' }; app.settings = this.ensureSettingsDefaults({});
         const eventMap = new Map(); const legacyMeetings = Array.isArray(legacy.meetings) ? legacy.meetings : [];
         const ensureEvent = (name, source = {}) => { const cleanName = String(name || '').trim(); if (!cleanName) return ''; if (eventMap.has(cleanName)) return eventMap.get(cleanName); const id = `evt_${App.utils.slug(cleanName) || App.utils.uid('evt')}`; const scheduleParts = []; if (source.wd && source.tWD) scheduleParts.push(`${source.wd} ${source.tWD}`); if (source.we && source.tWE) scheduleParts.push(`${source.we} ${source.tWE}`); app.events.push({ id, name: cleanName, color: App.utils.clampColor(source.color, '#1f7a45'), address: source.addr || source.address || '', schedule: scheduleParts.join(', ') }); eventMap.set(cleanName, id); return id; };
         legacyMeetings.forEach((meeting) => ensureEvent(meeting?.name, meeting || {}));
@@ -347,7 +347,7 @@
       },
       normalizeApp(appData) {
         const app = appData && typeof appData === 'object' ? appData : this.createDefaultData();
-        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.5.7-manual-sync' };
+        app.settings = this.ensureSettingsDefaults(app.settings || {}); if (!Array.isArray(app.events)) app.events = []; if (!Array.isArray(app.entries)) app.entries = []; if (!app.serviceYears || typeof app.serviceYears !== 'object') app.serviceYears = {}; if (!app.meta || typeof app.meta !== 'object') app.meta = { version:'9.5.9-year-week-bars' };
         app.events = App.utils.uniqueBy(app.events.map((item) => ({ id: item.id || App.utils.uid('evt'), name: item.name || 'Без названия', color: App.utils.clampColor(item.color), address: item.address || '', schedule: item.schedule || '' })), (item) => [item.name,item.color,item.address,item.schedule].join('|'));
         app.entries = App.utils.uniqueBy(app.entries.filter((item) => item && item.start && item.end).map((item) => ({ id: item.id || App.utils.uid('entry'), eventId: item.eventId || '', start: App.utils.iso(item.start), end: App.utils.iso(item.end), title: item.title || '', note: item.note || '', flags: { f302: !!item?.flags?.f302, letter: !!item?.flags?.letter }, source: item.source || 'entry' })), (item) => [item.eventId,item.title,item.note,item.start,item.end].join('|'));
         Object.keys(app.serviceYears).forEach((year) => {
@@ -355,7 +355,7 @@
           Object.keys(sy.weeks).forEach((weekId) => { const w = sy.weeks[weekId]; if (!w) return; const start = App.utils.iso(w.start || weekId); const end = App.utils.iso(w.end || App.utils.addDays(App.utils.parseLocalDate(start), 6)); sy.weeks[weekId] = { id: w.id || weekId, weekId, start, end, eventId: w.eventId || '', priority: w.priority || 'normal', flagLetter: !!w.flagLetter, flagS302: !!w.flagS302, note: w.note || '' }; });
           app.serviceYears[year] = sy;
         });
-        app.meta.version = '9.5.7-manual-sync';
+        app.meta.version = '9.5.9-year-week-bars';
         return app;
       },
       migrate(appData) { return this.normalizeApp(appData && appData.schema === 'sp-backup-v2' ? this.convertLegacyBackup(appData) : appData); },
@@ -564,12 +564,12 @@
         const now = new Date().toISOString();
         App.state.app.meta = App.state.app.meta || {};
         App.state.app.meta.lastSyncExportAt = now;
-        App.state.app.meta.version = '9.5.7-manual-sync';
+        App.state.app.meta.version = '9.5.9-year-week-bars';
         App.store.save();
         const payload = {
           schema: 'service-year-planner-sync-v1',
           exportedAt: now,
-          appVersion: 'v9.5.7-manual-sync',
+          appVersion: 'v9.5.9-year-week-bars',
           source: 'manual-file-sync',
           payload: App.state.app
         };
@@ -589,7 +589,7 @@
             App.state.app.meta = App.state.app.meta || {};
             App.state.app.meta.lastSyncImportAt = new Date().toISOString();
             App.state.app.meta.lastSyncSourceExportedAt = parsed?.exportedAt || '';
-            App.state.app.meta.version = '9.5.7-manual-sync';
+            App.state.app.meta.version = '9.5.9-year-week-bars';
             App.store.save();
             const years = Object.keys(App.state.app.serviceYears || {}).map(Number).sort((a,b) => a - b);
             const currentSY = App.utils.getServiceYearForDate(new Date());
@@ -791,8 +791,8 @@
         const qa = (sel) => Array.from(document.querySelectorAll(sel));
         this.localizeColorOptions();
         const brandH1 = q('.brand h1'); if (brandH1) brandH1.textContent = App.utils.t('appTitle');
-        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.7-manual-sync • index.html + app.js`;
-        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.7-manual-sync`;
+        const brandP = q('.brand p'); if (brandP) brandP.textContent = `v9.5.9-year-week-bars • index.html + app.js`;
+        const versionBadge = q('.version-badge'); if (versionBadge) versionBadge.textContent = `${App.utils.t('version')}: v9.5.9-year-week-bars`;
         if (App.els.themeBtn) App.els.themeBtn.textContent = App.utils.t('theme');
         if (App.els.exportBtn) App.els.exportBtn.textContent = App.utils.t('export');
         if (App.els.syncTitle) App.els.syncTitle.textContent = App.utils.t('sync_title');
@@ -1091,7 +1091,7 @@
  .flag-badge{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:2px 6px;font-size:10px;font-weight:700;color:var(--text)}
  .calendar-action-grid{display:grid;gap:8px;margin-top:12px}.entry-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.entry-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}.side-item-card{padding:10px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
  
- /* v9.5.7-manual-sync: day popover for service-year mini calendar */
+ /* v9.5.9-year-week-bars: day popover for service-year mini calendar */
  .day-popover{position:fixed;z-index:3200;min-width:260px;max-width:min(340px,calc(100vw - 24px));background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 55px rgba(0,0,0,.22);padding:14px;font-size:13px;line-height:1.35}
  .day-popover[hidden]{display:none !important}
  .day-popover-title{font-weight:800;font-size:14px;margin-bottom:3px}
@@ -1105,7 +1105,7 @@
  .day-popover-actions .btn{padding:8px 10px;border-radius:12px;font-size:12px;box-shadow:none}
  .sy-day.has-events:hover{outline:2px solid var(--accent);outline-offset:1px}
  
- /* v9.5.7-manual-sync: stable popover + sending workflow */
+ /* v9.5.9-year-week-bars: stable popover + sending workflow */
  .calendar-details-card #calendarSideDetails .side-item-card:has(.entry-actions){display:none !important}
 
  .day-popover{pointer-events:auto !important}
@@ -1219,32 +1219,63 @@ showServiceYearDayPopover(anchor, dateIso, pinned = false) {
         }
         const dayNames = App.utils.dayNames();
         const todayIso = App.utils.iso(new Date());
+        const todayDate = App.utils.parseLocalDate(todayIso);
+        const selectedDate = App.utils.parseLocalDate(App.state.calendarSelectedDateIso);
+        const selectedInServiceYear = selectedDate && selectedDate >= bounds.start && selectedDate <= bounds.end;
+        const fallbackSelectedIso = (todayDate && todayDate >= bounds.start && todayDate <= bounds.end) ? todayIso : App.utils.iso(bounds.start);
+        if (!selectedInServiceYear) App.state.calendarSelectedDateIso = fallbackSelectedIso;
         const html = this.buildServiceYearMonths(serviceYear).map(({ month, year }) => {
           const monthStart = new Date(year, month, 1);
           const monthEnd = new Date(year, month + 1, 0);
-          const firstOffset = (monthStart.getDay() + 6) % 7;
-          const days = [];
-          for (let i = 0; i < firstOffset; i += 1) days.push('<div class="sy-empty"></div>');
           const items = App.data.buildCalendarItemsForMonth(month, year);
-          for (let day = 1; day <= monthEnd.getDate(); day += 1) {
-            const date = new Date(year, month, day);
-            const iso = App.utils.iso(date);
-            const dayItems = items.filter((item) => App.utils.overlaps(item.start, item.end, date, date));
-            const dots = dayItems.slice(0, 3).map((item) => `<span class="sy-event-dot" style="background:${App.utils.clampColor(item.color)}"></span>`).join('');
-            const count = dayItems.length > 3 ? `<span class="sy-count">+${dayItems.length - 3}</span>` : '';
-            days.push(`<button class="sy-day ${iso === todayIso ? 'today' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'weekend' : ''} ${dayItems.length ? 'has-events' : ''} ${App.state.calendarSelectedDateIso === iso ? 'selected' : ''}" type="button" data-add-date="${App.utils.escapeAttr(iso)}" title="${App.utils.escapeAttr(dayItems.length ? App.utils.t('day_details_title') : App.utils.t('add_on_date'))}"><span>${day}</span>${count}<span class="sy-event-dots">${dots}</span></button>`);
+          const rows = [];
+          let weekStart = App.utils.startOfWeek(monthStart);
+          const lastWeekStart = App.utils.startOfWeek(monthEnd);
+          while (weekStart <= lastWeekStart) {
+            const weekEnd = App.utils.addDays(weekStart, 6);
+            const dayCells = [];
+            for (let i = 0; i < 7; i += 1) {
+              const date = App.utils.addDays(weekStart, i);
+              const iso = App.utils.iso(date);
+              if (date.getMonth() !== month) {
+                dayCells.push('<div class="sy-empty"></div>');
+              } else {
+                const dayItems = items.filter((item) => App.utils.overlaps(item.start, item.end, date, date));
+                const title = dayItems.length ? dayItems.map((item) => item.title).join(' · ') : App.utils.t('add_on_date');
+                dayCells.push(`<button class="sy-day ${iso === todayIso ? 'today' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'weekend' : ''} ${dayItems.length ? 'has-events' : ''} ${App.state.calendarSelectedDateIso === iso ? 'selected' : ''}" type="button" data-add-date="${App.utils.escapeAttr(iso)}" title="${App.utils.escapeAttr(title)}"><span>${date.getDate()}</span></button>`);
+              }
+            }
+            const overlapping = items.filter((item) => {
+              const segmentStart = new Date(Math.max(item.start.getTime(), monthStart.getTime(), weekStart.getTime()));
+              const segmentEnd = new Date(Math.min(item.end.getTime(), monthEnd.getTime(), weekEnd.getTime()));
+              return segmentStart <= segmentEnd;
+            }).sort((a, b) => a.start - b.start || b.end - a.end || String(a.title).localeCompare(String(b.title)));
+            const bars = overlapping.slice(0, 3).map((item, lane) => {
+              const segmentStart = new Date(Math.max(item.start.getTime(), monthStart.getTime(), weekStart.getTime()));
+              const segmentEnd = new Date(Math.min(item.end.getTime(), monthEnd.getTime(), weekEnd.getTime()));
+              const left = Math.max(0, App.utils.daysDiff(segmentStart, weekStart));
+              const right = Math.min(6, App.utils.daysDiff(segmentEnd, weekStart));
+              const span = Math.max(1, right - left + 1);
+              const color = App.utils.clampColor(item.color);
+              const label = App.utils.escapeHtml(item.title || App.utils.t('event'));
+              return `<button class="sy-period-bar" type="button" data-detail-calendar-item="${App.utils.escapeAttr(item.id)}" data-add-date="${App.utils.escapeAttr(App.utils.iso(segmentStart))}" style="--bar-left:${left};--bar-span:${span};--bar-lane:${lane};--bar-color:${color};" title="${App.utils.escapeAttr(item.title)}"><span>${label}</span></button>`;
+            }).join('');
+            const more = overlapping.length > 3 ? `<button class="sy-bar-more" type="button" data-add-date="${App.utils.escapeAttr(App.utils.iso(weekStart))}">+${overlapping.length - 3}</button>` : '';
+            rows.push(`<div class="sy-week-row">${dayCells.join('')}${bars}${more}</div>`);
+            weekStart = App.utils.addDays(weekStart, 7);
           }
-          // Monthly summary dots removed: the bottom row of colored dots under each month is intentionally hidden.
-          return `<section class="sy-month-card"><div class="sy-month-title"><span>${App.utils.monthName(month)}</span><small>${year}</small></div><div class="sy-dow">${dayNames.map((name) => `<span>${name}</span>`).join('')}</div><div class="sy-days">${days.join('')}</div></section>`;
+          return `<section class="sy-month-card"><div class="sy-month-title"><span>${App.utils.monthName(month)}</span><small>${year}</small></div><div class="sy-dow">${dayNames.map((name) => `<span>${name}</span>`).join('')}</div><div class="sy-weeks">${rows.join('')}</div></section>`;
         }).join('');
         const legendHtml = '';
         if (App.els.calendarGrid) App.els.calendarGrid.innerHTML = `${legendHtml}<div class="service-year-grid">${html}</div>`;
+
         const quickItems = filteredYearItems.sort((a,b) => a.start - b.start || a.end - b.end);
         if (App.els.calendarQuickList) App.els.calendarQuickList.innerHTML = quickItems.slice(0, 24).map((item) => `<button class="side-item" type="button" data-detail-calendar-item="${App.utils.escapeAttr(item.id)}"><strong>${App.utils.escapeHtml(item.title)}</strong><div class="small">${App.utils.prettyDate(item.start)} — ${App.utils.prettyDate(item.end)}</div><div class="small">${App.utils.escapeHtml(item.note || App.utils.t('no_note'))}</div></button>`).join('') || `<div class="empty">${App.utils.t('no_events_month')}</div>`;
-        const detail = quickItems.find((item) => item.id === App.state.calendarDetailId) || quickItems[0] || null;
-        this.renderCalendarDetails(detail);
-        if (App.state.calendarSelectedDateIso) this.renderServiceYearDayDetails(App.state.calendarSelectedDateIso);
-        
+        const selectedIso = App.state.calendarSelectedDateIso || fallbackSelectedIso;
+        const selectedDateForDetail = App.utils.parseLocalDate(selectedIso);
+        const activeItem = selectedDateForDetail ? quickItems.find((item) => App.utils.overlaps(item.start, item.end, selectedDateForDetail, selectedDateForDetail)) : null;
+        App.state.calendarDetailId = activeItem?.id || App.state.calendarDetailId || null;
+        this.renderServiceYearDayDetails(selectedIso);
 document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
  btn.addEventListener('click', (e) => {
  e.stopPropagation();
@@ -1263,7 +1294,8 @@ document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
  window.setTimeout(() => App.ui.hideDayPopover(false), 260);
  });
 });
-        document.querySelectorAll('[data-detail-calendar-item]').forEach((btn) => btn.addEventListener('click', () => { const item = quickItems.find((entry) => entry.id === btn.dataset.detailCalendarItem); App.state.calendarDetailId = item?.id || null; App.ui.renderCalendarDetails(item || null); }));
+        document.querySelectorAll('.sy-bar-more[data-add-date]').forEach((btn) => btn.addEventListener('click', (e) => { e.stopPropagation(); App.state.calendarSelectedDateIso = btn.dataset.addDate; App.ui.renderServiceYearDayDetails(btn.dataset.addDate); }));
+        document.querySelectorAll('[data-detail-calendar-item]').forEach((btn) => btn.addEventListener('click', (e) => { e.stopPropagation(); const item = quickItems.find((entry) => entry.id === btn.dataset.detailCalendarItem); App.state.calendarDetailId = item?.id || null; App.ui.renderCalendarDetails(item || null); }));
       },
       renderCalendar() {
         const viewMonthStart = new Date(App.state.calendarYear, App.state.calendarMonth, 1);
@@ -1595,10 +1627,10 @@ document.querySelectorAll('.sy-day[data-add-date]').forEach((btn) => {
       App.els.layoutPresetSelect?.addEventListener('change', (e) => { App.state.app.settings.layoutPreset = e.target.value; App.store.save(); App.ui.renderAll(); });
       App.els.calendarLayoutPresetSelect?.addEventListener('change', (e) => { App.state.app.settings.layoutPreset = e.target.value; App.store.save(); App.ui.renderAll(); });
       App.els.prevMonthBtn?.addEventListener('click', () => { if (App.state.calendarView === 'year') { const sy = App.utils.getServiceYearForDate(new Date(App.state.calendarYear, App.state.calendarMonth, 1)) - 1; App.state.calendarYear = sy; App.state.calendarMonth = App.config.serviceYearStartMonth; App.ui.renderCalendar(); return; } const date = new Date(App.state.calendarYear, App.state.calendarMonth - 1, 1); App.state.calendarMonth = date.getMonth(); App.state.calendarYear = date.getFullYear(); App.ui.renderCalendar(); });
-      App.els.todayMonthBtn?.addEventListener('click', () => { const now = new Date(); App.state.calendarMonth = now.getMonth(); App.state.calendarYear = now.getFullYear(); App.ui.renderCalendar(); });
+      App.els.todayMonthBtn?.addEventListener('click', () => { const now = new Date(); App.state.calendarMonth = now.getMonth(); App.state.calendarYear = now.getFullYear(); App.state.calendarSelectedDateIso = App.utils.iso(now); App.ui.renderCalendar(); });
       App.els.nextMonthBtn?.addEventListener('click', () => { if (App.state.calendarView === 'year') { const sy = App.utils.getServiceYearForDate(new Date(App.state.calendarYear, App.state.calendarMonth, 1)) + 1; App.state.calendarYear = sy; App.state.calendarMonth = App.config.serviceYearStartMonth; App.ui.renderCalendar(); return; } const date = new Date(App.state.calendarYear, App.state.calendarMonth + 1, 1); App.state.calendarMonth = date.getMonth(); App.state.calendarYear = date.getFullYear(); App.ui.renderCalendar(); });
       App.els.calendarYearSelect?.addEventListener('change', (e) => { App.state.calendarYear = Number(e.target.value); if (App.state.calendarView === 'year') App.state.calendarMonth = App.config.serviceYearStartMonth; App.ui.renderCalendar(); });
-      App.els.toggleTeamPanelBtn?.addEventListener('click', () => { App.state.calendarView = App.state.calendarView === 'year' ? 'month' : 'year'; App.state.app.settings.calendarView = App.state.calendarView; App.store.save(); App.ui.renderCalendar(); });
+      App.els.toggleTeamPanelBtn?.addEventListener('click', () => { App.state.calendarView = App.state.calendarView === 'year' ? 'month' : 'year'; if (App.state.calendarView === 'year') { const now = new Date(); App.state.calendarSelectedDateIso = App.utils.iso(now); App.state.calendarYear = now.getFullYear(); App.state.calendarMonth = now.getMonth(); } App.state.app.settings.calendarView = App.state.calendarView; App.store.save(); App.ui.renderCalendar(); });
       App.els.editorCloseBtn?.addEventListener('click', () => App.ui.closeCalendarEditor());
       App.els.editorCancelBtn?.addEventListener('click', () => App.ui.closeCalendarEditor());
       App.els.editorSaveBtn?.addEventListener('click', () => App.actions.saveCalendarEditor());
